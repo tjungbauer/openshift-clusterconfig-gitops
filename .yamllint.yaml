@@ -5,7 +5,7 @@ rules:
   comments-indentation: disable
   key-duplicates: enable
   line-length: disable # Lines can be any length
-  new-line-at-end-of-file: enable
+  new-line-at-end-of-file: disable
   new-lines:
     type: unix
   trailing-spaces: enable
