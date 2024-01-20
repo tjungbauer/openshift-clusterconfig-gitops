@@ -1,0 +1,62 @@
+---
+override-rhacm-operator-version: &rhacmversion release-2.9
+
+# Install Operator RHACM
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    advanced-cluster-management:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: open-cluster-management
+        create: true
+      subscription:
+        channel: *rhacmversion
+        approval: Automatic
+        operatorName: advanced-cluster-management
+        source: cs-redhat-operator-index
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+helper-status-checker:
+  enabled: true
+
+  operatorName: advanced-cluster-management
+
+  # space separate list of deployments which shall be checked for status
+  deployments: "multicluster-operators-application multicluster-observability-operator multicluster-operators-channel multicluster-operators-hub-subscription multicluster-operators-standalone-subscription multicluster-operators-subscription-report multiclusterhub-operator submariner-addon"
+
+  wait_time: 60  # wait time in seconds for the check-job to verify when the deployments should be ready
+
+  namespace:
+    name: open-cluster-management
+
+  serviceAccount:
+    create: true
+    name: "status-checker-acm"
+
+rhacm-setup:
+  rhacm:
+    # Namespace
+    # Should be installed in open-cluster-management (default)
+    namespace:
+      name: open-cluster-management
+    multiclusterhub:
+      enabled: true
+      syncwave: '3'
+
+      # Specifies deployment replication for improved availability. Options are: Basic and High
+      # Default: Basic
+      availabilityConfig: High
+
+      # If you want this component to only run on specific nodes, you can
+      # configure tolerations of tainted nodes.
+      # tolerations:
+      #  - effect: NoSchedule
+      #    key: infra
+      #    operator: Equal
+      #    value: reserved

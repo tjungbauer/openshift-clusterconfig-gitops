@@ -1,9 +1,9 @@
 apiVersion: v2
 name: setup-acs
-description: Deploys Advanced Cluster Security (ACS) on target cluster. If enabled Central will be deployed too.
+description: Deploys Advanced Cluster Managment (ACM) on target cluster.
 version: 1.0.0
 dependencies:
-  - name: rhacs-setup
+  - name: rhacm-setup
     version: ~1.0.0
     repository: https://charts.stderr.at/
 maintainers:
