@@ -1,0 +1,17 @@
+{{ if .Values.projecttemplate }}
+{{ if eq ( .Values.projecttemplate.enabled | toString) "true" }}
+---
+apiVersion: config.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: 'true'
+    include.release.openshift.io/self-managed-high-availability: 'true'
+    include.release.openshift.io/single-node-developer: 'true'
+    release.openshift.io/create-only: 'true'
+  name: cluster
+spec:
+  projectRequestTemplate:
+    name: {{ .Values.projecttemplate.name | default "project-template" }}
+{{- end }}
+{{- end }}

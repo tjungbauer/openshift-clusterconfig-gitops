@@ -1,0 +1,37 @@
+---
+cluster_admin_list:
+  - fx-emergency
+
+projecttemplate:
+  enabled: true
+
+generic-cluster-config:
+  self_provisioner:
+    deactivate: true
+
+  monitoring:
+    enabled: true
+    enableUserWorkload: true
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/infra
+        value: reserved
+      - effect: NoExecute
+        key: node-role.kubernetes.io/infra
+        value: reserved
+    alertmanagerMain:
+      storage: 2Gi
+      storageclass: gp3-csi
+    prometheusK8s:
+      storage: 10Gi
+      storageclass: gp3-csi
+      retention: 1d
+
+  idp:
+    enabled: true
+    enable_idp_provider: true
+    providers:
+      htpasswd:
+        - name: Emergency
+          enabled: true
+

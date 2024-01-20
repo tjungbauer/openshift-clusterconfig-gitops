@@ -1,0 +1,8 @@
+apiVersion: v2
+name: clusterconfig
+description: Installs cluster configuration which is usually valid for ALL clusters
+version: 1.0.1
+dependencies:
+  - name: generic-cluster-config
+    version: ~1.0.10
+    repository: https://charts.stderr.at
