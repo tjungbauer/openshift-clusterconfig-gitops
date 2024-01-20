@@ -14,7 +14,7 @@ helper-operator:
         channel: stable
         approval: Automatic
         operatorName: file-integrity-operator
-        source: cs-redhat-operator-index
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
         create: true
