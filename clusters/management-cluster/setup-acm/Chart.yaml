@@ -1,5 +1,5 @@
 apiVersion: v2
-name: setup-acs
+name: setup-acm
 description: Deploys Advanced Cluster Managment (ACM) on target cluster.
 version: 1.0.0
 dependencies:
