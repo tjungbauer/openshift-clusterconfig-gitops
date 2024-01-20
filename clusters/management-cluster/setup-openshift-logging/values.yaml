@@ -99,22 +99,6 @@ logging:
   namespace:
     name: *log-namespace
 
-  # Bucket that shall be created
-  bucket:
-    enabled: true
-    name: *bucketname
-
-    # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
-    # Default: 1
-    syncwave: 1
-
-    # is_secure: true
-    # port: 443
-
-    # Name of the storageclass
-    # Default: openshift-storage.noobaa.io
-    storageclass: *storageclassname
-
   lokistack:
     # name of the Lokistack object and its syncwave (should be after bucket and secret generation)
     name: logging-loki
