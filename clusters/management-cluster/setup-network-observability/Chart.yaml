@@ -1,0 +1,19 @@
+apiVersion: v2
+name: openshift-logging-deployment
+description: Installs and configures OpenShift Logging by calling the Chart openshift-logging
+version: 1.0.0
+dependencies:
+  - name: helper-loki-bucket-secret
+    version: ~1.0.0
+    repository: file://../../../charts/helper-loki-bucket-secret
+    condition: helper-loki-bucket-secret.enabled
+  - name: helper-operator
+    version: ~1.0.0
+    repository: file://../../../charts/helper-operator
+  - name: helper-status-checker
+    version: ~3.0.0
+    repository: file://../../../charts/helper-status-checker
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: file://../../../charts/helper-objectstore
+    condition: helper-objectstore.enabled
