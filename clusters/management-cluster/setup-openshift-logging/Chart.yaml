@@ -1,5 +1,5 @@
 apiVersion: v2
-name: openshift-logging-deployment
+name: setup-openshift-logging
 description: Installs and configures OpenShift Logging by calling the Chart openshift-logging
 version: 1.0.0
 dependencies:

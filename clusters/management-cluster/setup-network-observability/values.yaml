@@ -143,7 +143,7 @@ helper-loki-bucket-secret:
   # Name of the bucket
   bucket:
     name: *bucketname
-  
+
 # The operators are installed in a separate way in this case.
 # sub subchart
 helper-operator:
