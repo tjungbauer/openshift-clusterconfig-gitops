@@ -345,7 +345,7 @@ helper-operator:
         channel: *rhacsversion
         approval: Automatic
         operatorName: rhacs-operator
-        source: cs-redhat-operator-index
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
         create: true
