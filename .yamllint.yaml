@@ -1,0 +1,13 @@
+---
+# yamllint configuration
+# See: https://github.com/helm/charts/pull/2429
+rules:
+  comments-indentation: disable
+  key-duplicates: enable
+  line-length: disable # Lines can be any length
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix
+  trailing-spaces: enable
+  truthy:
+    level: warning

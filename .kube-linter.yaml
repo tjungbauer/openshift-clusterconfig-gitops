@@ -1,0 +1,12 @@
+---
+checks:
+  addAllBuiltIn: true
+  exclude:
+    # Don't require dedicated ServiceAccount for each deployment
+    - 'default-service-account'
+    # Don't alert if Deployments only use 1 replicas
+    - 'minimum-three-replicas'
+    # Don't alert if used ServiceAccount can't be detected
+    - 'non-existent-service-account'
+    # Don't alert if Deployments use replace update strategy
+    - 'no-rolling-update-strategy'

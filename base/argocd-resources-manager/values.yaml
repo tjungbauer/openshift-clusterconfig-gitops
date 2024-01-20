@@ -1,0 +1,95 @@
+---
+# General values
+#
+# Set cluster names ...
+# https://issues.redhat.com/browse/GITOPS-1777
+# The issue that the in-cluster cannot be renamed has been resolved
+mgmt-cluster: &mgmtcluster https://kubernetes.default.svc
+mgmt-cluster-name: &mgmtclustername in-cluster
+production-cluster: &prodcluster https://api.ocp.aws.ispworld.at:6443
+production-cluster-name: &prodclustername prod
+
+repourl: &repourl 'https://github.com/tjungbauer/openshift-clusterconfig-gitops'
+repobranch: &branch main
+
+# the anchor *rev must be set to a default value, in case it is not set for the cluster
+dummy_rev: &rev 1.0.0
+
+argocd_projects:
+  - *mgmtclustername
+  - *prodclustername
+
+applicationsets:
+
+  ############################
+  # MATRIX GENERATOR EXAMPLE #
+  ############################
+  # Matrix Generator: The idea here is to walk over a folder, for example /clusters/management-cluster
+  # and take all settings from there.
+  # This way you see what is installed on which cluster and you do not need to configure the application here
+  # Instead, you just add a new configuretion to clusters/management-cluster and it will automatically takes from there.
+  #
+  # The generator config here is bypassed 1:1 to the applicationset. It uses Git and list.
+  #   Git: Walking through the specified path
+  #   List: simply defines the target cluster. This is important so that we know where to deploy :)
+  #
+  # To make it flexible create one Matrix Generator per cluster.
+  # Don't forget that the Matrix Generator supports only 2 generators at the moment.
+  mgmt-cluster:
+    # Is the ApplicationSet enabled or not
+    enabled: true
+
+    # Description - always usful
+    description: "ApplicationSet that Deploys on Management Cluster Configuration (using Matrix Generator)"
+
+    # Any labels you would like to add to the Application. Good to filter it in the Argo CD UI.
+    labels:
+      category: configuration
+      env: mgmt-cluster
+
+    # Using go text template. See: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/GoTemplate/
+    goTemplate: true
+    argocd_project: *mgmtclustername
+
+    # preserve all resources when the application get deleted. This is useful to keep that workload even if Argo CD is removed or severely changed.
+    preserveResourcesOnDeletion: true
+
+    # Definition of Matrix Generator. Only 2 generators are supported at the moment
+    generatormatrix:
+          # Git: Walking through the specific folder and take whatever is there.
+          - git:
+              directories:
+                - path: clusters/management-cluster/*
+                - path: clusters/management-cluster/waves
+                  exclude: true
+              repoURL: *repourl
+              revision: *branch
+          # List: simply define the targetCluster. The name of the cluster must be known by Argo CD
+          - list:
+              elements:
+                  # targetCluster is important, this will define on which cluster it will be rolled out.
+                  # The cluster name must be known in Argo CD
+                - targetCluster: *mgmtclustername
+    syncPolicy:
+      autosync_enabled: false
+
+    # Ignore specific differences in obhects. For example: the randomly generated password string in the secret for Quay.
+    ignoreDifferences:
+      - kind: Secret
+        jsonPointers:
+          - /data/password
+        name: init-user
+        namespace: quay-enterprise
+
+  ################################
+  # END MATRIX GENERATOR EXAMPLE #
+  ################################
+
+
+# These define the default values.
+# It is possible to overwrite repourl and targetrevision in the Applications(Sets)
+general:
+  argocd_project: 'default'
+  source:
+    repourl: *repourl
+  branch: *branch

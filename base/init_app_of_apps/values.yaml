@@ -1,0 +1,13 @@
+---
+# General values
+#
+
+server: https://kubernetes.default.svc
+argocd_project: 'default'
+repourl_configuration: 'https://github.com/tjungbauer/openshift-clusterconfig-gitops'
+revision_configuration: main
+path_configurations:
+  - base/argocd-resources-manager/values.yaml
+repoURL_chart: https://charts.stderr.at/
+chart_name: helper-argocd
+chart_version: 2.0.x

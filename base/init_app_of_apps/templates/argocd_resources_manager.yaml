@@ -1,0 +1,32 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-resources-manager
+  labels:
+    gitops.ownedBy: cluster-config
+{{ include "common.labels" . | indent 4 }}
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: {{ .Values.server }}
+  project: {{ .Values.argocd_project }}
+  sources:
+    - repoURL: https://github.com/tjungbauer/openshift-clusterconfig-gitops
+      targetRevision: main
+      ref: values
+    - repoURL: {{ .Values.repoURL_chart }}
+      chart: {{ .Values.chart_name }}
+      targetRevision: {{ .Values.chart_version }}
+      helm:
+        valueFiles:
+          {{- range .Values.path_configurations }}
+          - $values/{{ . }}
+          {{- end }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  info:
+    - name: Description
+      value: 'This is the starting point which will initialize all applicationsets or argocd applications'

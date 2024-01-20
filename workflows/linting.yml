@@ -1,0 +1,84 @@
+name: Linting
+
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+
+jobs:
+  ct-lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.2.1
+
+      - name: Run chart-testing (lint)
+        run: |
+          #!/usr/bin/env bash
+            for charts in `find . -name 'Chart.yaml' -type f | xargs -I{} dirname {}`; do
+              printf "\n\n##### CHECKING $charts #####\n";
+              ct lint --charts $charts;
+            done
+
+  lint-test:
+    runs-on: ubuntu-latest
+    container:
+            image: quay.io/tjungbau/linter-image:v1.0.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+         
+      - name: Run helm lint on found Charts
+        run: |
+          #!/usr/bin/env bash
+
+          for charts in $(find . -name 'Chart.yaml'); do
+            helm_dir=$(dirname "${charts}")
+            echo "Checking $helm_dir"
+            echo "Trying to find in-cluster-values.yaml files"
+            add_val_files=$(find $helm_dir -type f -name in-cluster-values.yaml)
+            if [ -z "$add_val_files" ]; then
+                echo "No additional files found"
+                values=""
+            else
+                echo "Additional file found $add_val_files"
+                values="-f $add_val_files"
+            fi
+
+            helm dep up "${helm_dir}"
+            helm lint --strict --with-subcharts $values "${helm_dir}"
+            echo "Done"
+          done
+
+      - name: Run yamllint on all values-files
+        id: yamllint_test
+        run: |
+          get_files=$(find . -type f -name '*values.yaml')
+          yamllint -f standard -c .yamllint.yaml $get_files 
+
+          echo "Done checking with yamllint"
+
+      - name: Check possible ansible files
+        if: always()
+        run: |
+          get_files=$(find ansible -type f \( -name '*.yml' -o -name '*.yaml' \))
+          yamllint -f standard -c .yamllint.yaml $get_files 
+
+          echo "Done checking with yamllint"
+
