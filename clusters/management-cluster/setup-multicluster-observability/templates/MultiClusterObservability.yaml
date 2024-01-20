@@ -1,0 +1,29 @@
+{{ if eq (.Values.multicluster_observability.enabled | toString) "true" }}
+{{- with .Values.multicluster_observability }}
+---
+apiVersion: observability.open-cluster-management.io/v1beta2
+kind: MultiClusterObservability
+metadata:
+ name: observability
+spec:
+  enableDownsampling: {{ .config.enableDownsampling | default "true" }}
+  imagePullPolicy: {{ .imagePullPolicy | default "Always" }}
+  observabilityAddonSpec:
+    enableMetrics: {{ .config.addonSpec.enableMetrics | default "true" }}
+    interval: {{ .config.addonSpec.interval | default "60" }}
+  storageConfig:
+    metricObjectStorage:
+      name: {{ .s3_secretname }}
+      key: thanos.yaml
+    storeStorageSize: {{ .config.storage.storeStorageSize | default "10Gi" }}
+    storageClass: {{ .config.storage.storageClass | default "gp2" }}
+  advanced:
+    retentionConfig:
+      blockDuration: {{ .config.advanced.retentionConfig.blockDuration | default "2h" }}
+      deleteDelay: {{ .config.advanced.retentionConfig.deleteDelay | default "48h" }}
+      retentionInLocal: {{ .config.advanced.retentionConfig.retentionInLocal | default "24h" }}
+      retentionResolutionRaw: {{ .config.advanced.retentionConfig.retentionResolutionRaw | default "30d" }}
+      retentionResolution5m: {{ .config.advanced.retentionConfig.retentionResolution5m | default "180d" }}
+      retentionResolution1h: {{ .config.advanced.retentionConfig.retentionResolution1h | default "0d" }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,9 @@
+apiVersion: v2
+name: setup-multicluster-observability
+description: Enabled MutliClusterObservability once ACM has been installed
+version: 1.0.0
+dependencies:
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-objectstore.enabled

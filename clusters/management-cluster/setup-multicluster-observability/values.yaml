@@ -1,0 +1,104 @@
+---
+storageclassname: &storageclassname observability-bucket-storage-class
+bucketname: &bucketname multicluster-observability-bucket
+
+multicluster_observability:
+  enabled: true
+  namespace: open-cluster-management-observability
+  s3_secretname: thanos-object-store
+  bucket:
+    name: *bucketname
+
+  config:
+    addonSpec:
+      enableMetrics: true
+      # interval: 60
+
+    # Enable or disable the downsampling.
+    # The default is true.
+    #
+    # Note: Disabling downsampling is not recommended as querying long time ranges without non-downsampled data is not efficient and useful.
+    # enableDownSampling: true
+
+    storage:
+      # The amount of storage applied to the Observability stateful sets, i.e. Thanos store, Rule, compact and receiver.
+      # Default: 10Gi
+      # storeStorageSize: 10Gi
+
+      # Specify the storageClass Stateful Sets. This storage class will also be used for Object Storage if 
+      # MetricObjectStorage was configured for the system to create the storage."
+      # Default: gp2
+      storageClass: gp3-csi
+
+    # Advanced configurations for observability
+    advanced:
+      # Specifies the data retention configurations to be used by Observability
+      retentionConfig:
+        # configure --tsdb.block-duration in rule (Block duration for TSDB block)
+        # Default is 2h
+        # blockDuration: 2h
+
+        # configure --delete-delay in compact Time before a block marked for deletion is deleted from bucket.
+        # Default is 48h
+        # deleteDelay: 48h
+
+        # How long to retain raw samples in a local disk. It applies to rule/receive: --tsdb.retention in receive --tsdb.retention in rule.
+        # Default is 24h.
+        # retentionInLocal: 24h
+
+        # How long to retain raw samples in a bucket.
+        # Default is 30d.
+        retentionResolutionRaw: 10d
+
+        # How long to retain samples of resolution 1 (5 minutes) in a bucket.
+        # Default is 180d
+        retentionResolution5m: 90d
+
+        # How long to retain samples of resolution 2 (1 hour) in a bucket.
+        # Default is 0d.
+        retentionResolution1h: 10d
+
+# A helper chart that simply creates another backingstore for quay.
+# This is a chart in a very early state, and not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: observability-backingstore
+  # Size of the BackingStore
+  backingstore_size: 200Gi
+  limits_cpu: 500m
+  limits_memory: 2Gi
+  # numOfVolumes: 1
+  # type: pv-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    enabled: true
+    name: *bucketname
+    namespace: open-cluster-management-observability
+
+    # is_secure: true
+    # port: 443
+
+    # Name of the storageclass
+    # Default: openshift-storage.noobaa.io
+    # a separate StorageClass with BackingStore and BackingClass can be created.
+    storageclass: *storageclassname
+
+    # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # Default: 2
+    syncwave: 2

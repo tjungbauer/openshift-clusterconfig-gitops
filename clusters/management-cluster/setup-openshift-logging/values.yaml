@@ -20,8 +20,10 @@ helper-objectstore:
   backingstore_name: logging-backingstore
   # Size of the BackingStore
   backingstore_size: 700Gi
+  limits_cpu: 500m
+  limits_memory: 2Gi
   # numOfVolumes: 1
-  # type: py-pool
+  # type: pv-pool
 
   # The StorageClass the BackingStore is based on
   baseStorageClass: thin-csi

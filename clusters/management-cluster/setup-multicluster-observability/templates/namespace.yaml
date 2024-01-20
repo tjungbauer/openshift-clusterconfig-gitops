@@ -1,0 +1,10 @@
+{{ if eq (.Values.multicluster_observability.enabled | toString) "true" }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: open-cluster-management-observability
+  labels:
+    openshift.io/cluster-monitoring: "true"
+    {{- include "common.labels" $ | nindent 4 }}
+{{- end }}
