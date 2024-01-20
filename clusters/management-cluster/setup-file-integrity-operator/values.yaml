@@ -1,0 +1,88 @@
+---
+
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    quay-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-file-integrity
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: file-integrity-operator
+        source: cs-redhat-operator-index
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
+  operatorName: file-integrity-operator
+
+  # where operator is installed
+  namespace:
+    name: openshift-file-integrity
+
+  serviceAccount:
+    create: true
+    name: "sa-file-integrity-checker"
+
+file-integrity-operator:
+  aide:
+    worker:
+      enabled: true
+      syncwave: 5
+      name: worker-fileintegrity
+      namespace: openshift-file-integrity
+      selector:
+        key: node-role.kubernetes.io/worker
+        value: ""
+      config:
+        gracePeriod: 900
+        maxBackups: 5
+        customconfig: # Created if omitted
+          enabled: false
+          # name: myconfig
+          # namespace: openshift-file-integrity
+          # key: "config"
+
+      # If you want this component to only run on specific nodes, you can
+      # configure tolerations of tainted nodes.
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/worker
+          operator: Exists
+
+    controlplane:
+      enabled: true
+      syncwave: 10
+      name: controlplane-fileintegrity
+      namespace: openshift-file-integrity
+      selector:
+        key: node-role.kubernetes.io/master
+        value: ""
+      config:
+        gracePeriod: 900
+        maxBackups: 5
+        customconfig: # Created if omitted
+          enabled: true
+          name: controlplane-aide-conf
+          namespace: openshift-file-integrity
+          key: "controlplane-aide.conf"
+
+      # If you want this component to only run on specific nodes, you can
+      # configure tolerations of tainted nodes.
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists

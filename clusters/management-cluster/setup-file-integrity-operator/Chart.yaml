@@ -1,0 +1,15 @@
+apiVersion: v2
+name: setup-file-integrity-operator
+description: Setup File Integrity Operator
+version: 1.0.0
+dependencies:
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~3.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+  - name: file-integrity-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
