@@ -111,7 +111,10 @@ openshift-data-foundation:
 helper-operator:
 
   console_plugins:
-    - odf-console
+    enabled: true
+    plugins:
+      - odf-console
+    job_namespace: kube-system
 
   operators:
     odf-operator:
