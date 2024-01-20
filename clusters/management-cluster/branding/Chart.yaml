@@ -1,0 +1,10 @@
+apiVersion: v2
+name: clusterbranding
+description: Deploys Cluster Branding such as custom Login Page or Logo etc.
+version: 1.0.1
+dependencies:
+  - name: generic-cluster-config
+    version: ~1.0.10
+    repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer

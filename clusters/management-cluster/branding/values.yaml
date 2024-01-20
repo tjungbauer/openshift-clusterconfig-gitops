@@ -1,0 +1,19 @@
+---
+generic-cluster-config:
+  console:
+    console_banners:
+      topbanner:
+        enabled: true
+        text: 'Management Cluster'
+        location: BannerTop
+        color: "#FFFFFF"
+        backgroundcolor: '#0088ee'
+      bottombanner:
+        enabled: false
+        text: Copyright © 2024 Sample Company, Inc. |
+        location: BannerBottom
+        color: "#FFFFFF"
+        backgroundcolor: '#000'
+        link:
+          href: 'https://www.example.com/data-protection-policy'
+          text: Data Protection and Privacy Policy
