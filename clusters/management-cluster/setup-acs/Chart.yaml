@@ -1,0 +1,14 @@
+apiVersion: v2
+name: setup-acs
+description: Deploys ACS on target cluster. If enabled Central will be deployed too.
+version: 1.0.0
+dependencies:
+  - name: rhacs-setup
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+keywords:
+  - acs
+  - security

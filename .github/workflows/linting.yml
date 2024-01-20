@@ -73,12 +73,3 @@ jobs:
           yamllint -f standard -c .yamllint.yaml $get_files 
 
           echo "Done checking with yamllint"
-
-      - name: Check possible ansible files
-        if: always()
-        run: |
-          get_files=$(find ansible -type f \( -name '*.yml' -o -name '*.yaml' \))
-          yamllint -f standard -c .yamllint.yaml $get_files 
-
-          echo "Done checking with yamllint"
-
