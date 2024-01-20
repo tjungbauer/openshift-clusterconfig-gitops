@@ -5,15 +5,15 @@ version: 1.0.0
 dependencies:
   - name: helper-loki-bucket-secret
     version: ~1.0.0
-    repository: file://../../../charts/helper-loki-bucket-secret
+    repository: https://charts.stderr.at/
     condition: helper-loki-bucket-secret.enabled
   - name: helper-operator
     version: ~1.0.0
-    repository: file://../../../charts/helper-operator
+    repository: https://charts.stderr.at/
   - name: helper-status-checker
     version: ~3.0.0
-    repository: file://../../../charts/helper-status-checker
+    repository: https://charts.stderr.at/
   - name: helper-objectstore
     version: ~1.0.0
-    repository: file://../../../charts/helper-objectstore
+    repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
