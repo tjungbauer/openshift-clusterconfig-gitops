@@ -289,7 +289,7 @@ rhacs-setup:
       enabled: true
       syncwave: '4'
       clustername: *clustername
-  
+
       # in case tolerations are required
       sensor:
         # If you want this component to only run on specific nodes, you can
@@ -309,7 +309,7 @@ rhacs-setup:
           # Set this to 'true' to enable preventive policy enforcement for object updates.
           # Note: this will not have any effect unless 'Listen On Creates' is set to 'true' as well.
           updates: true
-  
+
         # If you want this component to only run on specific nodes, you can
         # configure tolerations of tainted nodes.
         tolerations:
