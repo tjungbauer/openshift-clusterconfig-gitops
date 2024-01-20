@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: clusterconfig
+description: Enables ETCD encryption with the decided encryption type and starts a Job that verifies the status if the encryption.
+version: 1.0.0
+dependencies:
+  - name: generic-cluster-config
+    version: ~1.0.10
+    repository: https://charts.stderr.at

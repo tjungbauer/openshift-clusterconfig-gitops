@@ -1,5 +1,8 @@
 ---
-etcd_encryption:
-  enabled: true
-  namespace: kube-system
-  serviceAccount: etcd-encryption-checker
+generic-cluster-config:
+  etcd_encryption:
+    enabled: true
+
+    # Namespace where Job is executed that verifies the status of the encryption
+    namespace: kube-system
+    serviceAccount: etcd-encryption-checker
