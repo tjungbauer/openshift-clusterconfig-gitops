@@ -1,0 +1,14 @@
+apiVersion: v2
+name: setup-compliance-operator
+description: Deploy and configure the Compliance Operator
+version: 1.0.0
+dependencies:
+  - name: compliance-operator-full-stack
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+keywords:
+  - acs
+  - security

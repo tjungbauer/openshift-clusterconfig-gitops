@@ -1,0 +1,65 @@
+---
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    compliance-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-compliance
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: compliance-operator
+        source: cs-redhat-operator-index
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
+  operatorName: compliance-operator
+
+  # where operator is installed
+  namespace:
+    name: openshift-compliance
+
+  serviceAccount:
+    create: true
+    name: "sa-compliance"
+
+compliance-operator-setup:
+  compliance:
+    namespace:
+      name: openshift-compliance
+      syncwave: '0'
+      descr: 'Red Hat Compliance'
+    scansettingbinding:
+      enabled: true
+      syncwave: '3'
+
+      # Example
+      tailored:
+        enabled: false
+        modified_profiles:
+        - name: tailoredprofile-ocp4-cis
+          description: Modified ocp4-cis profile
+          title: Tailored Profile of ocp4-cis
+          extends: ocp4-cis
+          disableRule:
+          - name: ocp4-scc-limit-container-allowed-capabilities
+            rationale: Disabling CIS-OCP 5.2.8 that will always be triggered as long nutanix-csi does not provide SCC configuration
+
+      profiles:
+        - name: ocp4-cis-node
+          kind: Profile  # Could be Profile or TailedProfile
+        - name: ocp4-cis
+          kind: Profile
+      scansetting: default
