@@ -1,3 +1,4 @@
+---
 apiVersion: v2
 name: setup-network-observability
 description: Installs and configures OpenShift Network Observability.
@@ -19,4 +20,3 @@ dependencies:
     condition: helper-objectstore.enabled
 maintainers:
   - name: tjungbauer
-
