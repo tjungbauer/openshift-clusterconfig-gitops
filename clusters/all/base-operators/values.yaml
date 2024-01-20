@@ -1,0 +1,122 @@
+---
+# Set channels/versions for the different operators
+pipelines: &channel-pipelines latest
+loki: &channel-loki stable-5.8
+#netobserv: &channel-netobserv stable
+cert-utils: &channel-cert-utils alpha
+cert-manager: &channel-cert-manager stable-v1
+channel-oadp: &channel-oadp stable-1.3
+
+# Enable the Console Plugins for the following Operators
+helper-operator:
+#  console_plugins:
+#    enabled: true
+#    plugins:
+#      - netobserv-plugin
+#
+#    job_namespace: kube-system
+
+  operators:
+    #####################
+    # OpenShift Pipelines
+    #####################
+    # Name of the operator (This name will be used as name of the Application in Argo CD)
+    openshift-pipelines-operator-rh:
+      enabled: true
+      # Namespace where the operator shall be installed into
+      namespace:
+        name: openshift-operators
+        # Only create if it is a non-existing namespace. i.e. openshift-operators must not be created
+        create: false
+      # Information about the subscription
+      subscription:
+        # Version that shall be used
+        channel: *channel-pipelines
+        # Automatic of manual approval to update the Operator
+        # Default: Automatic
+        approval: Automatic
+        # The operator Name
+        operatorName: openshift-pipelines-operator-rh
+        # Source of the Operator
+        source: redhat-operators
+        # Source Namespace, typically openshift-marketplace
+        sourceNamespace: openshift-marketplace
+      # Crete an Operator group of not
+      operatorgroup:
+        create: false
+        # Watch own namespace or not.
+        # Only makes sense when operatorgroup is created
+        # AllNamespaces InstallModeType not supported, cannot configure to watch all namespaces
+        notownnamespace: true
+
+    #######
+    # Loki
+    #######
+    loki-operator:
+      enabled: true
+      namespace:
+        name: openshift-operators-redhat
+        create: true
+      subscription:
+        channel: *channel-loki
+        approval: Automatic
+        operatorName: loki-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+    ############
+    # Cert-Utils
+    ############
+    cert-utils-operator:
+      enabled: true
+      namespace:
+        name: cert-utils-operator
+        create: true
+      subscription:
+        channel: *channel-cert-utils
+        approval: Automatic
+        operatorName: cert-utils-operator
+        source: community-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+    ##############
+    # Cert-Manager
+    ##############
+    openshift-cert-manager-operator:
+      enabled: true
+      namespace:
+        name: cert-manager-operator
+        create: true
+      subscription:
+        channel: *channel-cert-manager
+        approval: Automatic
+        operatorName: openshift-cert-manager-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+    ######
+    # OADP
+    ######
+    redhat-oadp-operator:
+      enabled: true
+      namespace:
+        name: openshift-adp
+        create: true
+      subscription:
+        channel: *channel-oadp
+        approval: Automatic
+        operatorName: redhat-oadp-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false

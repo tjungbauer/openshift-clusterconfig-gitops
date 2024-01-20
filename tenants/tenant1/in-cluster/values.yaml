@@ -1,0 +1,293 @@
+# Example values files for a tenant onboarding
+# It is a huge file and can help you creating:
+#   - one or more namespaces including labels etc.
+#   - local project admin group (in case groups are not created by other mechnics like LDAP Group Sync)
+#   - GitOps (ArgoCD) Project, that limits allowed repos, clusters, permissions etc.
+#   - Resource Quotas
+#   - Limit Ranges
+#   - Creation of default Network Policies (same namespace, OpenShift Monitoring & API Server, OpenShift Ingress, Egress Deny All)
+#   - Creation of custom Network Policies
+#
+# This values file shows all possible settings. Most probably, you do not need to use everything.
+# I tried to make is as configuratble as possible and most settings are working with defaults values and all can be disabled by setting "enabled" to false
+#
+# Most variables are handed over to the Sub-Chart: helper-proj-onboarding /charts/helper-proj-onboarding
+
+# Environment to which these values are valid, this should be the cluster name as defined in the values-global.yaml
+# In best case the same is equal to the folder we are currntly in, but this is optional.
+environment: &environment in-cluster
+
+# Parameters handed over to Sub-Chart helper-proj-onboarding
+helper-proj-onboarding:
+
+  # Use the new version, more streamlined, RBAC configuration
+  rbac20: true
+
+  # This setting is required for the ApplicationSet and MUST point to the cluster where ArgoCD is running
+  environment: in-cluster
+  
+  # Allowed environments that this tenant can use. This list is mandatory to explicitly set the destination clusters.
+  # The name here must be equal to the configured environments in the Global-Values
+
+  # ThIS IS FROM CLUSTER POV
+  # Since we are using separate Argo CD instances on each cluster, the tenant requires access to the LOCAL cluster.
+  allowed_envs:
+    - in-cluster
+  
+  allowed_source_repos:
+    - https://my-git-repo.com/super-repo
+  
+  # Groups that are allowed in RBAC. 
+  # This group can either be created using this Helm Chart (will be named as <namespace>-admin) or must be known (for example synced via LDAP Group Sync)
+  # NOTE: if either allowed_oidc_groups nor overwrite_oidc_groups are defined, then a dummy value will be set
+  allowed_oidc_groups: 
+    - admin-group-1
+    - admin-group-2
+
+  # List of namespaces this tenant shall manage.
+  # A tenant or project may consist of multiple namespace
+  namespaces:
+
+    # Name of the first Namespace
+    - name: &name tenant1-app-1
+
+      # Is this Namespace enabled or not
+      enabled: true
+
+      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of 
+      # an instance on each and every cluster.
+      approject_disabled: false
+
+      # Additional labels for Podsecurity and Monitoring for the Namespace
+      additional_settings:
+        # Pod Security Standards
+        # https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
+        # Possible values: Privileged, Baseline, Restricted
+        # Privileged: Unrestricted policy, providing the widest possible level of permissions. This policy allows for known privilege escalations.
+        # Baseline: Minimally restrictive policy which prevents known privilege escalations. Allows the default (minimally specified) Pod configuration.
+        # Restricted: Heavily restricted policy, following current Pod hardening best practices.
+
+        # Policy violations will trigger the addition of an audit annotation to the event recorded in the audit log, but are otherwise allowed.
+        # podsecurity_audit: restricted
+        # Policy violations will trigger a user-facing warning, but are otherwise allowed.
+        # podsecurity_warn: restricted
+        # Policy violations will cause the pod to be rejected.
+        # podsecurity_enforce: restricted
+        cluster_monitoring: true
+
+      argocd_rbac_setup:
+        # This is required to build the rbac rules correctly. Theoretically, you can create multiple RBAC rules, but usually you create one per project/tenant
+        argocd_project_1:
+          enabled: true
+          name: tenant1-app-1
+          # OVERWRITE List of allowed repositories. If the tenant tries to use a different repo, Argo CD will deny it. * can be used to allow all.
+          # Typicall not required, since global list can be defined and allowed_source_repos list can be defined too.
+          # sourceRepos:
+          #  - 'https://git-repo-com/overwrites-other-lists'
+          rbac:
+              # Name of the RBAC rule
+            - name: write
+              # Description of the RBAC rule
+              description: "Group to deploy on target environments"
+              # OVERWRITE List of OCP groups that is allowed to manage objects in this project
+              # overwrite_oidc_groups:
+               # - overwrite-admin-group
+              # Project policies
+              # This will limit a project to specific actions
+              # Parameters:
+              #   - action: Mandatory, either get, create, update, delete, sync or override
+              #   - permissions: allow or deny (Default: deny)
+              #   - resource: i.e applications (Default: applications)
+              #   - object: Which kind of objects can be managed, default "*" (all) inside the namespace
+              policies:
+                - action: get # get, create, update, delete, sync, override
+                  permission: allow # allow or deny
+                  object: '*' # which kind of objects can be managed, default "*" (all) inside the namespace
+                - action: create
+                  permission: allow
+                - action: update
+                  permission: allow
+                - action: delete
+                  permission: allow
+                - action: sync
+                  permission: allow
+                - action: override
+                  permission: allow
+            - name: read
+              description: "Group to deploy on target environments"
+              overwrite_oidc_groups:
+               - read-group
+              policies:
+                - action: get
+                  permission: allow
+
+
+      # List of Labels that should be added to the Namespace
+      labels:
+        my_additional_label: my_label
+        another_label: another_label
+
+      # Create a local Group with Admin users and the required rolebinding
+      # If other systems, like LDAP Group sync is used, you will probaably not need this and can either disable it or remove the whole block.
+      local_admin_group:
+        enabled: true
+        # group_name: my_group_name
+        # optional parameter, default would be "admin"
+        clusterrole: admin
+        # List of users
+        users:
+          - mona
+          - peter
+
+      # Configure ResourceQuotas
+      # Here are a lot of examples, typically, you do not need all of these. cpu/memory is a good start for most use cases.
+      resourceQuotas:
+        # Enable Quotas or not. You can either disable it or remove the whole block
+        enabled: true
+        # limits of Pods, CPU, Memory, storage, secrets... etc. etc.
+        # Byte values will be replace: gi -> Gi, mi -> Mi
+        pods: 4
+        cpu: 4
+        memory: 4Gi
+        ephemeral_storage: 4Gi
+        replicationcontrollers: 20
+        resourcequotas: 20
+        services: 100
+        secrets: 100
+        configmaps: 100
+        persistentvolumeclaims: 10
+        limits:
+          cpu: 4
+          memory: 4gi # lower case will be automatically replaced
+          ephemeral_storage: 4mi # lower case will be automatically replaced
+        requests:
+          cpu: 1
+          memory: 2Gi
+          storage: 50Gi
+          ephemeral_storage: 2Gi
+        # add here a list of your storage classes you would like to limit as well.
+        storageclasses:
+          # for example: Storageclass "bronze" has a request limit and a limit ov max. PVCs.
+          bronze.storageclass.storage.k8s.io/requests.storage: "10Gi"
+          bronze.storageclass.storage.k8s.io/persistentvolumeclaims: "10"
+
+      # Limit Ranges, are optional, if not set here, then default (very small ones) are used
+      limitRanges:
+        # Enable Quotas or not. You can either disable it or remove the whole block
+        enabled: true
+        pod:
+          max:
+            cpu: 4
+            memory: 4Gi
+          min:
+            cpu: 500m
+            memory: 500Mi
+        container:
+          max:
+            cpu: 4
+            memory: 4Gi
+          min:
+            cpu: 500m
+            memory: 500Mi
+          default:
+            cpu: 1
+            memory: 4Gi
+          defaultRequest:
+            cpu: 1
+            memory: 2Gi
+        pvc:
+          min:
+            storage: 1Gi
+          max:
+            storage: 20Gi
+
+      # Network Policies ... these are a bit more complex, when you want to keep them fully configurable.
+      # Maybe the following is too much to manage, anyway, let's start
+
+      # 5 default network policies will be created everytime, unless you overwrite them here
+      # You can remove this whole block to have the policies created or you can select specific policies
+      # which shall be disabled/enabled.
+      # The 5 policies are:
+      #    - Allow Ingress traffic from the OpenShift Router
+      #    - Allow OpenShift Monitoring to access and fetch metrics
+      #    - Deny inner namespace communication (pod to pod of the same Namespace)
+      #    - Allow Kube API Server
+      #    - Forbid ANY Egress traffic
+
+      default_policies:
+        # enable_allow_from_ingress: true
+        # disable_allow_from_monitoring: false
+        # disable_allow_kube_apiserver: false
+        # disable_deny_all_egress: true 
+        # disable_deny_all_ingress: true
+
+      # Additional custom Network Policies
+      # I created this to be able to create Policies using a Helm chart. It might look complex but it is actually quite straight forward.
+      #
+      # 1. Defaine a PodsSelect (or use all pods see example 2)
+      # 2. Define Ingress rules with selectors and ports or IP addresses
+      # 3. Optionally define egress Rules
+      networkpolicies:
+          # List of NetworkPolicies to create with name and switch if active or not
+        - name: netpol1
+          active: true
+
+          # The PodSelect based on matchLabels. Could be empty as well
+          podSelector:
+            matchLabels:
+              app: myapplication
+              app2: myapplication2
+
+          # Incoming Rules, based on Port and Selectors (Pod and Namespace)
+          ingressRules:
+            - selectors:
+                  - podSelector:
+                      matchLabels:
+                        app: myapplication
+                        version: '1.0'
+                  - namespaceSelector:
+                      matchLabels:
+                        testnamespace: "true"
+              ports:
+                - protocol: TCP
+                  port: 443
+
+          # Outgoing Rules, based on Port and Selectors
+          egressRules:
+            - selectors: []
+              ports:
+                - port: 2
+                  protocol: UDP
+            - ports:
+                - port: 443
+                  protocol: TCP
+              selectors:
+                - podSelector:
+                    matchLabels:
+                      app: myapplication
+                      version: '1.0'
+
+          # 2nd example
+        - name: netpol2
+          active: true
+
+          podSelector: {}
+
+          # Incoming Rules, based on ipBlock and Selectors
+          ingressRules:
+            - selectors:
+                  - podSelector: {}
+                  - namespaceSelector:
+                      matchLabels:
+                        testnamespace: "testnamespace"
+                  - ipBlock:
+                      cidr: 127.0.0.1/24
+                      except:
+                        - 127.0.0.2/32
+              ports:
+                - protocol: TCP
+                  port: 443
+
+################################
+    #  Name of the 2nd Namespace, with only Namespace creation
+

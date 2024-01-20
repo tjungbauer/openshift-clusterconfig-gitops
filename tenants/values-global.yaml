@@ -1,0 +1,54 @@
+---
+
+global:
+  # Namespace of application scoped GitOps instance, that is responsible to deploy workload onto the clusters
+  application_gitops_namespace: gitops-application
+
+  # cluster environments. A list of clusters that are known in Argo CD
+  # name and url must be equal to what is defined in Argo CD
+  envs:
+    - name: in-cluster
+      url: https://kubernetes.default.svc
+    - name: production
+      url: https://production.cluster
+
+  # Repositories projects are allowed to use. These are configured on a global level and used if not specified in a _T-Shirt_ project. 
+  # Can be overwritten for projects in their specific values-file
+  allowed_source_repos: 
+    - "https://myrepo"
+    - "https://the-second-repo"
+
+  tshirt_sizes:
+    - name: XL
+      quota:
+        pods: 100
+        limits:
+          cpu: 4
+          memory: 4Gi
+        requests:
+          cpu: 1
+          memory: 2Gi     
+    - name: L
+      quota:
+        limits:
+          cpu: 2
+          memory: 2Gi
+        requests:
+          cpu: 1
+          memory: 1Gi 
+    - name: S
+      quota:
+        limits:
+          cpu: 1
+          memory: 1Gi
+        requests:
+          cpu: 500m
+          memory: 1Gi
+      limitRanges:
+        container:
+          default:
+            cpu: 1
+            memory: 4Gi
+          defaultRequest:
+            cpu: 1
+            memory: 2Gi

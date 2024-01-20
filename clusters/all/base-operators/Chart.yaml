@@ -1,0 +1,9 @@
+apiVersion: v2
+name: deploy-base-operators
+description: Deploy base operators WITHOUT any additional configuration. This simply adds the Subscription and leave further configuration to you or another Chart.
+version: 1.0.0
+dependencies:
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+

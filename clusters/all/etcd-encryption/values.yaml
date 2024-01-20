@@ -1,0 +1,5 @@
+---
+etcd_encryption:
+  enabled: true
+  namespace: kube-system
+  serviceAccount: etcd-encryption-checker
