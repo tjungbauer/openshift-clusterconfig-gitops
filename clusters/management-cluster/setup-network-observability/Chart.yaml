@@ -19,4 +19,4 @@ dependencies:
     repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
 maintainers:
-  - name: tjungbaue
+  - name: tjungbauer
