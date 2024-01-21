@@ -25,7 +25,7 @@ multicluster_observability:
       # Default: 10Gi
       # storeStorageSize: 10Gi
 
-      # Specify the storageClass Stateful Sets. This storage class will also be used for Object Storage if 
+      # Specify the storageClass Stateful Sets. This storage class will also be used for Object Storage if
       # MetricObjectStorage was configured for the system to create the storage."
       # Default: gp2
       storageClass: gp3-csi

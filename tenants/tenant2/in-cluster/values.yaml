@@ -19,7 +19,7 @@ helper-proj-onboarding:
       # Is this Namespace enabled or not
       enabled: true
 
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of 
+      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
       # an instance on each and every cluster.
       approject_disabled: true
 
@@ -30,14 +30,13 @@ helper-proj-onboarding:
         users:
           - mona
 
-
     # Name of the first Namespace
     - name: &name tenant2-app-2
 
       # Is this Namespace enabled or not
       enabled: true
 
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of 
+      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
       # an instance on each and every cluster.
       approject_disabled: true
 

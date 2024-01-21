@@ -25,7 +25,7 @@ helper-proj-onboarding:
 
   # This setting is required for the ApplicationSet and MUST point to the cluster where ArgoCD is running
   environment: in-cluster
-  
+
   # Allowed environments that this tenant can use. This list is mandatory to explicitly set the destination clusters.
   # The name here must be equal to the configured environments in the Global-Values
 
@@ -33,14 +33,14 @@ helper-proj-onboarding:
   # Since we are using separate Argo CD instances on each cluster, the tenant requires access to the LOCAL cluster.
   allowed_envs:
     - in-cluster
-  
+
   allowed_source_repos:
     - https://my-git-repo.com/super-repo
-  
-  # Groups that are allowed in RBAC. 
+
+  # Groups that are allowed in RBAC.
   # This group can either be created using this Helm Chart (will be named as <namespace>-admin) or must be known (for example synced via LDAP Group Sync)
   # NOTE: if either allowed_oidc_groups nor overwrite_oidc_groups are defined, then a dummy value will be set
-  allowed_oidc_groups: 
+  allowed_oidc_groups:
     - admin-group-1
     - admin-group-2
 
@@ -54,7 +54,7 @@ helper-proj-onboarding:
       # Is this Namespace enabled or not
       enabled: true
 
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of 
+      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
       # an instance on each and every cluster.
       approject_disabled: false
 
@@ -218,7 +218,7 @@ helper-proj-onboarding:
         # enable_allow_from_ingress: true
         # disable_allow_from_monitoring: false
         # disable_allow_kube_apiserver: false
-        # disable_deny_all_egress: true 
+        # disable_deny_all_egress: true
         # disable_deny_all_ingress: true
 
       # Additional custom Network Policies

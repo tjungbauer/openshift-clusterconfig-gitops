@@ -116,14 +116,14 @@ applicationsets:
   onboarding-tenant-workload:
     # Is the ApplicationSet enabled or not
     enabled: true
-  
+
     # Description - always usful
     description: "Onboarding Workload to the cluster"
-  
+
     # Any labels you would like to add to the Application. Good to filter it in the Argo CD UI.
     labels:
       catagory: tenant-onboarding
-  
+
     # Path to the Git repository. The default URL and revision are defined as anchors at the beginning of the file, but could be overwritten here.
     path: clusters/all/project-onboarding
     repourl: *repourl
@@ -131,14 +131,14 @@ applicationsets:
 
     # Using go text template. See: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/GoTemplate/
     goTemplate: true
-  
+
     # Helm configuration. A list of helm values files
     helm:
       per_cluster_helm_values: false
       value_files:
         - '/{{ .path.path }}/values.yaml'
         - /tenants/values-global.yaml
-  
+
     # Generator: currently list, git and cluster are possible.
     # either "generatorlist", "generatorgit" or "generatorclusters"
     # Define the repository that shall be checked for configuration file
@@ -147,14 +147,13 @@ applicationsets:
         targetrevision: *branch
         files:
           - tenants/**/values.yaml
-  
+
     # preserve all resources when the application get deleted. This is useful to keep that workload even if Argo CD is removed or severely changed.
     preserveResourcesOnDeletion: true
-  
+
   ##########################################
   # END PROJECT ONBOARDING - GIT GENERATOR #
   ##########################################
-
 
 # These define the default values.
 # It is possible to overwrite repourl and targetrevision in the Applications(Sets)
