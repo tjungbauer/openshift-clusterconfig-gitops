@@ -47,7 +47,7 @@ file-integrity-operator:
       config:
         gracePeriod: 900
         maxBackups: 5
-        customconfig: #  Created if omitted
+        customconfig:  # Created if omitted
           enabled: false
           # name: myconfig
           # namespace: openshift-file-integrity
@@ -71,7 +71,7 @@ file-integrity-operator:
       config:
         gracePeriod: 900
         maxBackups: 5
-        customconfig: #  Created if omitted
+        customconfig:  # Created if omitted
           enabled: true
           name: controlplane-aide-conf
           namespace: openshift-file-integrity
