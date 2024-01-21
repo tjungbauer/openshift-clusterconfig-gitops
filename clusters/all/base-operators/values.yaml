@@ -2,7 +2,7 @@
 # Set channels/versions for the different operators
 pipelines: &channel-pipelines latest
 loki: &channel-loki stable-5.8
-#netobserv: &channel-netobserv stable
+# netobserv: &channel-netobserv stable
 cert-utils: &channel-cert-utils alpha
 cert-manager: &channel-cert-manager stable-v1
 channel-oadp: &channel-oadp stable-1.3
