@@ -13,3 +13,5 @@ dependencies:
   - name: file-integrity-operator
     version: ~1.0.0
     repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer

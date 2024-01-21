@@ -6,3 +6,5 @@ dependencies:
   - name: helper-proj-onboarding
     version: ~1.0.0
     repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer

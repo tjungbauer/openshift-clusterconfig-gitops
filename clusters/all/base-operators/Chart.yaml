@@ -6,4 +6,5 @@ dependencies:
   - name: helper-operator
     version: ~1.0.0
     repository: https://charts.stderr.at/
-
+maintainers:
+  - name: tjungbauer

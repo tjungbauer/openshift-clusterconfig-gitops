@@ -7,3 +7,5 @@ dependencies:
     version: ~1.0.0
     repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
+maintainers:
+  - name: tjungbauer

@@ -6,3 +6,5 @@ dependencies:
   - name: generic-cluster-config
     version: ~1.0.10
     repository: https://charts.stderr.at
+maintainers:
+  - name: tjungbauer
