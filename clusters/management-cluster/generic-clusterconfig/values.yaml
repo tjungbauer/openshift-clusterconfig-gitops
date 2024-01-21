@@ -34,4 +34,3 @@ generic-cluster-config:
       htpasswd:
         - name: Emergency
           enabled: true
-
