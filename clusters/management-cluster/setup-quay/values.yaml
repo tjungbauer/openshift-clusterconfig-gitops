@@ -1,0 +1,495 @@
+---
+quay_namespace: &namespace quay-enterprise
+quay_route: &publicroute quay-registry-quay-quay-enterprise.apps.ocp.aws.ispworld.at
+s3_hostname: &s3_hostname s3-openshift-storage.apps.ocp.aws.ispworld.at
+storageclassname: &storageclassname quay-bucket-storage-class
+
+# A helper chart that simply creates another backingstore for quay.
+# This is a chart in a very early state, and not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: quay-backingstore
+  # Size of the BackingStore
+  backingstore_size: 700Gi
+  # numOfVolumes: 1
+  # type: py-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: thin-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname
+
+# Main Chart
+quay:
+  enabled: true
+
+  namespace:
+    name: *namespace
+
+  # Creating initial admin account.
+  # The password for this user will be GENERATED and can be found in the secret "init-user"
+  # Defaults for username and mail:
+  #   - username: admin
+  #   - mail: admin@company.com
+  init_user:
+    username: admin
+    mail: test@test.com
+
+  # Bucket that shall be created
+  bucket:
+    name: quay-bucket
+
+    # is_secure: true
+    # port: 443
+
+    # Name of the storageclass
+    # Default: openshift-storage.noobaa.io
+    # a separate StorageClass with BackingStore and BackingClass can be created.
+    storageclass: *storageclassname
+
+    # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # Default: 2
+    syncwave: 2
+
+  # Generate the configuration secret for quay.
+  # This consists of numerous settings, Object storage settings and initial user configuration.
+  create_config_secret:
+    enabled: true
+    syncwave: 3
+
+    s3_hostname:
+      overwrite: true
+      hostname: *s3_hostname
+    
+    #####################
+    # QUAY CONFIGURATION
+    #####################
+    # Any setting here is OPTIONAL and will overwrite or append the default setting.
+    # ATTN: Helm does not work very well with booleans and the Quay configuration settings must have boolean types (strings with quotes are not accepted)
+    # Therefore it is a bit tricky to make this configurable.
+    # Inside the template the settings are verified like this:
+    #     {{ .feature.anonymous_access | quote | default "true" | trimAll "\"" }}
+    #
+    # 1. Quote them, to make them strings and compare them, then using trimAll to remove the quotes again.
+    # For the ConfigMap this should be good enough.
+    #
+    # If you miss any value simply define it here and in the skeleton for the configMap - I did not test any possibility
+    # For example mail od LDAP configurations are currently missing, but can be extended.
+
+    # Additional SUPER_USERS besides the initial administraor as defined at init_user.username (default admin)
+    super_user_list:
+      - second_admin
+
+    # The authentication engine to use for credential authentication.
+    # Values:
+    #    One of Database, LDAP, JWT, Keystone, OIDC
+    # Default: Database
+    # authentication_type: database
+
+    # If enabled, only API calls marked as being made by an XHR will be allowed from browsers
+    # Default: false
+    browser_api_calls_xhr_only: false
+
+    # Additional features that can be activated or deactivated
+    feature:
+
+      # To create the first user, users need to set the FEATURE_USER_INITIALIZE parameter to true
+      # Default: false
+      user_initialize: true
+
+      # Enabling log rotation and archival will move all logs older than 30 days to storage.
+      # Default: false
+      # action_log_rotation: false
+
+      # Whether to allow retrieval of aggregated log counts
+      # Default: true
+      # aggregated_log_count_retrieval: true
+
+      # Whether to allow anonymous users to browse and pull public repositories
+      # Default: true
+      anonymous_access: false
+
+      # When set, allows users to try the beta UI environment.
+      # Default: true
+      # ui_v2: false
+
+      # If enabled, users can create tokens for use by the Docker CLI
+      # Default: true
+      # app_specific_tokens: true
+
+      # Whether to support Bitbucket build triggers.
+      # Default: false
+      # bitbucket_build: false
+
+      # If set to true, no new User accounts may be created if their email domain is blacklisted
+      # Default: false
+      # blacklisted_emails: false
+
+      # Whether to support Dockerfile build.
+      # Default: false
+      # build_support: false
+
+      # Whether users and organizations are allowed to change the tag expiration for tags in their namespace.
+      # Default: true
+      # change_tag_expiration: true
+
+      # Whether users can directly login to the UI
+      # Default: true
+      # direct_login: true
+
+      # Enable support for nested repositories
+      # Default: true
+      # extended_repository_names: true
+
+      # If set to true, Red Hat Quay will run using FIPS-compliant hash functions
+      # Default: false
+      # fips: false
+
+      # Whether garbage collection of repositories is enabled.
+      # Default: true
+      # garbage_collection: true
+
+      # Enable support for OCI artifacts.
+      # Default: true
+      # general_oci_support: true
+
+      # Whether to support GitHub build triggers.
+      # Default: false
+      # github_build: false
+
+      # Whether GitHub login is supported
+      # Default: false
+      # github_login: false
+
+      # Whether to support GitLab build triggers.
+      # Default: false
+      # gitlab_build: false
+
+      # Whether Google login is supported.
+      # Default: false
+      # google_login: false
+
+      # Enable support for Helm artifacts.
+      # Default: false
+      helm_oci_support: true
+
+      # Whethe users being created must be invited by another user
+      # Default: false
+      # invite_only_user_creation: false
+
+      # Whether to allow for "namespace-less" repositories when pulling and pushing from Docker
+      # Default: true
+      # library_support: true
+
+      # Whether to allow exporting of action logs.
+      # Default: true
+      # log_export: true
+
+      # Whether emails are enabled
+      # Default: false
+      # mailing: false
+
+      # If enabled, non-superusers can setup syncing on teams using LDAP.
+      # Default: false
+      # nonsuperuser_team_syncing_setup: false
+
+      # If set to true, autocompletion will apply to partial usernames
+      # Default: true
+      # partial_user_autocomplete: true
+
+      # Whether to proxy all direct download URLs in storage through NGINX.
+      # Default: false
+      proxy_storage: true
+
+      # If set to true, the _catalog endpoint returns public repositories. Otherwise, only private repositories can be returned.
+      # Default: false
+      # public_catalog: false
+
+      # Enables configuration, caching, and validation for quota management feature.
+      # Default: false
+      # quota_management: false
+
+      # Whether to enable rate limits on API and registry endpoints. Setting FEATURE_RATE_LIMITS to true causes nginx to
+      # limit certain API calls to 30 per second. If that feature is not set, API calls are limited to 300 per second (effectively unlimited).
+      # Default: false
+      # rate_limits: false
+
+      # If set to true, build logs can be read by those with read access to the repository, rather than only write access or admin access.
+      # Default: false
+      # reader_build_logs: false
+
+      # Whether Recaptcha is necessary for user login and recovery
+      # Default: false
+      # recaptcha: false
+
+      # If set to true, enables repository mirroring.
+      # Default: true
+      # repo_mirror: true
+
+      # If set to true, only namespaces listed in V1_PUSH_WHITELIST support V1 push
+      # Default: true
+      # restricted_v1_push: true
+
+      # If the security scanner is enabled, turn on or turn off security notifications
+      # Default: false
+      security_notifications: true
+
+      # Whether to automatically replicate between storage engines.
+      # Default: false
+      # storage_replication: false
+
+      # Whether superusers are supported
+      # Default: true
+      # super_users: true
+
+      # Whether to allow for team membership to be synced from a backing group in the authentication engine (LDAP or Keystone).
+      # Default: true
+      # team_syncing: true
+
+      # When set, allows users to try the beta UI environment.
+      # Default: true
+      # ui_v2: true
+
+      # Enables repository settings in the beta UI Environment
+      # Default: false
+      # ui_v2_repo_settings: false
+
+      # Whether users can be created (by non-superusers)
+      # Default: true
+      user_creation: false
+
+      # Whether to record the last time a user was accessed
+      # Default: true
+      # user_last_accessed: true
+
+      # If set to true, users will have access to audit logs for their namespace
+      # Default: false
+      # user_log_access: false
+
+      # Whether to collect and support user metadata
+      # Default: false
+      # user_metadata: false
+
+      # If set to true, users can rename their own namespace
+      # Default: false
+      # user_rename: false
+
+      # If set to true, users can confirm and modify their initial usernames when logging in via OpenID Connect (OIDC) or a non-database internal authentication provider like LDAP.
+      # Default: true
+      username_confirmation: false
+
+      # Whether garbage collection is enabled for repositories.
+      # Defaults to true.
+      # repository_garbage_collection: true
+
+      # Whether to support signing
+      # Default: false
+      # signing: false
+
+    # The time after which a fresh login requires users to re-enter their password
+    # Default: 5m
+    # fresh_login_timeout: 5m
+
+    # Maximum allowed size of an image layer.
+    # Pattern: ^[0-9]+(G|M)$
+    # Default: 20G
+    # maximum_layer_size: 20G
+
+    # One of http or https. Note that users only set their PREFERRED_URL_SCHEME to http
+    # when there is no TLS encryption in the communication path from the client to Quay.
+    # Default: http
+    preferred_url_scheme: https
+
+    # The state of the registry
+    # Either: normal or read-only
+    # registry_state: normal
+
+    # If specified, the long-form title for the registry. Displayed in frontend of your Red Hat Quay deployment,
+    # for example, at the sign in page of your organization. Should not exceed 35 characters.
+    # Default: Red Hat Quay
+    # registry_title: Red Hat Quay
+
+    # If specified, the short-form title for the registry. Title is displayed on various pages of your organization,
+    # for example, as the title of the tutorial on your organization’s Tutorial page.
+    # Default: Red Hat Quay
+    # registry_title_short: Red Hat Quay
+
+    # The number of seconds between checking for repository mirror candidates
+    # Default: 30
+    # repo_mirror_interval: 30
+
+    # When set to true, the repository rolls back after a failed mirror attempt.
+    # Default: false
+    # repo_mirror_rollback: false
+
+    # Require HTTPS and verify certificates of Quay registry during mirror.
+    # DEfault: false
+    # repo_mirror_tls_verify: false
+
+    # Maximum number of pages the user can paginate in search before they are limited
+    # Default: 10
+    # search_max_result_page_count: 10
+
+    # Number of results returned per page by search page
+    # Default: 10
+    search_results_per_page: 30
+
+    # Whether the secure property should be set on session cookies
+    # Set to True for all installations using SSL
+    # Default: false
+    # session_cookie_secure: false
+
+    # If specified, nginx is configured to enabled a list of SSL protocols defined in the list.
+    # Removing an SSL protocol from the list disables the protocol during Red Hat Quay startup.
+    # ['TLSv1','TLSv1.1','TLSv1.2', `TLSv1.3]
+    # Default: TLSv1.3
+    ssl_protocols:
+      - TLSv1.2
+      - TLSv1.3
+
+    # If not set to None, the number of successive failures that can occur before a build trigger is automatically disabled.
+    # Default: 100
+    # successive_trigger_failure_disable_threshold: 100
+
+    # If not set to None, the number of successive internal errors that can occur before a build trigger is automatically disabled
+    # Default: 5
+    # successive_trigger_internal_error_disable_threshold: 5
+
+    # The length of time a token for recovering a user accounts is valid
+    # Pattern: ^[0-9]+(w|m|d|h|s)$
+    # Default: 30m
+    # user_recovery_token_lifetime: 30m
+
+    # Path under storage in which to place user-uploaded files
+    # Example: userfiles
+    # userfiles_path: userfiles/
+
+    # The number of results returned per page in V2 registry APIs
+    # DEfault: 50
+    # v2_pagination_size: 100
+
+    # If team syncing is enabled for a team, how often to check its membership and resync if necessary.
+    # Pattern: ^[0-9]+(w|m|d|h|s)$
+    # Example: 2h
+    # Default: 30m
+    # team_resync_stale_time: 30m
+
+    # If enabled, the options that users can select for expiration of tags in their namespace.
+    # ^[0-9]+(w|m|d|h|s)$
+    #
+    # Default:
+    #  - 0s
+    #  - 1d
+    #  - 1w
+    #  - 2w
+    #  - 4w
+    # tag_expiration_options:
+    #  - 0s
+    #  - 1d
+    #  - 1w
+    #  - 2w
+    #  - 4w
+
+    # The default, configurable tag expiration time for time machine.
+    # Pattern: ^[0-9]+(w|m|d|h|s)$
+    # Default: 2w
+    # default_tag_expiration: 2w
+
+    # If true, pulls will still succeed even if the pull audit log entry cannot be written.
+    # This is useful if the database is in a read-only state and it is desired for pulls to continue during that time.
+    # Default: false
+    # allow_pulls_without_strict_logging: false
+
+    # The types of avatars to display, either generated inline (local) or Gravatar (gravatar)
+    # Default: local
+    # avatar_kind: local
+
+    # Whether new repositories created by push are set to private visibility
+    # Default: true
+    # create_private_repo_on_push: true
+
+    # Enables system default quota reject byte allowance for all organizations.
+    # By default, no limit is set. --> 1.073741824e+11
+    # default_system_reject_quota_bytes: 1.073741824e+11
+
+quay-registry-setup:
+  quay:
+    enabled: true
+    syncwave: 10
+    config_bundle: quay-generated-configuration
+    public_route: *publicroute
+
+    namespace:
+      create: true
+      name: *namespace
+      syncwave: 1
+
+    components:
+      clair:
+        overrides:
+          replicas: 1
+      clairpostgres: {}
+      objectstore:
+        managed: "false"
+      redis: {}
+      hpa:
+        managed: "false"
+      route: {}
+      mirror:
+        managed: "false"
+      monitoring: {}
+      tls: {}
+      postgres: {}
+      quay:
+        overrides:
+          replicas: 1
+
+    job_init_quay:
+      enabled: true
+      syncwave: 200
+      serviceAccount: quay-initiator
+
+# Install Quay Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    quay-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-operators
+        create: false
+      subscription:
+        channel: stable-3.10
+        approval: Automatic
+        operatorName: quay-operator
+        source: cs-redhat-operator-index
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
+  operatorName: quay-operator
+
+  # where operator is installed
+  namespace:
+    name: openshift-operators
+
+  serviceAccount:
+    create: true
+    name: "sa-quay"

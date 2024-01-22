@@ -1,0 +1,19 @@
+{{- if eq ( .Values.quay.enabled | toString) "true" }}
+{{- with .Values.quay }}
+{{- if .bucket }}
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: {{ .bucket.name }}
+  namespace: {{ .namespace.name }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .bucket.syncwave | default "2" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  generateBucketName: {{ .bucket.name }}
+  storageClassName: {{ .bucket.storageclass | default "openshift-storage.noobaa.io" }}
+{{- end }}
+{{- end }}
+{{- end }}

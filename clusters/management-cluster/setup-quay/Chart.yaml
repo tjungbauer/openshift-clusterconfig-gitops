@@ -1,0 +1,19 @@
+apiVersion: v2
+name: setup-quay
+description: Setup Qay Registry
+version: 1.0.0
+dependencies:
+  - name: quay-registry-setup
+    version: ~1.0.0
+    repository: file://../../../charts/quay-registry-setup
+  - name: helper-operator
+    version: ~1.0.0
+    repository: file://../../../charts/helper-operator
+  - name: helper-status-checker
+    version: ~3.0.0
+    repository: file://../../../charts/helper-status-checker
+    condition: helper-status-checker.enabled
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: file://../../../charts/helper-objectstore
+    condition: helper-objectstore.enabled

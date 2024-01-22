@@ -1,0 +1,92 @@
+{{- with .Values.quay }}
+{{- if eq ( .create_config_secret.enabled | toString) "true" }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-config-secret
+  namespace:  {{ .namespace.name }}
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default 3 | quote }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+spec:
+  template:
+    metadata:
+      name: create-config-secret
+    spec:
+      containers:
+        - name: create-config-secret
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #!/usr/bin/env bash
+
+              # Sleeping before starting with the work, to be sure the bucket has been created.
+              SLEEPER_TMP=0
+
+              printf "Waiting 30 seconds before I start with the generation of the configuration\n"
+             
+              while [[ $SLEEPER_TMP -le "30" ]]; do
+                echo -n "."
+                sleep 1
+                SLEEPER_TMP=$(($SLEEPER_TMP+1))
+              done
+
+              printf "\nUsing the following skeleton file\n"
+              cat /tmp/quay-config-skeleton/properties
+
+              bucket_user=`cat /tmp/bucket-secret/AWS_ACCESS_KEY_ID`
+
+              bucket_secret=`cat /tmp/bucket-secret/AWS_SECRET_ACCESS_KEY`
+
+              bucket_name=`cat /tmp/quay-bucket/BUCKET_NAME`
+
+              if [ {{ .create_config_secret.s3_hostname.overwrite }} ]; then
+                bucket_host={{ .create_config_secret.s3_hostname.hostname }}
+              else
+                bucket_host=`cat /tmp/quay-bucket/BUCKET_HOST`
+              fi
+
+              mode="replace"
+              check=$(oc get secret quay-generated-configuration 2>&1)
+              if [ $? == 1 ]
+              then
+                printf "Secret does not exist, creating a new one.\n"
+                mode="create"
+              else
+                printf "Secret does exist already, replacing it.\n"
+                mode="replace"
+              fi
+              
+              printf "\nReplacing required information\n"
+              sed "s|PATCH_BUCKET_USER|${bucket_user}|g; s|PATCH_BUCKET_SECRET|${bucket_secret}|g; s|PATCH_BUCKET_NAME|${bucket_name}|g; s|PATCH_BUCKET_HOST|${bucket_host}|g;" /tmp/quay-config-skeleton/properties | oc create secret generic quay-generated-configuration --from-file=config.yaml=/dev/stdin --dry-run=client -o yaml -n quay-enterprise | oc $mode -f -
+          volumeMounts:
+            - name: bucket-secret
+              mountPath: "/tmp/bucket-secret"
+              readOnly: true
+            - name: quay-config-skeleton
+              mountPath: /tmp/quay-config-skeleton
+            - name: quay-bucket
+              mountPath: /tmp/quay-bucket
+      volumes:
+        - name: bucket-secret
+          secret:
+            secretName: {{ .bucket.name }}
+        - name: quay-bucket
+          configMap:
+            name: {{ .bucket.name }}
+        - name: quay-config-skeleton
+          configMap:
+            name: quay-config
+            items:
+              - key: quay.cleartext.properties
+                path: properties
+      restartPolicy: Never
+      serviceAccountName: create-config-secret-sa
+{{- end }}
+{{- end }}
