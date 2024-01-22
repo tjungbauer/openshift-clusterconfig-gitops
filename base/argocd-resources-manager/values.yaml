@@ -131,21 +131,6 @@ applicationsets:
     repourl: "https://charts.stderr.at/"
     targetrevision: 1.0.14
 
-  install_cyclonedx:
-    enabled: true
-    description: "Install CycloneDX SBOM Repository"
-    namespace: cyclonedx
-    labels:
-      catagory: security
-    chartname: cyclonedx
-    repourl: "https://charts.stderr.at/"
-    generatorlist:
-      - clustername: *mgmtclustername
-        clusterurl: *mgmtcluster
-    syncPolicy:
-      autosync_enabled: false
-    targetrevision: 1.0.1
-
   # Install RHACS Demo
   rhacs-demo-app:
     enabled: true

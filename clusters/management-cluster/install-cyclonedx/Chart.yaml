@@ -1,0 +1,14 @@
+apiVersion: v2
+name: install-cyclonedx
+description: Install Cyclonedx to store SBOMs
+version: 1.0.0
+dependencies:
+  - name: cyclonedx
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+keywords:
+  - secure-supply-chain
+  - security
