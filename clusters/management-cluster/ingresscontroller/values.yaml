@@ -1,0 +1,23 @@
+---
+
+# Define ingressControllers
+# Multiple might be defined. Verify the Helm Chart and add configuration options if required.
+ingresscontrollers:
+  - name: default
+    enabled: true
+    replicas: 3
+
+    # Bind internal registry to specific nodes 
+    nodePlacement:
+      nodeSelector:
+        key: node-role.kubernetes.io/infra
+        value: ''
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
