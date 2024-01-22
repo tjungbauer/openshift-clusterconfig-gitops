@@ -219,7 +219,7 @@ helper-proj-onboarding:
         # disable_allow_from_monitoring: false
         # disable_allow_kube_apiserver: false
         # disable_deny_all_egress: true
-        # disable_deny_all_ingress: true
+        # disable_allow_from_same_namespace: true
 
       # Additional custom Network Policies
       # I created this to be able to create Policies using a Helm chart. It might look complex but it is actually quite straight forward.
