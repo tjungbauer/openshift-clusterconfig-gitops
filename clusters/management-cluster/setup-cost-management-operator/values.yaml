@@ -1,0 +1,50 @@
+---
+
+cost-management:
+  costmgmt:
+    enabled: true
+
+    name: costmanagementmetricscfg
+
+    airgapped: true
+
+    max_reports_to_store: 60
+
+    # must be less or equal to 100
+    # Default: 100
+    # max_size_MB: 100
+    upload_cycle: 360
+
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    cost-management-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: costmanagement-metrics-operator
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: costmanagement-metrics-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+helper-status-checker:
+  enabled: true
+
+  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
+  operatorName: costmanagement-metrics-operator
+
+  # where operator is installed
+  namespace:
+    name: costmanagement-metrics-operator
+
+  serviceAccount:
+    create: true
+    name: "sa-costmanagement-metrics"
