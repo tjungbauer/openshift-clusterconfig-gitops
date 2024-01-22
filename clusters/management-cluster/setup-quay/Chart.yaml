@@ -5,15 +5,15 @@ version: 1.0.0
 dependencies:
   - name: quay-registry-setup
     version: ~1.0.0
-    repository: file://../../../charts/quay-registry-setup
+    repository: https://charts.stderr.at/
   - name: helper-operator
     version: ~1.0.0
-    repository: file://../../../charts/helper-operator
+    repository: https://charts.stderr.at/
   - name: helper-status-checker
     version: ~3.0.0
-    repository: file://../../../charts/helper-status-checker
+    repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
   - name: helper-objectstore
     version: ~1.0.0
-    repository: file://../../../charts/helper-objectstore
+    repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
