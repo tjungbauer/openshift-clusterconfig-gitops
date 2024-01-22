@@ -1,0 +1,17 @@
+---
+helper-server-side-apply:
+  nodes:
+    - name: <node1>
+      enabled: true
+      custom_labels:
+        node-role.kubernetes.io/infra: ''
+        environment: 'Production'
+        gpu: false
+    - name: <node2>
+      enabled: true
+      custom_labels:
+        node-role.kubernetes.io/infra: ''
+    - name: <node3>
+      enabled: true
+      custom_labels:
+        node-role.kubernetes.io/infra: ''

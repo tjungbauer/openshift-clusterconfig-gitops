@@ -7,7 +7,7 @@ ingresscontrollers:
     enabled: true
     replicas: 3
 
-    # Bind internal registry to specific nodes 
+    # Bind internal registry to specific nodes
     nodePlacement:
       nodeSelector:
         key: node-role.kubernetes.io/infra
