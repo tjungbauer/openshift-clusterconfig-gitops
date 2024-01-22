@@ -129,7 +129,7 @@ applicationsets:
       syncpolicy_selfheal: true
     generatorclusters: []
     repourl: "https://charts.stderr.at/"
-    targetrevision: 1.0.13
+    targetrevision: 1.0.14
 
   install_cyclonedx:
     enabled: true
@@ -144,6 +144,7 @@ applicationsets:
         clusterurl: *mgmtcluster
     syncPolicy:
       autosync_enabled: false
+    targetrevision: 1.0.1
 
   # Install RHACS Demo
   rhacs-demo-app:
