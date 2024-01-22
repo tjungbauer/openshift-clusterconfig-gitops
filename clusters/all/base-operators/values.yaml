@@ -110,7 +110,7 @@ helper-operator:
       enabled: true
       namespace:
         name: openshift-adp
-        create: true
+        create: false
       subscription:
         channel: *channel-oadp
         approval: Automatic
