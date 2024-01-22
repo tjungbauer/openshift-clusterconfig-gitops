@@ -109,6 +109,77 @@ applicationsets:
         autosync_enabled: false
     targetrevision: "main"
 
+  # separated because autosync enabled for sealed secrets
+  sealed-secrets:
+    enabled: true
+    description: "Deploy Sealed-Secrets"
+    labels:
+      category: security
+    generatorlist: []
+    project: default
+    chartname: sealed-secrets
+    helm:
+      releasename: sealed-secrets
+      helmvalues:
+        - name: sealed-secrets.enabled
+          value: 'true'
+    syncPolicy:
+      autosync_enabled: true
+      syncpolicy_prune: false
+      syncpolicy_selfheal: true
+    generatorclusters: []
+    repourl: "https://charts.stderr.at/"
+    targetrevision: 1.0.13
+
+  install_cyclonedx:
+    enabled: true
+    description: "Install CycloneDX SBOM Repository"
+    namespace: cyclonedx
+    labels:
+      catagory: security
+    chartname: cyclonedx
+    repourl: "https://charts.stderr.at/"
+    generatorlist:
+      - clustername: *mgmtclustername
+        clusterurl: *mgmtcluster
+    syncPolicy:
+      autosync_enabled: false
+
+  # Install RHACS Demo
+  rhacs-demo-app:
+    enabled: true
+    description: "Deploy a vulnerable demo application to show results in RHACS"
+    labels:
+      category: security
+      solution: rhacs
+    helm:
+      per_cluster_helm_values: false
+    generatorlist:
+      - clustername: *mgmtclustername
+        clusterurl: *mgmtcluster
+    syncPolicy:
+      autosync_enabled: false
+    path: charts/rhacs-demo-applications/
+    repourl: "https://github.com/tjungbauer/helm-charts"
+    targetrevision: "main"
+
+  # Install Pipeline Demo
+  pipeline-demo:
+    enabled: true
+    description: "Deploy a demo pipeline about linting to show possibilities"
+    labels:
+      category: cicd
+    helm:
+      per_cluster_helm_values: false
+    generatorlist:
+      - clustername: *mgmtclustername
+        clusterurl: *mgmtcluster
+    syncPolicy:
+      autosync_enabled: false
+    path: charts/pipeline-example/
+    repourl: "https://github.com/tjungbauer/helm-charts"
+    targetrevision: "main"
+
   ######################################
   # PROJECT ONBOARDING - GIT GENERATOR #
   ######################################
