@@ -70,7 +70,7 @@ quay:
     s3_hostname:
       overwrite: true
       hostname: *s3_hostname
-    
+
     #####################
     # QUAY CONFIGURATION
     #####################
@@ -474,7 +474,7 @@ helper-operator:
         channel: stable-3.10
         approval: Automatic
         operatorName: quay-operator
-        source: cs-redhat-operator-index
+        source: credhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
         create: false
