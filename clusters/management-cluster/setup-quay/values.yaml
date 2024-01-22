@@ -474,7 +474,7 @@ helper-operator:
         channel: stable-3.10
         approval: Automatic
         operatorName: quay-operator
-        source: credhat-operators
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
         create: false
