@@ -1,0 +1,25 @@
+{{- with .Values }}
+{{ if eq ( .enabled | toString) "true" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default 3 | quote }}
+  name: patch-image-registry-crb-{{ .namespace }}-clusterrole
+  namespace: {{ .namespace | quote }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+rules:
+  - apiGroups:
+      - imageregistry.operator.openshift.io
+    resources:
+      - configs
+    verbs:
+      - get
+      - list
+      - patch
+{{- end }}
+{{- end }}

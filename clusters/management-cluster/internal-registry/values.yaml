@@ -1,0 +1,70 @@
+---
+storageclassname: &storageclassname internal-registry-bucket-storage-class
+bucketname: &bucketname internal-registry-bucket
+namespace: &namespace openshift-image-registry
+
+enabled: true
+namespace: *namespace
+bucket:
+  name: *bucketname
+
+# Replicas for internal registry
+# Default: 2
+# replicas: 2
+
+# Bind internal registry to specific nodes 
+nodeSelector:
+  key: node-role.kubernetes.io/infra
+  value: ''
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Equal
+    value: reserved
+  - effect: NoExecute
+    key: node-role.kubernetes.io/infra
+    operator: Equal
+    value: reserved
+
+# A helper chart that simply creates another backingstore for quay.
+# This is a chart in a very early state, and not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: internal-registry-backingstore
+  # Size of the BackingStore
+  backingstore_size: 100Gi
+  # numOfVolumes: 1
+  # type: py-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: thin-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    enabled: true
+    name: *bucketname
+    namespace: *namespace
+
+    # is_secure: true
+    # port: 443
+
+    # Name of the storageclass
+    # Default: openshift-storage.noobaa.io
+    # a separate StorageClass with BackingStore and BackingClass can be created.
+    storageclass: *storageclassname
+
+    # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # Default: 2
+    syncwave: 2
