@@ -6,6 +6,13 @@ dependencies:
   - name: rhacm-setup
     version: ~1.0.0
     repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: "1.0.14"
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~3.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
