@@ -24,7 +24,7 @@
 
 # Anchors ... because I am lazy.
 mgmt-cluster: &mgmtcluster https://kubernetes.default.svc
-repourl: &repourl 'https://github.com/tjungbauer/openshift-cluster-bootstrap'
+repourl: &repourl 'https://github.com/tjungbauer/openshift-clusterconfig-gitops'
 repobranch: &branch main
 
 # Generic default values, they might be overwritten in the Application specification
