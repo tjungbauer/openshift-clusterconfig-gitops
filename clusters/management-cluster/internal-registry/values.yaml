@@ -1,10 +1,10 @@
 ---
 storageclassname: &storageclassname internal-registry-bucket-storage-class
 bucketname: &bucketname internal-registry-bucket
-namespace: &namespace openshift-image-registry
+regnamespace: &regnamespace openshift-image-registry
 
 enabled: true
-namespace: *namespace
+namespace: *regnamespace
 bucket:
   name: *bucketname
 
@@ -12,7 +12,7 @@ bucket:
 # Default: 2
 # replicas: 2
 
-# Bind internal registry to specific nodes 
+# Bind internal registry to specific nodes
 nodeSelector:
   key: node-role.kubernetes.io/infra
   value: ''
