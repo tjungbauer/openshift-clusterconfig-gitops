@@ -19,6 +19,8 @@ policySet:
       description: "Performing generic health checks"
       namespace: *namespace
       placement:
+        clusterSets:
+          - hub
         lableSelectors:
           - key: name
             operator: In
