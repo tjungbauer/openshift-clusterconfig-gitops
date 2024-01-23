@@ -253,8 +253,6 @@ applicationsets:
         clusterurl: *mgmtcluster
     syncPolicy:
       autosync_enabled: false
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
 
   ##############################
   # END LIST GENERATOR EXAMPLE #
