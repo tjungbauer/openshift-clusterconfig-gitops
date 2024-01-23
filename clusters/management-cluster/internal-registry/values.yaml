@@ -46,7 +46,7 @@ helper-objectstore:
   # type: py-pool
 
   # The StorageClass the BackingStore is based on
-  baseStorageClass: thin-csi
+  baseStorageClass: gp3-csi
 
   # Name of the StorageClass that shall be enabled.
   storageclass_name: *storageclassname
