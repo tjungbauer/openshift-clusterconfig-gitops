@@ -1,0 +1,81 @@
+---
+#############################################################################
+# WAVE CONTROLLER
+#
+# The purpose of this wave controller is to create an App-of-Apps
+# that is able to rollout specified Argo CD Application in (sync)waves.
+# This is currently not possible with ApplicationSet (end 2023)
+#
+# Applications that are dependent to each other, or form some kind of
+# group should be defined this was.
+#
+# In this example Secuity Tools are deployed in the following order:
+#    1. Configure Allowed Registries
+#    2. Deploy and configure Compliance Operator
+#    3. Deploy and configure Advanced Cluster Security
+#
+# The syntax to define the Applications, that shall be managed by
+# the App-of-Apps is defined in the helm chart "helper-argocd"
+#
+# NOTE: It makes sense that the managed Applications are automatically
+#       synced.
+#############################################################################
+
+
+# Anchors ... because I am lazy.
+mgmt-cluster: &mgmtcluster https://kubernetes.default.svc
+repourl: &repourl 'https://github.com/tjungbauer/openshift-cluster-bootstrap'
+repobranch: &branch main
+
+# Generic default values, they might be overwritten in the Application specification
+general:
+  source:
+    repourl: *repourl
+  branch: *branch
+  server: *mgmtcluster
+
+# Argo CD Applications
+applications:
+
+  # Name of the Application in Argo CD --> this key will be used as name
+  wave-1-acm-preparation:
+    enabled: true
+    syncwave: '1'
+    description: "Wave 1 to prepare ACM by create a ManagedClusterSet, Namespace etc."
+
+    # SyncPolicies
+    syncPolicy:
+      # Enable Automatic Sync
+      autosync_enabled: true
+
+      # Enable Selfhealing
+      # Default: false
+      syncpolicy_selfheal: true
+
+      # Enable automatic pruning
+      # Default: false
+      # syncpolicy_prune: false
+
+      # Sync Options for this Application
+      syncOptions:
+        - name: ApplyOutOfSyncOnly
+          value: true
+
+    # Source ... here only the path is defined, the rest is taken from the
+    # generic values defined at the top.
+    source:
+      path: clusters/management-cluster/waves/acm-policies/acm-preparation
+
+  # WAVE 10: Logging Operator
+  wave-10-policy-clusterhealth:
+    enabled: true
+    syncwave: '10'
+    description: "Wave 10 Add policies to monitor the health of the pods inside a cluster"
+    syncPolicy:
+      autosync_enabled: true
+      syncpolicy_selfheal: true
+      syncOptions:
+        - name: ApplyOutOfSyncOnly
+          value: true
+    source:
+      path: clusters/management-cluster/waves/acm-policies/clusterhealth
