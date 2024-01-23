@@ -55,7 +55,7 @@ helper-objectstore:
   bucket:
     enabled: true
     name: *bucketname
-    namespace: *namespace
+    namespace: *regnamespace
 
     # is_secure: true
     # port: 443
