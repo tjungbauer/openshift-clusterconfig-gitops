@@ -41,3 +41,6 @@ Chart.lock
 *.tgz
 
 scripts/example_htpasswd/users.htpasswd
+
+*.key
+*.crt

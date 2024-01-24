@@ -1,10 +1,10 @@
 #!/bin/bash
 echo "Creating custom certificate for sealed secrets"
 
-export PRIVATEKEY="fxtls.key"
-export PUBLICKEY="fxtls.crt"
+export PRIVATEKEY="custom-tls.key"
+export PUBLICKEY="custom-tls.crt"
 export NAMESPACE="sealed-secrets"
-export SECRETNAME="fx-customsecret"
+export SECRETNAME="customsecret"
 
 openssl req -x509 -days 3650 -nodes -newkey rsa:4096 -keyout "$PRIVATEKEY" -out "$PUBLICKEY" -subj "/CN=sealed-secret/O=sealed-secret"
 
