@@ -1,0 +1,123 @@
+---
+hostname: &hostname gitops.apps.prod.ocp.local
+
+openshift-gitops:
+  gitopsinstances:
+    gitops_application:
+      enabled: true
+      namespace: gitops-application
+      syncwave: 10
+
+      server:
+        host: *hostname
+
+      generic_config:
+        #  The metadata.label key name where Argo CD injects the app name as a tracking label.
+        #  Argo CD identifies resources it manages by setting the application instance label
+        #  to the name of the managing Application on all resources that are managed
+        #  Default: argocd.argoproj.io/<<name of the gitopsinstance>>
+        #
+        #  applicationInstanceLabelKey: argocd.argoproj.io/application-instance
+
+        #  Object tracking method. This could either be:
+        #    label - Argo CD uses the app.kubernetes.io/instance label
+        #    annotation+label - Argo CD uses the app.kubernetes.io/instance label but only for informational purposes.
+        #      The label is not used for tracking purposes, and the value is still truncated if longer than 63 characters.
+        #      The annotation argocd.argoproj.io/tracking-id is used instead to track application resources.
+        #      Use this for resources that you manage with Argo CD, but still need compatibility with other tools that require the instance label.
+        #    annotation - Argo CD uses the argocd.argoproj.io/tracking-id annotation to track application resources.
+        #      Use this when you don't need to maintain both the label and the annotation.
+        #  Default: label
+        #
+        resourceTrackingMethod: annotation
+
+        #  The build options and parameters to use with kustomize build.
+        #  Default: empty
+        kustomizeBuildOptions: "--enable-helm"
+
+      rbac:
+        defaultRole: 'role:none'
+        policy: |-
+            # Access Control
+            g, system:cluster-admins, role:admin
+            g, cluster-admins, role:admin
+            p, role:none, applications, get, */*, deny
+            p, role:none, certificates, get, *, deny
+            p, role:none, clusters, get, *, deny
+            p, role:none, repositories, get, *, deny
+            p, role:none, projects, get, *, deny
+            p, role:none, accounts, get, *, deny
+            p, role:none, gpgkeys, get, *, deny
+
+            # Adding Roles for specific group, i.e. Developers
+            p, role:application-1-dev, applications, get, application-1/*, allow
+            p, role:application-1-dev, clusters, get, https://kubernetes.default.svc, allow
+            g, application-1-dev, role:application-1-dev
+
+            p, role:application-1-ops, applications, get, application-1-prod/*, allow
+            p, role:application-1-ops, clusters, get, *, allow
+            g, application-1-ops, role:application-1-ops
+
+        scopes: '[groups]'
+      resourceExclusions: |-
+        # resources to be excluded
+        - apiGroups:
+          - tekton.dev
+          clusters:
+          - '*'
+          kinds:
+          - TaskRun
+          - PipelineRun
+
+###################################################################
+# Operator installation is not required on the management cluster
+# However, when you deploy the application-gitops on other
+# clusters, you might need to deploy the operator.
+###################################################################
+
+# Subchart helper-operator
+# Simply installs the operator
+# Install Operator RHACS
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  enabled: false
+  operators:
+    openshift-gitops-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-gitops-operators
+        create: true
+      subscription:
+        channel: latest
+        approval: Automatic
+        operatorName: openshift-gitops-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+        config:
+          env:
+            - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+              value: 'true'
+      operatorgroup:
+        create: true
+        # rhacs does not support to monitor own namespace,
+        # therefor the spec in the OperatorGroup must be empty
+        notownnamespace: true
+
+
+# Subchart helper-status-checker
+# checks if ACS operator is ready
+helper-status-checker:
+  enabled: false
+
+  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
+  operatorName: openshift-gitops-operator
+
+  # where operator is installed
+  namespace:
+    name: openshift-gitops-operators
+
+  serviceAccount:
+    create: true
+    name: "status-checker-gitops"

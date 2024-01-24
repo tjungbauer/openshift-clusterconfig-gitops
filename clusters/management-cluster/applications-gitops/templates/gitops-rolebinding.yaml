@@ -1,0 +1,22 @@
+{{ with index .Values "openshift-gitops" }}
+{{- range $key, $value := .gitopsinstances }}
+{{ if eq ($value.enabled | toString) "true" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $key | replace "_" "-" }}-rolebinding
+  namespace: {{ $value.namespace | default "openshift-operators" | quote }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io  
+  kind: Role
+  name: {{ $key | replace "_" "-" }}-role
+subjects:
+- kind: ServiceAccount
+  name: gitops-application-argocd-application-controller
+  namespace: {{ .namespace | default "openshift-operators" | quote }} 
+{{- end }}
+{{- end }}
+{{- end }}

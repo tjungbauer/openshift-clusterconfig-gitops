@@ -1,0 +1,24 @@
+{{ with index .Values "openshift-gitops" }}
+{{- range $key, $value := .gitopsinstances }}
+{{ if eq ($value.enabled | toString) "true" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $key | replace "_" "-" }}-role
+  namespace: {{ $value.namespace | default "openshift-operators" | quote }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - "*"
+  verbs:
+  - Get
+  - List
+  - Watch
+  - Patch
+{{- end }}
+{{- end }}
+{{- end }}

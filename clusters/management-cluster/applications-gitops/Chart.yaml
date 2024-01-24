@@ -1,0 +1,18 @@
+apiVersion: v2
+name: gitops-deployment
+description: Deployment of a GitOps for Application Management
+version: 1.0.0
+dependencies:
+  - name: openshift-gitops
+    version: ~1.0.5
+    repository: https://charts.stderr.at
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at
+    condition: helper-operator.enabled
+  - name: helper-status-checker
+    version: ~3.0.0
+    repository: https://charts.stderr.at
+    condition: helper-status-checker.enabled
+maintainers:
+  - name: tjungbauer
