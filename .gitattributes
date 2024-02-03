@@ -1,3 +1,5 @@
-*.yml linguist-detectable
-*.yaml linguist-detectable
+*.yml linguist-detectable=true
+*.yaml linguist-detectable=true
 *.tpl linguist-detectable=true
+*.html linguist-detectable=false
+
