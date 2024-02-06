@@ -35,7 +35,7 @@ helper-status-checker:
     create: true
     name: "sa-compliance"
 
-compliance-operator-setup:
+compliance-operator-full-stack:
   compliance:
     namespace:
       name: openshift-compliance
