@@ -17,6 +17,7 @@ repourl_configuration: 'https://github.com/tjungbauer/openshift-clusterconfig-gi
 revision_configuration: main
 
 # -- The path_configurations parameter specifies the path within the Git repository where the configuration files are located.
+# Here the values-file is stored only. This values-files is used by the App-of-Apps to define all Applications and ApplicationSets.
 path_configurations:
   - base/argocd-resources-manager/values.yaml
 
@@ -24,8 +25,9 @@ path_configurations:
 repoURL_chart: https://charts.stderr.at/
 
 # -- Specifies the name of the Helm chart.
-# This will be used to render the App-of-Apps Application
+# This chart will be used by the argocd-resources-manager to render all objects.
 chart_name: helper-argocd
 
 # -- Specifies the version of the Helm chart to be deployed.
+# This chart will be used by the argocd-resources-manager to render all objects.
 chart_version: 2.0.x
