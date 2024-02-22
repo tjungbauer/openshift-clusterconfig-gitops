@@ -65,7 +65,7 @@ spec:
 
 This Application will observe https://github.com/tjungbauer/openshift-clusterconfig-gitops for any changes.
 
-**NOTE**: In this example multiple **Sources** are defined. A feature that is currently TechPreview (22nd February 2024). 
+**NOTE**: In this example multiple **Sources** are defined. A feature that is currently TechPreview ([22nd February 2024]<https://argo-cd.readthedocs.io/en/stable/user-guide/multiple_sources/>). 
 This feature help to define the values-file of a Helm chart outside the actual Helm Chart (and thus you can put your values-file into a separate repository).
 If you do not want to use TechPreview feature create a "wrapper helm chart", put the values-file into it and add a dependency
 the **helper-argocd** Subchart.
