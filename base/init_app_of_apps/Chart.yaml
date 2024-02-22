@@ -1,6 +1,6 @@
 apiVersion: v2
 name: init_app_of_apps
-description: Installs a single Application into AgoCD which automatically syncs all other Applications and ApplicationSets
+description: Installs a single application into Argo CD, which automatically syncs all other applications and ApplicationSets.
 version: 1.0.0
 maintainers:
   - name: tjungbauer

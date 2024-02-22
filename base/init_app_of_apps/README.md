@@ -2,9 +2,9 @@
 
 # init_app_of_apps
 
-  [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Linting](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml/badge.svg)](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml)
-  [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
+[![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
   ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square)
 
@@ -12,17 +12,10 @@
 
   ## Description
 
-  Installs a single Application into AgoCD which automatically syncs all other Applications and ApplicationSets
+  Installs a single application into Argo CD, which automatically syncs all other applications and ApplicationSets.
 
-This chart can be used to install Operators in OpenShift.
-It is best used with a GitOps approach such as Argo CD does. For example: https://github.com/tjungbauer/openshift-clusterconfig-gitops
-
-This chart will create the objects: Namespace, Subscription, OperatorGroup and a Job, that will enable additional console plugins, if enabled.
-
-*NOTE*: It is usually used as Subchart for other Charts and it works best with the second subchart [helper-status-checker](https://github.com/tjungbauer/helm-charts/tree/main/charts/helper-status-checker)
-
-**init_app_of_apps** is a Helm chart for initializing applications in an OpenShift cluster using GitOps principles. It is the first Argo CD Application that will be installed and acts as an App-of-Apps by verifying the configured **path**
-which will define all further Applications and ApplicationSets for **cluster configuration**
+`init_app_of_apps` is a Helm chart for initializing applications in an OpenShift cluster using GitOps principles. It serves as the first Argo CD Application to be installed, acting as an App-of-Apps by verifying the configured **path**
+which defines all further Applications and ApplicationSets for **cluster configuration**
 
 If you use the shell script of this repository, it will be installed as the final step of that script, so you can immediately start with your cluster configuration.
 
@@ -33,7 +26,7 @@ Ensure the following prerequisites are met before deploying this Helm chart:
 * Git repository with application configurations.
 
 ## Installation
-Either run the shell script **./init_GitOps.sh** that will install the OpenShift GitOps Operator and autmatically installs this init_app_of_apps, or manually use Helm.
+Either run the shell script **./init_GitOps.sh** that will install the OpenShift GitOps Operator and automatically installs this init_app_of_apps, or manually use Helm.
 
 ```bash
 helm upgrade --install --values ./base/init_app_of_apps/values.yaml --namespace=openshift-gitops app-of-apps ./base/init_app_of_apps
