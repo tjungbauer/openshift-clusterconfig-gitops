@@ -2,12 +2,30 @@
 # General values
 #
 
+# -- The server parameter specifies the Kubernetes server URL to be used.
+# The server parameter specifies the Kubernetes server URL to be used.
 server: https://kubernetes.default.svc
+
+# -- The argocd_project parameter specifies the ArgoCD project to use.
+# This indicates that the applications will be managed within the 'default' ArgoCD project.
 argocd_project: 'default'
+
+# -- The repourl_configuration parameter specifies the URL of the Git repository containing cluster configurations.
 repourl_configuration: 'https://github.com/tjungbauer/openshift-clusterconfig-gitops'
+
+# -- The revision_configuration parameter specifies the revision or branch of the Git repository to use.
 revision_configuration: main
+
+# -- The path_configurations parameter specifies the path within the Git repository where the configuration files are located.
 path_configurations:
   - base/argocd-resources-manager/values.yaml
+
+# -- he repoURL_chart parameter specifies the Helm chart repository URL.
 repoURL_chart: https://charts.stderr.at/
+
+# -- Specifies the name of the Helm chart.
+# This will be used to render the App-of-Apps Application
 chart_name: helper-argocd
+
+# -- Specifies the version of the Helm chart to be deployed.
 chart_version: 2.0.x

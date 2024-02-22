@@ -1,0 +1,53 @@
+
+{{ define "doc.header" -}}
+
+{{ template "chart.header" . }}
+
+  [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Linting](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml/badge.svg)](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml)
+  [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
+
+  {{ template "chart.versionBadge" . }}
+
+  {{ template "chart.deprecationWarning" . }}
+
+  ## Description
+
+  {{ template "chart.description" . }}
+
+{{- end }}
+
+
+{{ define "doc.deps" -}}
+
+## Dependencies
+
+This charts has the following dependencies:
+
+{{ template "chart.requirementsTable" . }}
+
+{{- end }}
+
+{{ define "doc.values" -}}
+
+{{ template "chart.valuesSection" . }}
+
+{{- end }}
+
+
+{{ define "doc.maintainer_and_sources" -}}
+
+{{ template "chart.maintainersSection" . }}
+
+## Sources
+Source: {{ template "chart.sourcesList" . }}
+
+Source code: {{ template "chart.homepage" . }}
+
+{{- end }}
+
+{{ define "doc.footer" -}}
+
+{{ template "helm-docs.versionFooter" . }}
+
+{{- end }}

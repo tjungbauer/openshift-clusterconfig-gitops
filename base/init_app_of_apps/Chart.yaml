@@ -4,3 +4,12 @@ description: Installs a single Application into AgoCD which automatically syncs 
 version: 1.0.0
 maintainers:
   - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/base/init_app_of_apps
+keywords:
+  - helper
+  - subchart
+  - gitops
