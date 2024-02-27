@@ -15,7 +15,7 @@ helper-operator:
         channel: stable
         approval: Automatic
         operatorName: compliance-operator
-        source: cs-redhat-operator-index
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
         create: true
