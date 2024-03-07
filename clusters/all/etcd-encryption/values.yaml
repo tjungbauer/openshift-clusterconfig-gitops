@@ -1,8 +1,17 @@
 ---
+# -- Using subchart generic-cluster-config
 generic-cluster-config:
   etcd_encryption:
+    # -- Enable ETCD encryption or not
+    # @default -- false
     enabled: true
 
-    # Namespace where Job is executed that verifies the status of the encryption
+    # -- Type of encryption. Must either be aesgcm or aescbc
+    # @default -- aesgcm
+    encryption_type: aesgcm
+
+    # -- Namespace where Job is executed that verifies the status of the encryption
     namespace: kube-system
+
+    # Service Account that will be created to check if ETCD encryption has been finished.
     serviceAccount: etcd-encryption-checker

@@ -1,6 +1,6 @@
 ---
 apiVersion: v2
-name: clusterconfig
+name: clusterconfig-etcd-encryption
 description: Enables ETCD encryption with the decided encryption type and starts a Job that verifies the status if the encryption.
 version: 1.0.0
 dependencies:
@@ -9,3 +9,12 @@ dependencies:
     repository: https://charts.stderr.at
 maintainers:
   - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/all/etcd-encryption
+keywords:
+  - security

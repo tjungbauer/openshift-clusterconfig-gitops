@@ -1,0 +1,29 @@
+{{ template "doc.header" . }}
+
+Enable ETCD encryption on ALL clusters. This chart uses the Subchart: generic-cluster-config.
+
+{{ template "doc.deps" . }}
+
+It is best used with a full GitOps approach such as Argo CD does. For example, https://github.com/tjungbauer/openshift-clusterconfig-gitops
+
+{{ template "doc.maintainer_and_sources" . }}
+
+## Parameters
+The following table lists the configurable parameters of the init_app_of_apps chart and their default values.
+
+{{ template "doc.values" . }}
+
+## Example values
+
+```yaml
+---
+generic-cluster-config:
+  etcd_encryption:
+    enabled: true
+
+    # Namespace where Job is executed that verifies the status of the encryption
+    namespace: kube-system
+    serviceAccount: etcd-encryption-checker
+```
+
+{{ template "doc.footer" . }}
