@@ -3,6 +3,13 @@ name: setup-openshift-logging
 description: Installs and configures OpenShift Logging by calling the Chart openshift-logging
 version: 1.0.0
 dependencies:
+  - name: helper-operator
+    version: ~1.0.18
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
   - name: openshift-logging
     version: ~1.0.23
     repository: https://charts.stderr.at/
@@ -14,5 +21,17 @@ dependencies:
     version: ~1.0.0
     repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
+  - name: helper-lokistack
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-lokistack.enabled
 maintainers:
   - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - logging
+  - loki

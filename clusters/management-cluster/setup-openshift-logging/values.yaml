@@ -3,6 +3,9 @@ logging-namespace: &log-namespace openshift-logging
 bucketname: &bucketname logging-bucket
 lokisecret: &loki-secret-name logging-loki-s3
 storageclassname: &storageclassname logging-bucket-storage-class
+lokistack: &lokistackname logging-loki
+loki: &channel-loki stable-5.8
+logging: &channel-logging stable-5.8
 
 # A helper chart that simply creates another backingstore for quay.
 # This is a chart in a very early state, and not everything can be customized for now.
@@ -65,7 +68,7 @@ helper-operator:
         name: *log-namespace
         create: true
       subscription:
-        channel: stable-5.8
+        channel: *channel-logging
         source: redhat-operators
         approval: Automatic
         operatorName: cluster-logging
@@ -73,6 +76,66 @@ helper-operator:
       operatorgroup:
         create: true
         notownnamespace: false
+
+    loki-operator:
+      enabled: true
+      namespace:
+        name: openshift-operators-redhat
+        create: true
+      subscription:
+        channel: *channel-loki
+        approval: Automatic
+        operatorName: loki-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator
+helper-status-checker:
+
+  # -- Enable or disable LokiStack configuration
+  # @default -- false
+  enabled: true
+
+  # -- Enable automatic approval of an InstallPlan. Useful if the installation must be approved manually and you want to initially deploy the Operator using GitOps.
+  # @default -- false
+  approver: false
+
+  # List of checks that shall be performed.
+  checks:
+       # -- Name of operator to check. Use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
+    - operatorName: cluster-logging
+
+      # -- If the Operator is not yet ready wait this amount of seconds.
+      # @default -- 20
+      sleeptimer: 20
+
+      # -- Maximum number of retries before the checks will fail
+      # @default -- 20
+      maxretries: 20
+
+      # -- Namespace where the status-checker Job shall be scheduled.
+      namespace:
+        name: openshift-logging
+
+      # -- Syncwave for the status-check Job
+      # @default -- 0
+      syncwave: 3
+
+      serviceAccount:
+        # -- Name of the Service Account.
+        name: "status-checker-logging"
+
+    - operatorName: loki-operator
+      namespace:
+        name: openshift-logging
+      syncwave: 3
+
+      serviceAccount:
+        name: "status-checker-loki"
 
 # SubChart to create the loki secret if required.
 # The Secret must contain all required bucket information, while ODF creates a secret and a configmap for example.
@@ -94,64 +157,164 @@ helper-loki-bucket-secret:
   bucket:
     name: *bucketname
 
-# Local values.
-logging:
+# Subchart with values to render the LokiStack object
+helper-lokistack:
+  # -- Enable or disable LokiStack configuration
+  # @default -- false
   enabled: true
-  namespace:
-    name: *log-namespace
+  
+  # -- Name of the LokiStack object
+  name: *lokistackname
 
-  lokistack:
-    # name of the Lokistack object and its syncwave (should be after bucket and secret generation)
-    name: logging-loki
-    syncwave: 3
+  # -- Namespace of the LokiStack object
+  namespace: *log-namespace
 
-    # storage settings
-    storage:
+  # -- Syncwave for the LokiStack object.
+  # @default -- 3
+  syncwave: 3
 
-      # Size defines one of the support Loki deployment scale out sizes.
-      # Can be either:
-      #   - 1x.extra-small (Default)
-      #   - 1x.small
-      #   - 1x.medium
-      # size: 1x.extra-small
+  # -- This is for log streams only, not the retention of the object store. Data retention must be configured on the bucket.
+  global_retention_days: 4
 
-      # Secret for object storage authentication. Name of a secret in the same namespace as the LokiStack custom resource.
-      secret:
+  # storage settings
+  storage:
 
-        # Name of a secret in the namespace configured for object storage secrets.
-        name: *loki-secret-name
+    # -- Size defines one of the supported Loki deployment scale out sizes.
+    # Can be either:
+    #   - 1x.extra-small (Default)
+    #   - 1x.small
+    #   - 1x.medium
+    # @default -- 1x.extra-small
+    # size: 1x.extra-small
 
-        # Type of object storage that should be used
-        # Can bei either:
-        #  - swift
-        #  - azure
-        #  - s3 (default)
-        #  - alibabacloud
-        #  - gcs
-        # type: s3
+    # Secret for object storage authentication. Name of a secret in the same namespace as the LokiStack custom resource.
+    secret:
 
-      # Schemas for reading and writing logs.
-      # schemas:
-      #  # Version for writing and reading logs.
-      #  # Can be v11 or v12
-      #  #
-      #  # Default: v12
+      # -- Name of a secret in the namespace configured for object storage secrets.
+      name: *loki-secret-name
+
+      # Type of object storage that should be used
+      # Can bei either:
+      #  - swift
+      #  - azure
+      #  - s3 (default)
+      #  - alibabacloud
+      #  - gcs
+      # -- Type of object storage that should be used
+      # @default -- s3
+      # type: s3
+
+    # Schemas for reading and writing logs.
+    # schemas:
+      # -- Version for writing and reading logs.
+      # Can be v11 or v12
+      # @default -- v12
       #  - version: v12
 
-      #    # EffectiveDate is the date in UTC that the schema will be applied on. To ensure readibility of logs, this date should be before the current date in UTC.
-      #    # Default: 2022-06-01
+      # -- EffectiveDate is the date in UTC that the schema will be applied on. To ensure readibility of logs, this date should be before the current date in UTC.
+      # @default -- 2022-06-01
       #    effectiveDate: "2022-06-01"
 
-    # Storage class name defines the storage class for ingester/querier PVCs.
-    storageclassname: gp3-csi
+  # -- Storage class name defines the storage class for ingester/querier PVCs.
+  # @default -- gp3-csi
+  storageclassname: *storageclassname
 
-    # Mode defines the mode in which lokistack-gateway component will be configured.
-    # Can be either:
-    #   - static (default)
-    #   - dynamic
-    #   - openshift-logging
-    #   - openshift-network
-    mode: openshift-logging
+  # -- Mode defines the mode in which lokistack-gateway component will be configured.
+  # Can be either: static (default), dynamic, openshift-logging, openshift-network
+  # @default -- static
+  mode: openshift-logging
+
+  # -- Control pod placement for LokiStack components. You can define a list of tolerations for the following components:
+  # compactor, distributer, gateway, indexGateway, ingester, querier, queryFrontend, ruler
+  podPlacements:
+    # Pod placement of compactor
+    compactor:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of distributor
+    distributor:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of gateway
+    gateway:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of indexGateway
+    indexGateway:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of ingester
+    ingester:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of querier
+    querier:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of queryFrontend
+    queryFrontend:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+    # Pod placement of ruler
+    ruler:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
+        - effect: NoExecute
+          key: node-role.kubernetes.io/infra
+          operator: Equal
+          value: reserved
 
  # subchart
 openshift-logging:
@@ -169,7 +332,7 @@ openshift-logging:
       type: lokistack
 
       # Name of the LokiStack resource.
-      lokistack: logging-loki
+      lokistack: *lokistackname
 
       retentionPolicy:
         application:
