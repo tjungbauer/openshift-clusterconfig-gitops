@@ -131,7 +131,7 @@ helper-status-checker:
 
     - operatorName: loki-operator
       namespace:
-        name: openshift-logging
+        name: openshift-operators-redhat
       syncwave: 3
 
       serviceAccount:
