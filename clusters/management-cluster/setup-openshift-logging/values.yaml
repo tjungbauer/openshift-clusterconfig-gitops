@@ -162,7 +162,7 @@ helper-lokistack:
   # -- Enable or disable LokiStack configuration
   # @default -- false
   enabled: true
-  
+
   # -- Name of the LokiStack object
   name: *lokistackname
 
