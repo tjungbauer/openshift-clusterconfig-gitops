@@ -123,7 +123,7 @@ helper-status-checker:
 
       # -- Syncwave for the status-check Job
       # @default -- 0
-      syncwave: 3
+      syncwave: 1
 
       serviceAccount:
         # -- Name of the Service Account.
@@ -132,7 +132,7 @@ helper-status-checker:
     - operatorName: loki-operator
       namespace:
         name: openshift-operators-redhat
-      syncwave: 3
+      syncwave: 1
 
       serviceAccount:
         name: "status-checker-loki"
@@ -145,7 +145,7 @@ helper-loki-bucket-secret:
   enabled: true
 
   # Syncwave ... best to do after bucket creation
-  syncwave: 2
+  syncwave: 3
 
   # Namespace for logging
   namespace: *log-namespace
