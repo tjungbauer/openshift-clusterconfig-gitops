@@ -1,17 +1,29 @@
 ---
-
-# Define ingressControllers
-# Multiple might be defined. Verify the Helm Chart and add configuration options if required.
+# -- Define ingressControllers
+# Multiple might be defined.
 ingresscontrollers:
+    # -- Name of the IngressController. OpenShift initial IngressController is called 'default'.
   - name: default
+
+    # -- Enable the configuration
+    # @default -- false
     enabled: true
+
+    # -- Number of replicas for this IngressController
+    # @default -- 2
     replicas: 3
 
-    # Bind internal registry to specific nodes
+    # -- Bind IngressController to specific nodes
+    # Here as example for Infrastructure nodes.
+    # @default -- empty
     nodePlacement:
+
+      # NodeSelector that shall be used.
       nodeSelector:
         key: node-role.kubernetes.io/infra
         value: ''
+
+      # -- Tolerations, required if the nodes are tainted.
       tolerations:
         - effect: NoSchedule
           key: node-role.kubernetes.io/infra
