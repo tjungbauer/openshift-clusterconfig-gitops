@@ -7,52 +7,11 @@ lokistack: &lokistackname logging-loki
 loki: &channel-loki stable-5.8
 logging: &channel-logging stable-5.8
 
-# A helper chart that simply creates another backingstore for quay.
-# This is a chart in a very early state, and not everything can be customized for now.
-# It will create the objects:
-#  - BackingStore
-#  - BackingClass
-#  - StorageClass
 
-# NOTE: Currently only PV type is supported
-helper-objectstore:
-  enabled: true
-  # syncwave: 1
-
-  # Name of the BackingStore
-  backingstore_name: logging-backingstore
-  # Size of the BackingStore
-  backingstore_size: 700Gi
-  limits_cpu: 500m
-  limits_memory: 2Gi
-  # numOfVolumes: 1
-  # type: pv-pool
-
-  # The StorageClass the BackingStore is based on
-  baseStorageClass: gp3-csi
-
-  # Name of the StorageClass that shall be enabled.
-  storageclass_name: *storageclassname
-
-  # Bucket that shall be created
-  bucket:
-    enabled: true
-    name: *bucketname
-    namespace: *log-namespace
-
-    # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
-    # Default: 1
-    syncwave: 1
-
-    # is_secure: true
-    # port: 443
-
-    # Name of the storageclass
-    # Default: openshift-storage.noobaa.io
-    storageclass: *storageclassname
-
-# The operators are installed in a separate way in this case.
-# sub subchart
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
 helper-operator:
 
   console_plugins:
@@ -92,8 +51,11 @@ helper-operator:
         create: true
         notownnamespace: true
 
+
+########################################
 # SUBCHART: helper-status-checker
-# Verify the status of a given operator
+# Verify the status of a given operator.
+########################################
 helper-status-checker:
 
   # -- Enable or disable LokiStack configuration
@@ -137,9 +99,65 @@ helper-status-checker:
       serviceAccount:
         name: "status-checker-loki"
 
-# SubChart to create the loki secret if required.
-# The Secret must contain all required bucket information, while ODF creates a secret and a configmap for example.
-# A Kubernetes Job is created, that reads the data from the Secret and ConfigMap and creates a new secret for loki.
+
+########################################
+# SUBCHART: helper-objectstore
+# Verify the status of a given operator.
+
+# A helper chart that simply creates another backingstore for quay.
+# This is a chart in a very early state, and not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+########################################
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: logging-backingstore
+  # Size of the BackingStore
+  backingstore_size: 700Gi
+  limits_cpu: 500m
+  limits_memory: 2Gi
+  # numOfVolumes: 1
+  # type: pv-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    enabled: true
+    name: *bucketname
+    namespace: *log-namespace
+
+    # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # Default: 1
+    syncwave: 1
+
+    # is_secure: true
+    # port: 443
+
+    # Name of the storageclass
+    # Default: openshift-storage.noobaa.io
+    storageclass: *storageclassname
+
+
+##############################################
+# SUBCHART: helper-loki-bucket-secret
+# Creates a Secret that Loki requires
+#
+# A Kubernetes Job is created, that reads the 
+# data from the Secret and ConfigMap and
+# creates a new secret for loki.
+##############################################
 helper-loki-bucket-secret:
   # Enable Job creation
   enabled: true
@@ -157,6 +175,10 @@ helper-loki-bucket-secret:
   bucket:
     name: *bucketname
 
+########################################
+# SUBCHART: helper-lokistack
+# Renders a LokiStack object.
+########################################
 # Subchart with values to render the LokiStack object
 helper-lokistack:
   # -- Enable or disable LokiStack configuration
@@ -316,7 +338,11 @@ helper-lokistack:
           operator: Equal
           value: reserved
 
- # subchart
+
+########################################
+# SUBCHART: openshift-logging
+# Finally, configure openshift-logging.
+########################################
 openshift-logging:
 
   loggingConfig:
