@@ -1,7 +1,6 @@
 apiVersion: v2
 name: setup-openshift-logging
-description: Installs and configures OpenShift Logging by calling the Chart openshift-logging
-version: 1.0.0
+description: Installs and configures OpenShift Logging by deploying Logging and Loki Operator and configuring them accordingly. Example configuration is creating a Bucket using OpenShift Data Foundation.
 dependencies:
   - name: helper-operator
     version: ~1.0.18

@@ -14,27 +14,60 @@ logging: &channel-logging stable-5.8
 ######################################
 helper-operator:
 
+  # -- Configure console plugins for OpenShift.
+  # @default -- ""
   console_plugins:
+    # -- Enable console plugin configuration.
+    # @default -- false
     enabled: true
+    # -- List of console plugins to configure. Each list item will be added to the OpenShift UI.
+    # @default -- empty
     plugins:
       - logging-view-plugin
 
   operators:
     cluster-logging-operator:
+      # -- Enabled yes/no
+      # @default -- false
       enabled: true
+      # -- Syncwave for the operator deployment
+      # @default -- 0
       syncwave: '0'
+
       namespace:
+        # -- The Namespace the Operator should be installed in.
         name: *log-namespace
+        # -- Create the Namesoace yes/no.
+        # @default -- false
         create: true
+      # -- Definition of the Operator Subscription
+      # @default -- ""
       subscription:
+        # -- Channel of the Subscription
+        # @default -- stable
         channel: *channel-logging
+        # -- Source of the Operator
+        # @default -- redhat-operators
         source: redhat-operators
+        # -- Update behavior of the Operator. Manual/Automatic
+        # @default -- Automatic
         approval: Automatic
+        # -- Name of the Operator
+        # @default -- "empty"
         operatorName: cluster-logging
+        # -- Namespace of the source
+        # @default -- openshift-marketplace
         sourceNamespace: openshift-marketplace
       operatorgroup:
+        # -- Create an Operatorgroup object
+        # @default -- false
         create: true
+        # -- Monitor own Namespace. For some Operators no `targetNamespaces` must be defined
+        # @default -- false
         notownnamespace: false
+
+
+
 
     loki-operator:
       enabled: true
