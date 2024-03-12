@@ -182,20 +182,23 @@ helper-objectstore:
 # creates a new secret for loki.
 ##############################################
 helper-loki-bucket-secret:
-  # Enable Job creation
+  # -- Enable Job to create a Secret for LokiStack.
+  # @default -- false
   enabled: true
 
-  # Syncwave ... best to do after bucket creation
+  # -- Syncwave for Argo CD.
+  # @default -- 3
   syncwave: 3
 
-  # Namespace for logging
+  # -- Namespace where LokiStack is deployed and where the Secret shall be created.
   namespace: *log-namespace
 
-  # Secretname that shall be created
+  # -- Name of Secret that shall be created.
   secretname: *loki-secret-name
 
-  # Name of the bucket
+  # Bucket Configuration
   bucket:
+    # -- Name of the Bucket shall has been created.
     name: *bucketname
 
 
