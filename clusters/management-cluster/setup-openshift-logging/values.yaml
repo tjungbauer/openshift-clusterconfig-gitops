@@ -118,56 +118,56 @@ helper-objectstore:
   # -- Enable objectstore configuration
   # @default -- false
   enabled: true
-  
+
   # -- Syncwave for Argo CD
   # @default - 1
   syncwave: 1
-  
+
   # -- Name of the BackingStore
   backingstore_name: logging-backingstore
-  
+
   # -- Size of the BackingStore that each volume shall have.
   backingstore_size: 700Gi
-  
+
   # -- CPU Limit for the Noobaa Pod
   # @default -- 500m
   limits_cpu: 500m
-  
+
   # -- Memory Limit for the Noobaa Pod.
   # @default -- 2Gi
   limits_memory: 2Gi
-  
+
   pvPool:
     # -- Number of volumes that shall be used
     # @default -- 1
     numOfVolumes: 1
-  
+
     # Type of BackingStore. Currently pv-pool is the only one supported by this Helm Chart.
     # @default -- pv-pool
     type: pv-pool
-  
+
   # -- The StorageClass the BackingStore is based on
   baseStorageClass: gp3-csi
-  
+
   # -- Name of the StorageClass that shall be created for the bucket.
   storageclass_name: *storageclassname
-  
+
   # Bucket that shall be created
   bucket:
     # -- Shall a new bucket be enabled?
     # @default -- false
     enabled: true
-  
+
     # -- Name of the bucket that shall be created
     name: *bucketname
-  
+
     # -- Target Namespace for that bucket.
     namespace: *log-namespace
-  
+
     # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
     # @default -- 2
     syncwave: 2
-  
+
     # -- Name of the storageclass for our bucket
     # @default -- openshift-storage.noobaa.io
     storageclass: *storageclassname
