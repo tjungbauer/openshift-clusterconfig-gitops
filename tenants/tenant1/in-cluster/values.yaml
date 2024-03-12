@@ -213,6 +213,9 @@ helper-proj-onboarding:
       #    - Deny inner namespace communication (pod to pod of the same Namespace)
       #    - Allow Kube API Server
       #    - Forbid ANY Egress traffic
+      #
+      # WARNING: Per default role admin/edit project or namespace owner can modify the Network Policies.
+      # If you do not want this, you need to create a custom role and assign this to the users.
 
       default_policies:
         # enable_allow_from_ingress: true
