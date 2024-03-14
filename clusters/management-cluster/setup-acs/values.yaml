@@ -359,13 +359,12 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
-  operatorName: rhacs-operator
+  checks:
 
-  # where operator is installed
-  namespace:
-    name: rhacs-operator
+    - operatorName: rhacs-operator
+      namespace:
+        name: rhacs-operator
+      syncwave: 3
 
-  serviceAccount:
-    create: true
-    name: "status-checker-acs"
+      serviceAccount:
+        name: "status-checker-acs"
