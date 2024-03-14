@@ -66,9 +66,6 @@ helper-operator:
         # @default -- false
         notownnamespace: false
 
-
-
-
     loki-operator:
       enabled: true
       namespace:
