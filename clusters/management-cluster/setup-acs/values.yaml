@@ -125,11 +125,15 @@ rhacs-setup:
 
       # If you want this component to only run on specific nodes, you can
       # configure tolerations of tainted nodes.
-      tolerations:
-        - effect: NoSchedule
-          key: infra
-          operator: Equal
-          value: reserved
+      # tolerations:
+      #   - effect: NoSchedule
+      #     key: infra
+      #     operator: Equal
+      #     value: reserved
+      #   - effect: NoSchedule
+      #     key: infra
+      #     operator: Equal
+      #     value: reserved
 
       ###############
       # CENTRAL DB
@@ -180,11 +184,15 @@ rhacs-setup:
 
         # If you want this component to only run on specific nodes, you can
         # configure tolerations of tainted nodes.
-        tolerations:
-          - effect: NoSchedule
-            key: infra
-            operator: Equal
-            value: reserved
+        tolerations: {}
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
 
     ###############
     # SCANNER
@@ -220,11 +228,15 @@ rhacs-setup:
 
         # If you want this component to only run on specific nodes, you can
         # configure tolerations of tainted nodes.
-        tolerations:
-          - effect: NoSchedule
-            key: infra
-            operator: Equal
-            value: reserved
+        tolerations: {}
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
 
         # ONLY set this if you know what you are doing.
         # per default this block can be omitted.
@@ -247,11 +259,15 @@ rhacs-setup:
       db:
         # If you want this component to only run on specific nodes, you can
         # configure tolerations of tainted nodes.
-        tolerations:
-          - effect: NoSchedule
-            key: infra
-            operator: Equal
-            value: reserved
+        tolerations: {}
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
 
         # ONLY set this if you know what you are doing.
         # per default this block can be omitted.
