@@ -4,23 +4,23 @@ backup_storage_size: &backup_storage_size "100Gi"
 etcd-backup:
   enabled: true
   clusterrolebinding_name: *bu_name
-  
+
   # Variables for the Namespace where ETCD backup shall be executed.
   namespace:
     create: true
     name: *bu_name
     displayname: "Backup ETCD Automation"
     description: "Openshift Backup Automation Tool"
-  
+
   serviceAccount: *bu_name
-  
+
   # Settings for the CronJob
   cronjob:
     name: *bu_name
     schedule: "0 */4 * * *"
     retention: 30
     mountpath: /etcd-backup
-  
+
   # Settings for the PVC
   pvc:
     name: *bu_name
