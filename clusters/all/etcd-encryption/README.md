@@ -18,7 +18,7 @@ Enable ETCD encryption on ALL clusters. This chart uses the Subchart: generic-cl
 
 ## Dependencies
 
-This charts has the following dependencies:
+This chart has the following dependencies:
 
 | Repository | Name | Version |
 |------------|------|---------|
