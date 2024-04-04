@@ -1,0 +1,84 @@
+---
+# Configure openshift-gitops operator. This will be enabled via init_GitOps.sh script
+gitopsinstances:
+  openshift_gitops:
+    enabled: false
+    namespace: openshift-gitops
+    clusterAdmin: disabled
+    syncwave: 10
+    server:
+      route:
+        enabled: true
+    generic_config:
+      disableAdmin: true
+      resourceTrackingMethod: annotation
+      kustomizeBuildOptions: "--enable-helm"
+    appset: {}
+    repo: {}
+    controller: {}
+    sso:
+      dex:
+        openShiftOAuth: true
+    ha: {}
+    redis: {}
+    rbac:
+      defaultRole: 'role:none'
+      policy: |-
+          # Access Control
+          g, system:cluster-admins, role:admin
+          g, cluster-admin, role:admin
+          p, role:none, applications, get, */*, deny
+          p, role:none, certificates, get, *, deny
+          p, role:none, clusters, get, *, deny
+          p, role:none, repositories, get, *, deny
+          p, role:none, projects, get, *, deny
+          p, role:none, accounts, get, *, deny
+          p, role:none, gpgkeys, get, *, deny
+      scopes: '[groups]'
+    resourceExclusions: |-
+      # resources to be excluded
+      - apiGroups:
+        - tekton.dev
+        clusters:
+        - '*'
+        kinds:
+        - TaskRun
+        - PipelineRun
+    # Enable default health checks.
+    # This will create some default health checks I usually add.
+    # * ClusterLogging, * Application (Argo CD), * Lokistack, * Subcription, * Central (ACS), InstallPlan
+    default_resourceHealthChecks: true  
+
+# Deploy openshift-gitops operator. This will be enabled via init_GitOps.sh script
+helper-operator:
+  enabled: false
+  operators:
+    openshift-gitops-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-gitops-operator
+        create: true
+      subscription:
+        channel: latest
+        approval: Automatic
+        operatorName: openshift-gitops-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+# Deploy openshift-gitops operator. This will be enabled via init_GitOps.sh script
+helper-status-checker:
+  enabled: false
+
+  checks:
+
+    - operatorName:  openshift-gitops-operator
+      namespace:
+        name:  openshift-gitops-operator
+      syncwave: 3
+
+      serviceAccount:
+        name: "status-checker-gitops"
