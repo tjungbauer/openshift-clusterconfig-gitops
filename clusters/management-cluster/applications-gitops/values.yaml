@@ -9,8 +9,8 @@ openshift-gitops:
       clusterAdmin: enabled
 
       server:
-        #host: *hostname
-        route: 
+        # host: *hostname
+        route:
           enabled: true
 
       generic_config:
