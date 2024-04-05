@@ -9,7 +9,7 @@ openshift-gitops:
       clusterAdmin: enabled
 
       server:
-        host: *hostname
+        #host: *hostname
         route: 
           enabled: true
 
