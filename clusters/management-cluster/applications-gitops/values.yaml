@@ -6,7 +6,7 @@ openshift-gitops:
     gitops_application:
       enabled: true
       namespace: gitops-application
-      clusterAdmin: enabled
+      clusterAdmin: disabled
 
       server:
         # host: *hostname

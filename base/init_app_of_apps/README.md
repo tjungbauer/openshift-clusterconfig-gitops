@@ -17,7 +17,7 @@
 `init_app_of_apps` is a Helm chart for initializing applications in an OpenShift cluster using GitOps principles.
 It serves as the first Argo CD Application to be installed, acting as an **App-of-Apps** by verifying the
 configured **path** which defines all further Applications and ApplicationSets for **cluster configuration**.
-In other words, this App-of-Apps creates an Applicaton called **argocd-resources-manager** and this resources-manager renders all further Applications and ApplicationSets.
+In other words, this App-of-Apps creates an Application called **argocd-resources-manager** and this resources-manager renders all further Applications and ApplicationSets.
 
 If you use the shell script of this repository, it will be installed as the final step of that script, so you can immediately start with your cluster configuration.
 
