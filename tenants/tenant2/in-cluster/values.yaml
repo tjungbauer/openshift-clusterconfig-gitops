@@ -19,10 +19,6 @@ helper-proj-onboarding:
       # Is this Namespace enabled or not
       enabled: true
 
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
-      # an instance on each and every cluster.
-      approject_disabled: true
-
       # Create a local Group with Admin users and the required rolebinding
       # If other systems, like LDAP Group sync is used, you will probaably not need this and can either disable it or remove the whole block.
       local_admin_group:
@@ -35,10 +31,6 @@ helper-proj-onboarding:
 
       # Is this Namespace enabled or not
       enabled: true
-
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
-      # an instance on each and every cluster.
-      approject_disabled: true
 
       # Create a local Group with Admin users and the required rolebinding
       # If other systems, like LDAP Group sync is used, you will probaably not need this and can either disable it or remove the whole block.

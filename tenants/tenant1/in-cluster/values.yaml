@@ -20,12 +20,6 @@ environment: &environment in-cluster
 # Parameters handed over to Sub-Chart helper-proj-onboarding
 helper-proj-onboarding:
 
-  # Use the new version, more streamlined, RBAC configuration
-  rbac20: true
-
-  # This setting is required for the ApplicationSet and MUST point to the cluster where ArgoCD is running
-  environment: in-cluster
-
   # Allowed environments that this tenant can use. This list is mandatory to explicitly set the destination clusters.
   # The name here must be equal to the configured environments in the Global-Values
 
@@ -53,10 +47,6 @@ helper-proj-onboarding:
 
       # Is this Namespace enabled or not
       enabled: true
-
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
-      # an instance on each and every cluster.
-      approject_disabled: false
 
       # Additional labels for Podsecurity and Monitoring for the Namespace
       additional_settings:
@@ -91,7 +81,7 @@ helper-proj-onboarding:
               description: "Group to deploy on target environments"
               # OVERWRITE List of OCP groups that is allowed to manage objects in this project
               # overwrite_oidc_groups:
-               # - overwrite-admin-group
+              # - overwrite-admin-group
               # Project policies
               # This will limit a project to specific actions
               # Parameters:
@@ -99,6 +89,9 @@ helper-proj-onboarding:
               #   - permissions: allow or deny (Default: deny)
               #   - resource: i.e applications (Default: applications)
               #   - object: Which kind of objects can be managed, default "*" (all) inside the namespace
+
+              # HINT: You can use fullaccess: true to simply provide full access to the aplication, without defining all manually
+              # fullaccess: true
               policies:
                 - action: get # get, create, update, delete, sync, override
                   permission: allow # allow or deny
@@ -120,7 +113,14 @@ helper-proj-onboarding:
               policies:
                 - action: get
                   permission: allow
-
+        # you can define additional AppProjects even for a different Namespace.
+        argocd_project_2:
+          enabled: true
+          name: tenant1-app-2
+          rbac:
+            - name: write
+              description: "Group to deploy on target environments"
+              fullaccess: true
 
       # List of Labels that should be added to the Namespace
       labels:

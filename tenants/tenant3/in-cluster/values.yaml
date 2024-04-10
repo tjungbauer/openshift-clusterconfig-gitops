@@ -19,10 +19,6 @@ helper-proj-onboarding:
       # Is this Namespace enabled or not
       enabled: true
 
-      # Disable AppProject creation. This is required, when a central Argo CD instance is used, instead of
-      # an instance on each and every cluster.
-      approject_disabled: true
-
       project_size: "S"
 
       # Override specific quota settings individually
