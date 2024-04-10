@@ -2,6 +2,18 @@
 # General values
 #
 
+# -- Name of the App of Apps
+# @default -- argocd-resources-manager
+name: argocd-resources-manager
+
+# -- Namespace for the App of Apps
+# @default -- openshift-gitops
+namespace: openshift-gitops
+
+# -- Namespace on the destination cluster
+# @default -- openshift-gitops
+destinationNamespace: openshift-gitops
+
 # -- The server parameter specifies the Kubernetes server URL to be used.
 # The server parameter specifies the Kubernetes server URL to be used.
 server: https://kubernetes.default.svc

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: init_app_of_apps
 description: Installs a single application into Argo CD, which automatically syncs all other applications and ApplicationSets.
-version: 1.0.0
+version: 1.0.1
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com

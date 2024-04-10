@@ -2,13 +2,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-resources-manager
+  name: {{ .Values.name | default "argocd-resources-manager" }}
+  namespace: {{ .Values.namespace | default "openshift-gitops" }}
   labels:
     gitops.ownedBy: cluster-config
 {{ include "common.labels" . | indent 4 }}
 spec:
   destination:
-    namespace: openshift-gitops
+    namespace: {{ .Values.destinationNamespace | default "openshift-gitops" }}
     server: {{ .Values.server }}
   project: {{ .Values.argocd_project }}
   sources:

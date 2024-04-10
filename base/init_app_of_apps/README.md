@@ -41,6 +41,9 @@ The following table lists the configurable parameters of the init_app_of_apps ch
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| name | string | `"argocd-resources-manager"` | Name of the App of Apps | 
+| namespace | string | `"openshift-gitops"` | Namespace for the App of Apps |
+| destinationNamespace | string | `"openshift-gitops"` | Namespace on the destination cluster |
 | argocd_project | string | `"default"` | The argocd_project parameter specifies the ArgoCD project to use. This indicates that the applications will be managed within the 'default' ArgoCD project. |
 | chart_name | string | `"helper-argocd"` | Specifies the name of the Helm chart. This chart will be used by the argocd-resources-manager to render all objects. |
 | chart_version | string | `"2.0.x"` | Specifies the version of the Helm chart to be deployed. This chart will be used by the argocd-resources-manager to render all objects. |

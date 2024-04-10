@@ -137,7 +137,7 @@ function configure_argocd() {
 function deploy_app_of_apps() {
 
   printf "\n"
-  $HELM upgrade --install --values ./base/init_app_of_apps/values.yaml --namespace=openshift-gitops app-of-apps ./base/init_app_of_apps
+  $HELM upgrade --install --values ./base/init_app_of_apps/values.yaml --set 'namespace=openshift-gitops' app-of-apps ./base/init_app_of_apps
 
 }
 
