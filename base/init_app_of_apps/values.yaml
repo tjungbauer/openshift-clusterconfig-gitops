@@ -42,4 +42,4 @@ chart_name: helper-argocd
 
 # -- Specifies the version of the Helm chart to be deployed.
 # This chart will be used by the argocd-resources-manager to render all objects.
-chart_version: 2.0.x
+chart_version: 2.0.28
