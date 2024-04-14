@@ -24,16 +24,13 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
-  operatorName: compliance-operator
+  checks:
+    - operatorName: compliance-operator
+      namespace:
+        name: openshift-compliance
+      serviceAccount:
+        name: "status-checker-compliance"
 
-  # where operator is installed
-  namespace:
-    name: openshift-compliance
-
-  serviceAccount:
-    create: true
-    name: "sa-compliance"
 
 compliance-operator-full-stack:
   compliance:

@@ -25,19 +25,12 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  operatorName: advanced-cluster-management
-
-  # space separate list of deployments which shall be checked for status
-  deployments: "multicluster-operators-application multicluster-observability-operator multicluster-operators-channel multicluster-operators-hub-subscription multicluster-operators-standalone-subscription multicluster-operators-subscription-report multiclusterhub-operator submariner-addon"
-
-  wait_time: 60  # wait time in seconds for the check-job to verify when the deployments should be ready
-
-  namespace:
-    name: open-cluster-management
-
-  serviceAccount:
-    create: true
-    name: "status-checker-acm"
+  checks:
+    - operatorName: advanced-cluster-management
+      namespace:
+        name: open-cluster-management
+      serviceAccount:
+        name: "status-checker-acm"
 
 rhacm-setup:
   rhacm:

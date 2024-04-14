@@ -23,16 +23,12 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
-  operatorName: file-integrity-operator
-
-  # where operator is installed
-  namespace:
-    name: openshift-file-integrity
-
-  serviceAccount:
-    create: true
-    name: "sa-file-integrity-checker"
+  checks:
+    - operatorName: file-integrity-operator
+      namespace:
+        name: openshift-file-integrity
+      serviceAccount:
+        name: "sa-file-integrity-checker"
 
 file-integrity-operator:
   aide:

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: setup-compliance-operator
 description: Deploy and configure the Compliance Operator
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: compliance-operator-full-stack
     version: ~1.0.0
@@ -10,7 +10,7 @@ dependencies:
     version: ~1.0.21
     repository: https://charts.stderr.at/
   - name: helper-status-checker
-    version: ~3.0.0
+    version: ~4.0.0
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
 maintainers:

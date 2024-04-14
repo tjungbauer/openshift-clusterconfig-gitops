@@ -2,7 +2,7 @@
 apiVersion: v2
 name: setup-network-observability
 description: Installs and configures OpenShift Network Observability.
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: helper-loki-bucket-secret
     version: ~1.0.0
@@ -12,7 +12,7 @@ dependencies:
     version: ~1.0.0
     repository: https://charts.stderr.at/
   - name: helper-status-checker
-    version: ~3.0.0
+    version: ~4.0.0
     repository: https://charts.stderr.at/
   - name: helper-objectstore
     version: ~1.0.0

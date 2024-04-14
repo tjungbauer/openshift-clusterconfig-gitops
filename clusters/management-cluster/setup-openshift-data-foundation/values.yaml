@@ -135,13 +135,9 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
-  operatorName: odf-operator
-
-  # where operator is installed
-  namespace:
-    name: openshift-storage
-
-  serviceAccount:
-    create: true
-    name: "status-checker-odf"
+  checks:
+    - operatorName: odf-operator
+      namespace:
+        name: openshift-storage
+      serviceAccount:
+        name: "status-checker-odf"

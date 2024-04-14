@@ -483,13 +483,9 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
-  operatorName: quay-operator
-
-  # where operator is installed
-  namespace:
-    name: openshift-operators
-
-  serviceAccount:
-    create: true
-    name: "sa-quay"
+  checks:
+    - operatorName: quay-operator
+      namespace:
+        name: openshift-operators
+      serviceAccount:
+        name: "sa-quay"

@@ -38,13 +38,9 @@ helper-operator:
 helper-status-checker:
   enabled: true
 
-  # use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
-  operatorName: costmanagement-metrics-operator
-
-  # where operator is installed
-  namespace:
-    name: costmanagement-metrics-operator
-
-  serviceAccount:
-    create: true
-    name: "sa-costmanagement-metrics"
+  checks:
+    - operatorName: costmanagement-metrics-operator
+      namespace:
+        name: costmanagement-metrics-operator
+      serviceAccount:
+        name: "sa-costmanagement-metrics"
