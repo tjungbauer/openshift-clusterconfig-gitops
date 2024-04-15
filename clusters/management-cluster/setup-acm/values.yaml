@@ -1,5 +1,5 @@
 ---
-override-rhacm-operator-version: &rhacmversion release-2.9
+override-rhacm-operator-version: &rhacmversion release-2.10
 
 # Install Operator RHACM
 # Deploys Operator --> Subscription and Operatorgroup
