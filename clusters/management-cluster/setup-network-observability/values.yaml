@@ -3,6 +3,7 @@ namespace: &namespace openshift-netobserv-operator
 bucketname: &bucketname netobserv-bucket
 lokisecret: &loki-secret-name netobserv-loki-s3
 storageclassname: &storageclassname netobserv-bucket-storage-class
+lokistack_name: &lokistackname netobserv-loki
 
 network-observability:
   enabled: true
@@ -11,59 +12,167 @@ network-observability:
     namespace:
       name: *namespace
     syncwave: 10
+    lokistack_name: *lokistackname
 
-    lokistack:
-      # name of the Lokistack object and its syncwave (should be after bucket and secret generation)
-      name: netobserv-loki
-      syncwave: 3
+########################################
+# SUBCHART: helper-lokistack
+# Renders a LokiStack object.
+########################################
+# Subchart with values to render the LokiStack object
+helper-lokistack:
+  # -- Enable or disable LokiStack configuration
+  # @default -- false
+  enabled: true
 
-      # storage settings
-      storage:
+  # -- Name of the LokiStack object
+  name: *lokistackname
 
-        # Size defines one of the support Loki deployment scale out sizes.
-        # Can be either:
-        #   - 1x.extra-small (Default)
-        #   - 1x.small
-        #   - 1x.medium
-        size: 1x.extra-small
+  # -- Namespace of the LokiStack object
+  namespace: *namespace
 
-        # Secret for object storage authentication. Name of a secret in the same namespace as the LokiStack custom resource.
-        secret:
+  # -- Syncwave for the LokiStack object.
+  # @default -- 3
+  syncwave: 3
 
-          # Name of a secret in the namespace configured for object storage secrets.
-          name: *loki-secret-name
+  # storage settings
+  storage:
 
-          # Type of object storage that should be used
-          # Can bei either:
-          #  - swift
-          #  - azure
-          #  - s3 (default)
-          #  - alibabacloud
-          #  - gcs
-          # type: s3
+    # -- Size defines one of the supported Loki deployment scale out sizes.
+    # Can be either:
+    #   - 1x.extra-small (Default)
+    #   - 1x.small
+    #   - 1x.medium
+    # @default -- 1x.extra-small
+    size: 1x.extra-small
 
-        # Schemas for reading and writing logs.
-        # schemas:
-        #  # Version for writing and reading logs.
-        #  # Can be v11 or v12
-        #  #
-        #  # Default: v12
-        #  - version: v12
+    # Secret for object storage authentication. Name of a secret in the same namespace as the LokiStack custom resource.
+    secret:
 
-        #    # EffectiveDate is the date in UTC that the schema will be applied on. To ensure readibility of logs, this date should be before the current date in UTC.
-        #    # Default: 2022-06-01
-        #    effectiveDate: "2022-06-01"
+      # -- Name of a secret in the namespace configured for object storage secrets.
+      name: *loki-secret-name
 
-      # Storage class name defines the storage class for ingester/querier PVCs.
-      storageclassname: gp3-csi
+      # Type of object storage that should be used
+      # Can bei either:
+      #  - swift
+      #  - azure
+      #  - s3 (default)
+      #  - alibabacloud
+      #  - gcs
+      # -- Type of object storage that should be used
+      # @default -- s3
+      # type: s3
 
-      # Mode defines the mode in which lokistack-gateway component will be configured.
-      # Can be either:
-      #   - static (default)
-      #   - dynamic
-      #   - openshift-logging
-      #   - openshift-network
-      mode: openshift-network
+    # Schemas for reading and writing logs.
+    # schemas:
+      # -- Version for writing and reading logs.
+      # Can be v11 or v12
+      # @default -- v12
+      #  - version: v12
+
+      # -- EffectiveDate is the date in UTC that the schema will be applied on. To ensure readibility of logs, this date should be before the current date in UTC.
+      # @default -- 2022-06-01
+      #    effectiveDate: "2022-06-01"
+
+  # -- Storage class name defines the storage class for ingester/querier PVCs.
+  # @default -- gp3-csi
+  storageclassname: gp3-csi
+
+  # -- Mode defines the mode in which lokistack-gateway component will be configured.
+  # Can be either: static (default), dynamic, openshift-logging, openshift-network
+  # @default -- static
+  mode: openshift-network
+
+  # -- Control pod placement for LokiStack components. You can define a list of tolerations for the following components:
+  # compactor, distributer, gateway, indexGateway, ingester, querier, queryFrontend, ruler
+  podPlacements: {}
+  #  # Pod placement of compactor
+  #  compactor:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of distributor
+  #  distributor:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of gateway
+  #  gateway:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of indexGateway
+  #  indexGateway:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of ingester
+  #  ingester:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of querier
+  #  querier:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of queryFrontend
+  #  queryFrontend:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #  # Pod placement of ruler
+  #  ruler:
+  #    tolerations:
+  #      - effect: NoSchedule
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
+  #      - effect: NoExecute
+  #        key: node-role.kubernetes.io/infra
+  #        operator: Equal
+  #        value: reserved
 
 # A helper chart that simply creates another backingstore for quay.
 # This is a chart in a very early state, and not everything can be customized for now.

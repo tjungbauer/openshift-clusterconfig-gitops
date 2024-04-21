@@ -5,32 +5,53 @@ cluster_admin_list:
 projecttemplate:
   enabled: true
 
-generic-cluster-config:
+generic-cluster-config:  
+  ############################
+  # DISABLE SELF PROVISIONER #
+  ############################
   self_provisioner:
     deactivate: true
+  
+  ######################
+  # IDENTITY PROVIDERS #
+  ######################
+  idp:
+    enabled: true
+    # Define provider. Currently htpasswd and LDAP are supported
+    providers:
+      enabled: true
+      htpasswd:
+        - name: HTPASSWD
+          enabled: true
+          secretname: htpasswd-secret
 
+  ##############
+  # MONITORING #
+  ##############
   monitoring:
     enabled: true
     enableUserWorkload: true
-    tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/infra
-        value: reserved
-      - effect: NoExecute
-        key: node-role.kubernetes.io/infra
-        value: reserved
+  
+    ################
+    # ALERTMANAGER #
+    ################
+    # Configuration for the cluster (main) Alertmanager
     alertmanagerMain:
-      storage: 2Gi
-      storageclass: gp3-csi
+      disable_local_alertmanager: false
+  
+      # Add storage to Alertmanager to keep the data.
+      storage:
+        class: gp3-csi
+        size: 2Gi
+  
+    ##############
+    # PROMETHEUS #
+    ##############
     prometheusK8s:
-      storage: 10Gi
-      storageclass: gp3-csi
-      retention: 1d
-
-  idp:
-    enabled: true
-    enable_idp_provider: true
-    providers:
-      htpasswd:
-        - name: Emergency
-          enabled: true
+  
+      retention: 2d
+  
+      # Add storage to Prometheus to keep the data.
+      storage:
+        class: gp3-csi
+        size: 10Gi

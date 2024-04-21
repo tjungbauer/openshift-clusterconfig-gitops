@@ -22,5 +22,9 @@ dependencies:
     version: ~1.0.0
     repository: https://charts.stderr.at/
     condition: network-observability.enabled
+  - name: helper-lokistack
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-lokistack.enabled
 maintainers:
   - name: tjungbauer
