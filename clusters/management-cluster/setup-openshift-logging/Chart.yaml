@@ -11,7 +11,7 @@ dependencies:
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
   - name: openshift-logging
-    version: ~1.0.23
+    version: ~2.0.0
     repository: https://charts.stderr.at/
   - name: helper-loki-bucket-secret
     version: ~1.0.0
