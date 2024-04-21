@@ -240,6 +240,12 @@ helper-loki-bucket-secret:
 # The operators are installed in a separate way in this case.
 # sub subchart
 helper-operator:
+  console_plugins:
+    enabled: true
+    plugins:
+      - netobserv-plugin
+
+    job_namespace: kube-system
 
   operators:
     netobserv-operator:
