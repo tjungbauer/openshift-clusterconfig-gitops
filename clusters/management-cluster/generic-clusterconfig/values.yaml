@@ -5,13 +5,13 @@ cluster_admin_list:
 projecttemplate:
   enabled: true
 
-generic-cluster-config:  
+generic-cluster-config:
   ############################
   # DISABLE SELF PROVISIONER #
   ############################
   self_provisioner:
     deactivate: true
-  
+
   ######################
   # IDENTITY PROVIDERS #
   ######################
@@ -31,26 +31,26 @@ generic-cluster-config:
   monitoring:
     enabled: true
     enableUserWorkload: true
-  
+
     ################
     # ALERTMANAGER #
     ################
     # Configuration for the cluster (main) Alertmanager
     alertmanagerMain:
       disable_local_alertmanager: false
-  
+
       # Add storage to Alertmanager to keep the data.
       storage:
         class: gp3-csi
         size: 2Gi
-  
+
     ##############
     # PROMETHEUS #
     ##############
     prometheusK8s:
-  
+
       retention: 2d
-  
+
       # Add storage to Prometheus to keep the data.
       storage:
         class: gp3-csi
