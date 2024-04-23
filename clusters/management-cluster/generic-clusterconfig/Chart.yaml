@@ -4,7 +4,17 @@ description: Installs cluster configuration which is usually valid for ALL clust
 version: 1.0.1
 dependencies:
   - name: generic-cluster-config
-    version: ~1.0.10
+    version: ~1.0.25
     repository: https://charts.stderr.at
 maintainers:
   - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - generic
+  - clusterconfig
+  - gitops

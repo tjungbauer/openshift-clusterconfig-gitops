@@ -1,3 +1,28 @@
+{{ template "doc.header" . }}
+
+This Helm Chart will create some basic configurations for your cluster.
+
+Most values are passed to the sub-chart **generic-cluster-config**. However, some local settings inside this chart can be done. 
+For example, a project template can be defined and a local cluster administrator group.
+
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+## Local Parameters
+
+**TIP** Verify the chart(s):
+- [generic-cluster-config](https://github.com/tjungbauer/helm-charts/tree/main/charts/generic-cluster-config)
+
+**TIP**: Verify the values.yaml to see possible additional settings. 
+
+{{ template "doc.values" . }}
+
+
+## Example
+
+```yaml
 ---
 # -- List of cluster administrators. These users will automatically get the role cluster-admin assigned.
 # @default -- []
@@ -67,3 +92,6 @@ generic-cluster-config:
       storage:
         class: gp3-csi
         size: 10Gi
+```
+
+{{ template "doc.footer" . }}
