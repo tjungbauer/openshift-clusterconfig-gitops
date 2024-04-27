@@ -1,6 +1,7 @@
 apiVersion: v2
 name: clusterconfig
 description: Installs cluster configuration which is usually valid for ALL clusters
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/generic-clusterconfig
 version: 1.0.1
 dependencies:
   - name: generic-cluster-config

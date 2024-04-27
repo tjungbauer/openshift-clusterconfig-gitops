@@ -39,7 +39,7 @@ Source:
 * <https://charts.stderr.at/>
 * <https://github.com/tjungbauer/openshift-clusterconfig-gitops>
 
-Source code:
+Source code: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/generic-clusterconfig
 
 ## Local Parameters
 

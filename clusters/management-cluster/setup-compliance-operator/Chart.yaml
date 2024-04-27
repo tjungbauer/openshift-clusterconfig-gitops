@@ -1,7 +1,8 @@
 apiVersion: v2
 name: setup-compliance-operator
 description: Deploy and configure the Compliance Operator
-version: 1.0.1
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-compliance-operator
+version: 1.0.2
 dependencies:
   - name: compliance-operator-full-stack
     version: ~1.0.0
@@ -16,6 +17,12 @@ dependencies:
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
 keywords:
-  - acs
+  - compliance
   - security
+  - acs
