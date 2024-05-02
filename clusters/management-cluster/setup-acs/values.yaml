@@ -12,11 +12,11 @@ rhacs-setup:
     namespace:
       # -- Namespace where ACS shall be deployed. Typically, this is stackrox. This is not the Operator itself, that is usually deployed in "rhacs-operator".
       name: stackrox
-  
+
       # -- Syncwave to deploy the ACS namespace.
       # @default -- 0
       syncwave: '0'
-  
+
       # -- Description of the Namespace.
       descr: 'Red Hat Advanced Cluster Security'
 
@@ -54,7 +54,7 @@ rhacs-setup:
         #   - limits cpu 8, memory 16Gi
         #   - requests: cpu: 4, memory 8Gi
         # limit it to have more resourcen on demo systems (not suitable for production environments)
-        
+
         # -- Set Central DB resources.requests for a DEMO environment to save resources.
         resources:
           requests:
@@ -139,10 +139,10 @@ rhacs-setup:
         listenOn:
           # -- Set this to true to enable preventive policy enforcement for object creations.
           creates: true
-  
+
           # -- Set this to 'true' to enable monitoring and enforcement for Kubernetes events (port-forward and exec).
           events: true
-  
+
           # -- Set this to 'true' to enable preventive policy enforcement for object updates.
           # Note: this will not have any effect unless 'Listen On Creates' is set to 'true' as well.
           updates: true
@@ -167,33 +167,33 @@ rhacs-setup:
       # -- Maximum retries for Jobs that need to check a certain state.
       # @default -- 20
       max_attempts: 20
-  
+
     # -- Run the Job to initialze an ACS secrued cluster and creates a init bundle.
     job_init_bundle:
       # -- Enable this Job
       # @default -- false
       enabled: true
-  
+
       # -- Syncwave for Argo CD to create this Job.
       # @default -- 3
       syncwave: '3'
-  
+
     # -- Job that creates a console link in OpenShift
     consolelink:
       # -- Enable this Job
       # @default -- false
       enabled: true
-  
+
       # -- Syncwave for Argo CD to create this Job.
       # @default -- 3
       syncwave: '3'
-  
+
       # -- Location of the ConsoleLink
       location: ApplicationMenu
-  
+
       # -- Text of the ConsoleLink
       text: Advanced Cluster Security
-  
+
       # -- Section of the ConsoleLink
       section: Observability
 
