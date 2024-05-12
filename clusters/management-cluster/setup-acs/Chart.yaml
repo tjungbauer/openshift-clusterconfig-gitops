@@ -1,6 +1,7 @@
 apiVersion: v2
 name: setup-acs
 description: Deploys Advanced Cluster Security (ACS) on target cluster. If enabled Central will be deployed too.
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-acs
 version: 1.0.0
 dependencies:
   - name: rhacs-setup
@@ -16,6 +17,11 @@ dependencies:
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
 keywords:
-  - acs
   - security
+  - acs

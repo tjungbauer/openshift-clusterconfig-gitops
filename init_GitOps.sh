@@ -122,6 +122,7 @@ function configure_argocd() {
   printf "\n%bLets configure ArgoCD CRD%b\n" "${RED}" "${NC}"
 
   $HELM template --set 'gitopsinstances.openshift_gitops.enabled=true' --set 'gitopsinstances.openshift_gitops.clusterAdmin=enabled' --verify -f values-openshift-gitops.yaml tjungbauer/openshift-gitops | oc replace -f -
+  oc apply -f https://raw.githubusercontent.com/tjungbauer/helm-charts/main/charts/openshift-gitops/PATCH_openshift-gitops-crb.yaml
   
   printf "\n%bRestarting all ArgoCD CRD pods%b\n" "${RED}" "${NC}"
   oc delete pods --all -n openshift-gitops 1>/dev/null 2>&1
