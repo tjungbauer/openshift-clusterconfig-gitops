@@ -99,6 +99,7 @@ helper-status-checker:
   checks:
        # -- Name of operator to check. Use the value of the currentCSV (packagemanifest) but WITHOUT the version !!
     - operatorName: cluster-logging
+      subscriptionName: cluster-logging-operator
 
       # -- If the Operator is not yet ready wait this amount of seconds.
       # @default -- 20
@@ -131,9 +132,8 @@ helper-status-checker:
 
 ########################################
 # SUBCHART: helper-objectstore
-# Verify the status of a given operator.
 
-# A helper chart that simply creates another backingstore for quay.
+# A helper chart that simply creates another backingstore for logging.
 # This is a chart in a very early state, and not everything can be customized for now.
 # It will create the objects:
 #  - BackingStore
@@ -259,6 +259,7 @@ helper-lokistack:
 
     # -- Size defines one of the supported Loki deployment scale out sizes.
     # Can be either:
+    #   - 1x.demo
     #   - 1x.extra-small (Default)
     #   - 1x.small
     #   - 1x.medium
@@ -435,7 +436,7 @@ openshift-logging:
         type: vector
 
         # The resource requirements for the collector
-        # resources:
+        resources: {}
         #   limits:
         #     cpu: '500m'
         #     memory: '1Gi'
