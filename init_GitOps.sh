@@ -28,7 +28,7 @@ function check_op_status() {
   get_status=`oc get subscription.operators.coreos.com/openshift-gitops-operator -n openshift-gitops-operator -o jsonpath='{.status.conditions[0].reason}'`
 
   if [[ "$get_status" == "AllCatalogSourcesHealthy" ]]; then
-      printf "\nSubscription does not exist already\n"
+      printf "\nSubscription does exist already\n"
       return 0
   else
       return 1
