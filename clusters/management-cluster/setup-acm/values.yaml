@@ -4,7 +4,7 @@ override-rhacm-operator-version: &rhacmversion release-2.10
 # local settings
 # This will enable the GitOps integration with ACM
 gitops:
-  enabled: true
+  enabled: false
 
   integration:
     - namespace: openshift-gitops
@@ -16,7 +16,7 @@ gitops:
 # This will prepare the import to ACM. You still need to execute the command to fully integrate it.
 rhacm:
   importClusters:
-    enabled: true
+    enabled: false
 
     # syncwaves
     # Default: 3
