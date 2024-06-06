@@ -1,0 +1,44 @@
+{{- range $key, $value := .Values.nodes }}
+{{ if eq ( $value.enabled | toString) "true" }}
+---
+kind: Node
+apiVersion: v1
+metadata:
+  name: {{ $value.name | quote }}
+  labels:
+    {{- if eq ($value.ignore_argocd_labels | toString) "true" }}
+    {{- else }}
+    gitops.ownedBy: openshift-gitops
+    {{- include "common.labels" $ | nindent 4 }}
+    {{- end }}
+    {{- if $value.labels }}
+    {{- range $key_labels, $value_labels := $value.labels }}
+    {{ $key_labels }}: {{ $value_labels }}
+    {{- end }}
+    {{- end }}
+    {{- range $key_custom_label, $value_custom_label := $value.custom_labels }}
+    {{ $key_custom_label }}: {{ $value_custom_label | quote }}
+    {{- end }}
+    {{- if $value.roles }}
+    {{- range $key_roles, $value_roles := $value.roles }}
+    node-role.kubernetes.io/{{ $key_roles }}: ''
+    {{- end }}
+    {{- end }}
+  finalizers:
+    - kubernetes
+{{- if $value.spec }}
+spec:
+  {{- if $value.spec.taints }}
+  taints:
+  {{- range $taintkey, $taintvalue := $value.spec.taints }}
+  - effect: {{ $taintvalue.effect }}
+    key: {{ $taintvalue.key }}
+    value: {{ $taintvalue.value }}
+    {{- if $taintvalue.operator }}
+    operator: {{ $taintvalue.operator }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

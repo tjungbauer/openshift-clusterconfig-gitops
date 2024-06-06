@@ -1,17 +1,18 @@
 ---
-helper-server-side-apply:
-  nodes:
-    - name: <node1>
-      enabled: true
-      custom_labels:
-        node-role.kubernetes.io/infra: ''
-        environment: 'Production'
-        gpu: false
-    - name: <node2>
-      enabled: true
-      custom_labels:
-        node-role.kubernetes.io/infra: ''
-    - name: <node3>
-      enabled: true
-      custom_labels:
-        node-role.kubernetes.io/infra: ''
+nodes:
+  - name: <node1>
+    enabled: true
+    ignore_argocd_labels: true
+
+    custom_labels:
+      environment: 'Management'
+
+    roles:
+      infra: true
+      worker: true
+
+    spec:
+      taints:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
