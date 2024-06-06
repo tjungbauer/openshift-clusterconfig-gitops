@@ -1,6 +1,6 @@
 ---
 nodes:
-  - name: <node1>
+  - name: node1
     enabled: true
     ignore_argocd_labels: true
 
