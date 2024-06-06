@@ -9,6 +9,11 @@ dependencies:
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
 keywords:
   - secure-supply-chain
   - security
