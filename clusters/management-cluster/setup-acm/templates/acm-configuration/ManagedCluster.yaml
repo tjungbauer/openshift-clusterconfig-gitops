@@ -1,0 +1,47 @@
+{{- if eq (.Values.rhacm.importClusters.enabled | toString) "true" }}
+{{- range .Values.rhacm.importClusters.clusters }}
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: {{ .name }}
+  labels:
+    name: {{ .name }}
+    cluster.open-cluster-management.io/clusterset: {{ .clusterSet }}
+    {{- include "rhacm.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .managed_cluster_syncwave | quote | default "3" }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: {{ .name }}
+  namespace: {{ .name }}
+  labels:
+    {{- include "rhacm.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .klusterlet_addon_syncwave | quote | default "5" }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  clusterName: {{ .name }}
+  clusterNamespace: {{ .name }}
+  clusterLabels:
+    name: {{ .name }}
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: {{ .clusterSet }}
+  applicationManager:
+    enabled: true
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  iamPolicyController:
+    enabled: true
+{{- end }}
+{{- end }}

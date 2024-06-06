@@ -1,6 +1,34 @@
 ---
 override-rhacm-operator-version: &rhacmversion release-2.10
 
+# local settings
+# This will enable the GitOps integration with ACM
+gitops:
+  enabled: true
+
+  integration:
+    - namespace: openshift-gitops
+      syncwave: 10
+      clusterSet: default
+      gitopsCluster: local-cluster
+
+# Two objects will be created: KlusterletAddonConfig and ManagedCluster
+# This will prepare the import to ACM. You still need to execute the command to fully integrate it.
+rhacm:
+  importClusters:
+    enabled: true
+
+    # syncwaves
+    # Default: 3
+    managed_cluster_syncwave: '3'
+    # Default: 5
+    klusterlet_addon_syncwave: '5'
+
+    # List of clusters
+    clusters:
+    - name: my-cluster
+      clusterSet: default
+
 # Install Operator RHACM
 # Deploys Operator --> Subscription and Operatorgroup
 # Syncwave: 0

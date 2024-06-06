@@ -1,0 +1,23 @@
+{{ if eq (.Values.gitops.enabled | toString) "true" }}
+{{- range .Values.gitops.integration }}
+---
+apiVersion: apps.open-cluster-management.io/v1beta1
+kind: GitOpsCluster
+metadata:
+  name: gitops-cluster
+  namespace: {{ .namespace }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "10" | quote }}
+spec:
+  argoServer:
+    argoNamespace: {{ .namespace }}
+    cluster: {{ .gitopsCluster | default "local-cluster" }}
+  placementRef:
+    apiVersion: cluster.open-cluster-management.io/v1alpha1
+    kind: Placement
+    name: gitops-clusters
+{{- end }}
+{{- end }}
