@@ -10,7 +10,7 @@ metadata:
     cluster.open-cluster-management.io/clusterset: {{ .clusterSet }}
     {{- include "rhacm.labels" $ | nindent 4 }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .managed_cluster_syncwave | quote | default "3" }}
+    argocd.argoproj.io/sync-wave: 3
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   hubAcceptsClient: true
@@ -23,7 +23,7 @@ metadata:
   labels:
     {{- include "rhacm.labels" $ | nindent 4 }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .klusterlet_addon_syncwave | quote | default "5" }}
+    argocd.argoproj.io/sync-wave: 5
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   clusterName: {{ .name }}
