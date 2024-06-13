@@ -1,0 +1,25 @@
+{{- with .Values.clusterIssuer }}
+{{ if eq (.enabled | toString) "true" }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .name }}
+  labels:
+    {{- include "common.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default 20 | quote }}
+spec:
+  {{- if .acme }}
+  {{- with .acme }}
+  acme:
+    email: {{ .email }}
+    privateKeySecretRef:
+      name: {{ .privKeyRef | default "letsencrypt-account-key" }}
+    server: {{ .server | default "https://acme-v02.api.letsencrypt.org/directory" }}
+    solvers:
+      {{- toYaml .solvers | nindent 6 }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

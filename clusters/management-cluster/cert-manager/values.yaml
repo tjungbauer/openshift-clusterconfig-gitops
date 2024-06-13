@@ -1,0 +1,62 @@
+---
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    compliance-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: cert-manager-operator
+        create: true
+      subscription:
+        channel: stable-v1
+        approval: Automatic
+        operatorName: openshift-cert-manager-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: openshift-cert-manager-operator
+      namespace:
+        name: cert-manager-operator
+      serviceAccount:
+        name: "status-checker-cert-manager"
+
+clusterManager:
+  enable_patch: true
+
+  overrideArgs:
+    - '--dns01-recursive-nameservers-only'
+    - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
+
+clusterIssuer:
+  enabled: true
+  name: letsencrypt-prod
+  syncwave: 20
+
+  acme:
+    email: tjungbau@redhat.com
+
+    solvers:
+      - dns01:
+          route53:
+            accessKeyIDSecretRef:
+              key: access-key-id
+              name: prod-route53-credentials-secret
+            region: us-west-1
+            secretAccessKeySecretRef:
+              key: secret-access-key
+              name: prod-route53-credentials-secret
+        selector:
+          dnsZones:
+            - aws.ispworld.at
+

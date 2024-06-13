@@ -4,8 +4,8 @@
 # Set cluster names ...
 # https://issues.redhat.com/browse/GITOPS-1777
 # The issue that the in-cluster cannot be renamed has been resolved
-mgmt-cluster: &mgmtcluster https://api.ocp.aws.ispworld.at:6443
-mgmt-cluster-name: &mgmtclustername local-cluster
+mgmt-cluster: &mgmtcluster https://kubernetes.default.svc
+mgmt-cluster-name: &mgmtclustername in-cluster
 production-cluster: &prodcluster https://api.ocp.aws.ispworld.at:6443
 production-cluster-name: &prodclustername prod
 
