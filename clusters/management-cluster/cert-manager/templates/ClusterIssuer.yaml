@@ -1,8 +1,8 @@
-{{- range .Values.clusterIssuer }}
+{{- range .Values.issuer }}
 {{ if eq (.enabled | toString) "true" }}
 ---
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: {{ .type | default "ClusterIssuer"}}
 metadata:
   name: {{ .name }}
   labels:

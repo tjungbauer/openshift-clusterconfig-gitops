@@ -38,8 +38,9 @@ clusterManager:
     - '--dns01-recursive-nameservers-only'
     - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
 
-clusterIssuer:
+issuer:
   - name: letsencrypt-prod
+    type: ClusterIssuer
     enabled: true
     syncwave: 20
 
@@ -61,15 +62,18 @@ clusterIssuer:
               - aws.ispworld.at
 
   - name: selfsigned
+    type: ClusterIssuer
     enabled: true
     selfSigned: true
 
   - name: ca
+    type: ClusterIssuer
     enabled: true
     ca:
       secretName: ca-key-pair
 
   - name: vault
+    type: ClusterIssuer
     enabled: true
     vault:
       path: pki_int/sign/example-dot-com
@@ -81,6 +85,7 @@ clusterIssuer:
           key: token
 
   - name: venafi
+    type: ClusterIssuer
     enabled: true
 
     venafi:
