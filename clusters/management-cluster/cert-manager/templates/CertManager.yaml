@@ -9,6 +9,7 @@ metadata:
     {{- include "common.labels" $ | nindent 4 }}
   annotations:
     argocd.argoproj.io/sync-wave: {{ .syncwave | default 10 | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   logLevel: Normal
   managementState: Managed
