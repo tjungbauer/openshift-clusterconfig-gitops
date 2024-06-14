@@ -31,66 +31,33 @@ helper-status-checker:
       serviceAccount:
         name: "status-checker-cert-manager"
 
-clusterManager:
-  enable_patch: true
+cert-manager:
+  certManager:
+    enable_patch: true
 
-  overrideArgs:
-    - '--dns01-recursive-nameservers-only'
-    - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
+    overrideArgs:
+      - '--dns01-recursive-nameservers-only'
+      - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
 
-issuer:
-  - name: letsencrypt-prod
-    type: ClusterIssuer
-    enabled: true
-    syncwave: 20
+  issuer:
+    - name: letsencrypt-prod
+      type: ClusterIssuer
+      enabled: true
+      syncwave: 20
 
-    acme:
-      email: tjungbau@redhat.com
+      acme:
+        email: tjungbau@redhat.com
 
-      solvers:
-        - dns01:
-            route53:
-              accessKeyIDSecretRef:
-                key: access-key-id
-                name: prod-route53-credentials-secret
-              region: us-west-1
-              secretAccessKeySecretRef:
-                key: secret-access-key
-                name: prod-route53-credentials-secret
-          selector:
-            dnsZones:
-              - aws.ispworld.at
-
-  - name: selfsigned
-    type: ClusterIssuer
-    enabled: true
-    selfSigned: true
-
-  - name: ca
-    type: ClusterIssuer
-    enabled: true
-    ca:
-      secretName: ca-key-pair
-
-  - name: vault
-    type: ClusterIssuer
-    enabled: true
-    vault:
-      path: pki_int/sign/example-dot-com
-      server: https://vault.local
-      caBundle: <base64 encoded caBundle PEM file>
-      auth:
-        tokenSecretRef:
-          name: cert-manager-vault-token
-          key: token
-
-  - name: venafi
-    type: ClusterIssuer
-    enabled: true
-
-    venafi:
-      zone: "My Application\\My CIT"
-      cloud:
-        apiTokenSecretRef:
-          name: vaas-secret
-          key: apikey
+        solvers:
+          - dns01:
+              route53:
+                accessKeyIDSecretRef:
+                  key: access-key-id
+                  name: prod-route53-credentials-secret
+                region: us-west-1
+                secretAccessKeySecretRef:
+                  key: secret-access-key
+                  name: prod-route53-credentials-secret
+            selector:
+              dnsZones:
+                - aws.ispworld.at
