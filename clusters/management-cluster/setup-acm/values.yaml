@@ -1,5 +1,5 @@
 ---
-override-rhacm-operator-version: &rhacmversion release-2.9
+override-rhacm-operator-version: &rhacmversion release-2.10
 
 # local settings
 # This will enable the GitOps integration with ACM
@@ -56,6 +56,7 @@ helper-status-checker:
 
   checks:
     - operatorName: advanced-cluster-management
+      sleeptimer: 60
       namespace:
         name: open-cluster-management
       serviceAccount:
