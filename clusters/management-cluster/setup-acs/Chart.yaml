@@ -4,6 +4,9 @@ description: Deploys Advanced Cluster Security (ACS) on target cluster. If enabl
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-acs
 version: 1.0.0
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: rhacs-setup
     version: ~1.0.0
     repository: https://charts.stderr.at/
