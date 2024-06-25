@@ -197,10 +197,10 @@ rhacs-setup:
       # -- Section of the ConsoleLink
       section: Observability
 
-# Service account name used in Jobs
-serviceAccount:
-  create: true
-  name: "create-cluster-init"
+  # Service account name used in Jobs
+  serviceAccount:
+    create: true
+    name: "create-cluster-init"
 
 # Subchart helper-operator
 # Simply installs the operator
