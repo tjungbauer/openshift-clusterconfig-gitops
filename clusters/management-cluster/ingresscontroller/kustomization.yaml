@@ -6,4 +6,3 @@ helmCharts:
   valuesFile: values.yaml
 resources:
   - IngressController-Certificate.yaml
-  - test.yaml

@@ -59,6 +59,10 @@ ingresscontrollers:
     # @default -- 2
     replicas: 3
 
+    # -- The name of the secret that stores the certificate information for the IngressController
+    # @default -- N/A
+    defaultCertificate: router-certificate
+
     # -- Bind IngressController to specific nodes
     # Here as example for Infrastructure nodes.
     # @default -- empty
