@@ -9,4 +9,4 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-prod
-  secretName: router-certificate 
+  secretName: router-certificate-test
