@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: router-certificate
+  namespace: openshift-ingress 
+spec:
+  dnsNames:
+   - test.ocp.aws.ispworld.at 
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  secretName: router-certificate 
