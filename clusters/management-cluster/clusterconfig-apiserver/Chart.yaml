@@ -1,12 +1,15 @@
 ---
 apiVersion: v2
-name: clusterconfig-etcd-encryption
-description: Enables ETCD encryption with the decided encryption type and starts a Job that verifies the status if the encryption.
-version: 1.0.0
+name: clusterconfig-apiserver
+description: Enables ETCD encryption, customer certificate and audit-profile for APIServer
+version: 1.0.1
 dependencies:
   - name: generic-cluster-config
     version: ~1.0.10
     repository: https://charts.stderr.at
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
