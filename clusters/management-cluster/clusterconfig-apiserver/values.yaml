@@ -10,7 +10,7 @@ generic-cluster-config:
 
     # Configure a custom certificate for the API server
     custom_cert:
-      enabled: false
+      enabled: true
 
       cert_names:
         - api.ocp.aws.ispworld.at
