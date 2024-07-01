@@ -2,7 +2,7 @@
 apiVersion: v2
 name: clusterconfig-apiserver
 description: Enables ETCD encryption, customer certificate and audit-profile for APIServer
-version: 1.0.1
+version: 1.0.2
 dependencies:
   - name: generic-cluster-config
     version: ~1.0.10

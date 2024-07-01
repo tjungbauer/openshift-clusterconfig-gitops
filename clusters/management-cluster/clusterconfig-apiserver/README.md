@@ -1,20 +1,21 @@
 
 
-# clusterconfig-etcd-encryption
+# clusterconfig-apiserver
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Linting](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml/badge.svg)](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml)
 [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square)
+  ![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square)
 
  
 
   ## Description
 
-  Enables ETCD encryption with the decided encryption type and starts a Job that verifies the status if the encryption.
+  Enables ETCD encryption, customer certificate and audit-profile for APIServer
 
-Enable ETCD encryption on ALL clusters. This chart uses the Subchart: generic-cluster-config.
+Enable ETCD encryption on the clusters and order a certificate for the APIServer.
+This chart uses the Subcharts: generic-cluster-config and cert-manager
 
 ## Dependencies
 
@@ -22,6 +23,8 @@ This chart has the following dependencies:
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://charts.stderr.at/ | cert-manager | ~1.0.0 |
+| https://charts.stderr.at/ | tpl | ~1.0.0 |
 | https://charts.stderr.at | generic-cluster-config | ~1.0.10 |
 
 It is best used with a full GitOps approach such as Argo CD does. For example, https://github.com/tjungbauer/openshift-clusterconfig-gitops
@@ -30,36 +33,72 @@ It is best used with a full GitOps approach such as Argo CD does. For example, h
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| tjungbauer |  |  |
+| tjungbauer | <tjungbau@redhat.com> | <https://blog.stderr.at/> |
 
 ## Sources
 Source:
+* <https://github.com/tjungbauer/openshift-clusterconfig-gitops>
+* <https://github.com/tjungbauer/helm-charts>
+* <https://charts.stderr.at/>
 
-Source code:
+Source code: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/all/etcd-encryption
 
 ## Parameters
-The following table lists the configurable parameters of the init_app_of_apps chart and their default values.
-
-## Values
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| generic-cluster-config | object | `{"etcd_encryption":{"enabled":true,"encryption_type":"aesgcm","namespace":"kube-system","serviceAccount":"etcd-encryption-checker"}}` | Using subchart generic-cluster-config |
-| generic-cluster-config.etcd_encryption.enabled | bool | false | Enable ETCD encryption or not |
-| generic-cluster-config.etcd_encryption.encryption_type | string | aesgcm | Type of encryption. Must either be aesgcm or aescbc |
-| generic-cluster-config.etcd_encryption.namespace | string | `"kube-system"` | Namespace where Job is executed that verifies the status of the encryption |
+Verify the appropriate sub-charts for a full list of parameters.
 
 ## Example values
 
 ```yaml
 ---
 generic-cluster-config:
-  etcd_encryption:
+  apiserver:
     enabled: true
 
-    # Namespace where Job is executed that verifies the status of the encryption
-    namespace: kube-system
-    serviceAccount: etcd-encryption-checker
+    # audit configuration
+    audit:
+      profile: Default
+
+    # Configure a custom certificate for the API server
+    custom_cert:
+      enabled: false
+
+      cert_names:
+        - api.ocp.aws.ispworld.at
+
+      secretname: api-certificate
+
+    etcd_encryption:
+      enabled: true
+      encryption_type: aesgcm
+
+      namespace: kube-system
+
+      serviceAccount:
+        create: true
+        name: "etcd-encryption-checker"
+
+cert-manager:
+  enabled: true
+
+  certificates:
+    enabled: true
+
+    # List of certificates
+    certificate:
+      - name: api-certificate
+        enabled: true
+        namespace: openshift-config
+        syncwave: "0"
+        secretName: api-certificate
+ 
+        dnsNames:
+          - api.ocp.aws.ispworld.at
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: letsencrypt-prod
+          kind: ClusterIssuer
+
 ```
 
 ----------------------------------------------

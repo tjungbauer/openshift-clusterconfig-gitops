@@ -41,7 +41,7 @@ cert-manager:
         namespace: openshift-config
         syncwave: "0"
         secretName: api-certificate
-  
+
         dnsNames:
           - api.ocp.aws.ispworld.at
 

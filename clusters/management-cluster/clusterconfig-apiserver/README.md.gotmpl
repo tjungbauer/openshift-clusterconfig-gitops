@@ -1,6 +1,7 @@
 {{ template "doc.header" . }}
 
-Enable ETCD encryption on ALL clusters. This chart uses the Subchart: generic-cluster-config.
+Enable ETCD encryption on the clusters and order a certificate for the APIServer. 
+This chart uses the Subcharts: generic-cluster-config and cert-manager
 
 {{ template "doc.deps" . }}
 
@@ -9,21 +10,61 @@ It is best used with a full GitOps approach such as Argo CD does. For example, h
 {{ template "doc.maintainer_and_sources" . }}
 
 ## Parameters
-The following table lists the configurable parameters of the init_app_of_apps chart and their default values.
-
-{{ template "doc.values" . }}
+Verify the appropriate sub-charts for a full list of parameters.
 
 ## Example values
 
 ```yaml
 ---
 generic-cluster-config:
-  etcd_encryption:
+  apiserver:
     enabled: true
 
-    # Namespace where Job is executed that verifies the status of the encryption
-    namespace: kube-system
-    serviceAccount: etcd-encryption-checker
+    # audit configuration
+    audit:
+      profile: Default
+
+    # Configure a custom certificate for the API server
+    custom_cert:
+      enabled: false
+
+      cert_names:
+        - api.ocp.aws.ispworld.at
+
+      secretname: api-certificate
+
+    etcd_encryption:
+      enabled: true
+      encryption_type: aesgcm
+
+      namespace: kube-system
+
+      serviceAccount:
+        create: true
+        name: "etcd-encryption-checker"
+
+cert-manager:
+  enabled: true
+
+  certificates:
+    enabled: true
+
+    # List of certificates
+    certificate:
+      - name: api-certificate
+        enabled: true
+        namespace: openshift-config
+        syncwave: "0"
+        secretName: api-certificate
+  
+        dnsNames:
+          - api.ocp.aws.ispworld.at
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: letsencrypt-prod
+          kind: ClusterIssuer
+
 ```
 
 {{ template "doc.footer" . }}
