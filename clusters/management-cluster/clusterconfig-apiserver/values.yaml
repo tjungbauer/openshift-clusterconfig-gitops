@@ -3,30 +3,49 @@
 generic-cluster-config:
   apiserver:
     enabled: true
-  
+
     # audit configuration
     audit:
       profile: Default
-  
+
     # Configure a custom certificate for the API server
     custom_cert:
       enabled: false
-  
+
       cert_names:
         - api.ocp.aws.ispworld.at
-  
+
       secretname: api-certificate
-  
+
     etcd_encryption:
       enabled: true
       encryption_type: aesgcm
-  
+
       # -- Namespace where Job is executed that verifies the status of the encryption
       namespace: kube-system
-  
+
       serviceAccount:
         create: true
         name: "etcd-encryption-checker"
 
+cert-manager:
+  enabled: true
 
-      encryption_type: aesgcm
+  certificates:
+    enabled: true
+
+    # List of certificates
+    certificate:
+      - name: api-certificate
+        enabled: true
+        namespace: openshift-config
+        syncwave: "0"
+        secretName: api-certificate
+  
+        dnsNames:
+          - api.ocp.aws.ispworld.at
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: letsencrypt-prod
+          kind: ClusterIssuer

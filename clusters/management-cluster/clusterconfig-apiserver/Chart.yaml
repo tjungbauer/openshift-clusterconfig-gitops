@@ -7,6 +7,10 @@ dependencies:
   - name: generic-cluster-config
     version: ~1.0.10
     repository: https://charts.stderr.at
+  - name: cert-manager
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: cert-manager.enabled
   - name: tpl
     version: ~1.0.0
     repository: https://charts.stderr.at/
