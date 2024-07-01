@@ -37,3 +37,23 @@ ingresscontrollers:
     #      key: node-role.kubernetes.io/infra
     #      operator: Equal
     #      value: reserved
+
+certificates:
+  enabled: true
+
+  # List of certificates
+  certificate:
+    - name: router-certificate
+      enabled: true
+      namespace: openshift-ingress
+      syncwave: "0"
+      secretName: router-certificate
+
+      dnsNames:
+        - apps.ocp.aws.ispworld.at 
+        - '*.apps.ocp.aws.ispworld.at'
+
+      # Reference to the issuer that shall be used.
+      issuerRef:
+        name: letsencrypt-prod
+        kind: ClusterIssuer

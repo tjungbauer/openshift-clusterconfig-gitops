@@ -4,5 +4,6 @@ helmCharts:
 - name: ingresscontroller
   repo: https://charts.stderr.at
   valuesFile: values.yaml
-resources:
-  - IngressController-Certificate.yaml
+- name: cert-manager
+  repo: https://charts.stderr.at
+  valuesFile: values.yaml
