@@ -169,7 +169,7 @@ applicationsets:
       category: project
     chartname: sonarqube
     repourl: "https://charts.stderr.at/"
-    targetrevision: 1.0.15
+    targetrevision: 1.0.16
 
     # List of clusters
     # "clustername" (string): Is the name of the cluster a defined in Argo CD
