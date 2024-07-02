@@ -230,7 +230,7 @@ applicationsets:
       syncpolicy_selfheal: true
     generatorclusters: []
     repourl: "https://charts.stderr.at/"
-    targetrevision: 1.0.14
+    targetrevision: 1.0.19
 
   # Install RHACS Demo
   rhacs-demo-app:
