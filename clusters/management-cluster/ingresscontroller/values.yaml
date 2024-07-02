@@ -50,7 +50,7 @@ certificates:
       secretName: router-certificate
 
       dnsNames:
-        - apps.ocp.aws.ispworld.at 
+        - apps.ocp.aws.ispworld.at
         - '*.apps.ocp.aws.ispworld.at'
 
       # Reference to the issuer that shall be used.
