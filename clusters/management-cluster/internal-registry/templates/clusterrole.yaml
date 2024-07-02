@@ -11,7 +11,7 @@ metadata:
   name: patch-image-registry-crb-{{ .namespace }}-clusterrole
   namespace: {{ .namespace | quote }}
   labels:
-    {{- include "common.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
 rules:
   - apiGroups:
       - imageregistry.operator.openshift.io

@@ -10,7 +10,7 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/sync-wave: {{ .syncwave | default "10" | quote }}
   labels:
-    {{- include "common.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
 spec:
   managementState: Managed
   replicas: {{ .replicas | default "2" }}
