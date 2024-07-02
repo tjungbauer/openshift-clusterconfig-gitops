@@ -185,17 +185,18 @@ applicationsets:
   # END LIST GENERATOR EXAMPLE #
   ##############################
 
+  # Moved to clusters folder as it now enabled API certificate as well.
   # Install ETCD Encryption
-  enable-etcd-encryption:
-    enabled: true
-    description: "Enable ETCD Encryption on target cluster"
-    labels:
-      category: security
-    path: clusters/all/etcd-encryption
-    generatorlist: []
-    syncPolicy:
-      autosync_enabled: false
-    targetrevision: "main"
+  # enable-etcd-encryption:
+  #   enabled: true
+  #   description: "Enable ETCD Encryption on target cluster"
+  #   labels:
+  #     category: security
+  #   path: clusters/all/etcd-encryption
+  #   generatorlist: []
+  #   syncPolicy:
+  #     autosync_enabled: false
+  #   targetrevision: "main"
 
   # Install Base Operators
   enable-base-operators:
