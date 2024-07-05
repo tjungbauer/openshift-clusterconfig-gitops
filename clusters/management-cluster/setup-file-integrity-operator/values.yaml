@@ -12,7 +12,7 @@ helper-operator:
         create: true
       subscription:
         channel: stable
-        approval: Automatic
+        approval: Manual
         operatorName: file-integrity-operator
         source: redhat-operators
         sourceNamespace: openshift-marketplace
@@ -22,6 +22,7 @@ helper-operator:
 
 helper-status-checker:
   enabled: true
+  approver: true
 
   checks:
     - operatorName: file-integrity-operator
