@@ -14,9 +14,6 @@ dependencies:
     version: ~1.0.0
     repository: https://charts.stderr.at/
     condition: cert-manager.enabled
-  - name: tpl
-    version: ~1.0.0
-    repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com

@@ -8,7 +8,7 @@ metadata:
   name: {{ $key | replace "_" "-" }}-role
   namespace: {{ $value.namespace | default "openshift-operators" | quote }}
   labels:
-    {{- include "common.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
 rules:
 - apiGroups:
   - "*"

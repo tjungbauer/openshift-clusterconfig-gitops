@@ -12,7 +12,7 @@ metadata:
   name: {{ $value_appproject.name | replace "_" "-" }}
   namespace: {{ $.Values.global.application_gitops_namespace }}
   labels:
-    {{- include "common.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
 spec:
   description: {{ $value_appproject.name | replace "_" "-" }} GitOps Project
   clusterResourceWhitelist:

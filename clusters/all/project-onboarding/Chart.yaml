@@ -3,6 +3,9 @@ name: proj-onboarding
 description: This Chart shall deploy namespaces and their depending resources, like NetworkPolicies or Quotas etc.
 version: 1.0.5
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: helper-proj-onboarding
     version: ~1.0.0
     repository: https://charts.stderr.at/
