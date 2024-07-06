@@ -4,7 +4,7 @@
 # Syncwave: 0
 helper-operator:
   operators:
-    quay-operator:
+    file-integrity-operator:
       enabled: true
       syncwave: '0'
       namespace:
