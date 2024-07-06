@@ -9,6 +9,9 @@ dependencies:
   - name: tpl
     version: ~1.0.0
     repository: https://charts.stderr.at/
+  - name: etcd-backup
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
@@ -17,7 +20,4 @@ sources:
   - https://github.com/tjungbauer/helm-charts
   - https://charts.stderr.at/
   - https://github.com/tjungbauer/openshift-clusterconfig-gitops
-dependencies:
-  - name: etcd-backup
-    version: ~1.0.0
-    repository: https://charts.stderr.at/
+
