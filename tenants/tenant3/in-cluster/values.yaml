@@ -26,6 +26,10 @@ helper-proj-onboarding:
         limits:
           cpu: 10
 
+      limitRanges:
+        # Enable Quotas or not. You can either disable it or remove the whole block
+        enabled: true
+
       # Create a local Group with Admin users and the required rolebinding
       # If other systems, like LDAP Group sync is used, you will probaably not need this and can either disable it or remove the whole block.
       local_admin_group:
