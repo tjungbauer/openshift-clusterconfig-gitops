@@ -20,17 +20,9 @@ spec:
     {{ .nodeSelector.key }}: {{ .nodeSelector.value | quote }}
   {{- end }}
 
+  {{- /* Define required tolerations */}}
   {{- if .tolerations }}
-  tolerations:
-    {{- range $key, $value := .tolerations }}
-    - effect: {{ $value.effect }}
-      key: {{ $value.key }}
-      operator: {{ $value.operator }}
-      value: {{ $value.value }}
-      {{- if $value.tolerationSeconds }}
-      tolerationSeconds: {{ $value.tolerationSeconds }}
-      {{- end }}
-    {{- end }}
+{{ include "tpl.tolerations" .tolerations | indent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}
