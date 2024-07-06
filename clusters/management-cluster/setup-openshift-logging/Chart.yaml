@@ -3,6 +3,9 @@ name: setup-openshift-logging
 description: Installs and configures OpenShift Logging by deploying Logging and Loki Operator and configuring them accordingly. Example configuration is creating a Bucket using OpenShift Data Foundation.
 version: 1.0.1
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: helper-operator
     version: ~1.0.18
     repository: https://charts.stderr.at/

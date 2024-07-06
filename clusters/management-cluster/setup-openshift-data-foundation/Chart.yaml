@@ -3,6 +3,9 @@ name: clusterbranding
 description: Deploys Cluster Branding such as custom Login Page or Logo etc.
 version: 1.0.2
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: openshift-data-foundation
     version: ~1.0.10
     repository: https://charts.stderr.at/

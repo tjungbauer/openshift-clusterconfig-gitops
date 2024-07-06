@@ -3,6 +3,9 @@ name: install-cyclonedx
 description: Install Cyclonedx to store SBOMs
 version: 1.0.0
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: cyclonedx
     version: ~1.0.0
     repository: https://charts.stderr.at/

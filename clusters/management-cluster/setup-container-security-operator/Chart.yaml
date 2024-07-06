@@ -3,6 +3,9 @@ name: setup-container-security-operator
 description: Setup the Quay Container Security Operator.
 version: 1.0.6
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: helper-operator
     version: ~1.0.14
     repository: https://charts.stderr.at/

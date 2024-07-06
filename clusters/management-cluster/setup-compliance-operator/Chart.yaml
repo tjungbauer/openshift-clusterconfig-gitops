@@ -4,6 +4,9 @@ description: Deploy and configure the Compliance Operator
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-compliance-operator
 version: 1.0.2
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: compliance-operator-full-stack
     version: ~1.0.0
     repository: https://charts.stderr.at/

@@ -4,6 +4,9 @@ name: setup-network-observability
 description: Installs and configures OpenShift Network Observability.
 version: 1.0.1
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: helper-loki-bucket-secret
     version: ~1.0.0
     repository: https://charts.stderr.at/

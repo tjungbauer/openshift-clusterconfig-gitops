@@ -4,6 +4,9 @@ description: Setup and configure the cert Manager operator
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/cert-manager
 version: 1.0.0
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: helper-operator
     version: ~1.0.21
     repository: https://charts.stderr.at/

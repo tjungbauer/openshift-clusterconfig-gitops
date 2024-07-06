@@ -4,6 +4,9 @@ description: Installs cluster configuration which is usually valid for ALL clust
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/generic-clusterconfig
 version: 1.0.1
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: generic-cluster-config
     version: ~1.0.25
     repository: https://charts.stderr.at

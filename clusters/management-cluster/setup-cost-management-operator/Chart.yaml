@@ -3,6 +3,9 @@ name: setup-file-integrity-operator
 description: Setup File Integrity Operator
 version: 1.0.0
 dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
   - name: helper-operator
     version: ~1.0.0
     repository: https://charts.stderr.at/

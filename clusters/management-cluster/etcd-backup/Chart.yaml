@@ -5,6 +5,10 @@ description: Create a CronJob that performs ETCD Backup and stores the backup to
 version: 1.0.0
 home: https://github.com/tjungbauer/helm-charts/tree/main/charts/etcd-backup
 icon: https://github.com/tjungbauer/helm-charts/raw/gh-pages/images/backup.png
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
