@@ -13,7 +13,7 @@ dependencies:
     version: "1.0.14"
     repository: https://charts.stderr.at/
   - name: helper-status-checker
-    version: ~4.0.0
+    version: ~4.0.11
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
 maintainers:
