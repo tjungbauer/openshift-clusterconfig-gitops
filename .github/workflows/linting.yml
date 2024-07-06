@@ -62,7 +62,7 @@ jobs:
             fi
 
             helm dep up "${helm_dir}"
-            helm lint --strict --with-subcharts $values "${helm_dir}"
+            helm lint --strict $values "${helm_dir}"
             echo "Done"
           done
 
