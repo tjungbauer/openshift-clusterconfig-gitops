@@ -1,0 +1,35 @@
+{{ if eq (.Values.keycloak.enabled | toString) "true" }}
+{{ range .Values.keycloak.users }}
+{{ if eq (.enabled | toString) "true" }}
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.keycloak.namespace.name }}
+  labels:
+    {{- toYaml .labels | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "10" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  realmSelector:
+    matchLabels:
+      {{- toYaml .labels | nindent 6 }}
+  user:
+    credentials:
+      - type: password
+        valueFrom:
+          secretKeyRef:
+            name: {{ .name }}-secret
+            key: password
+    email: {{ .email }}
+    emailVerified: {{ .emailVerified }}
+    enabled: {{ .enabled }}
+    username: {{ .name }}
+    firstName: {{ .firstName | default "" }}
+    lastName: {{ .lastName | default "" }}
+{{- end }}
+{{- end }}
+{{- end }}

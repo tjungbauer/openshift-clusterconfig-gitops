@@ -8,7 +8,7 @@ metadata:
   labels:
     name: {{ .name }}
     cluster.open-cluster-management.io/clusterset: {{ .clusterSet }}
-    {{- include "rhacm.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
   annotations:
     argocd.argoproj.io/sync-wave: 3
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true

@@ -1,0 +1,21 @@
+{{ if eq (.Values.keycloak.enabled | toString) "true" }}
+apiVersion: keycloak.org/v1alpha1
+kind: Keycloak
+metadata:
+  labels:
+    {{- toYaml .Values.keycloak.labels | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.keycloak.syncwave | default "10" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  name: keycloak
+  namespace: {{ .Values.keycloak.namespace.name }}
+spec:
+  externalAccess:
+    enabled: {{ .Values.keycloak.externalAccess.enabled }}
+  instances: {{ .Values.keycloak.instances }}
+  keycloakDeploymentSpec:
+    imagePullPolicy: {{ .Values.keycloak.keycloakDeploymentSpec.imagePullPolicy }}
+  postgresDeploymentSpec:
+    imagePullPolicy: {{ .Values.keycloak.postgresDeploymentSpec.imagePullPolicy }}
+{{- end }}

@@ -7,7 +7,7 @@ metadata:
   name: gitops-clusters
   namespace: {{ .namespace }}
   labels:
-    {{- include "common.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/sync-wave: {{ .syncwave | default "10" | quote }}

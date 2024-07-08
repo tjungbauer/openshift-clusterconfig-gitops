@@ -1,0 +1,113 @@
+---
+cluster_admin_list:
+  - emergency
+
+keycloak:
+  enabled: true
+  syncwave: '10'
+  namespace:
+    name: keycloak-system
+  instances: 1
+  labels:
+    app: sso
+  externalAccess:
+    enabled: true
+  keycloakDeploymentSpec:
+    imagePullPolicy: Always
+  postgresDeploymentSpec:
+    imagePullPolicy: Always
+
+  realms:
+    - name: trusted-artifact-signer
+      enabled: true
+      syncwave: '11'
+      labels:
+        app: sso
+      displayName: Red-Hat-Trusted-Artifact-Signer
+      id: trusted-artifact-signer
+      realm: trusted-artifact-signer
+      sslRequired: none
+
+  clients:
+    - name: openshift
+      enabled: true
+      syncwave: '12'
+      labels:
+        app: sso
+      clientAuthenticatorType: client-secret
+      redirectUris:
+        - 'https://oauth-openshift.apps.ocp.aws.ispworld.at/oauth2callback/rhsso'
+      serviceAccountsEnabled: true
+      clientId: idp-4-ocp
+      defaultClientScopes:
+        - profile
+        - email
+        - roles
+        - acr
+        - web-origins
+      implicitFlowEnabled: false
+      publicClient: false
+      standardFlowEnabled: true
+      directAccessGrantsEnabled: true
+
+  users:
+    - name: user1
+      enabled: true
+      syncwave: '13'
+      emailVerified: true
+      email: user1@ispworld.at
+      firstName: User
+      lastName: One
+      labels:
+        app: sso
+
+# @ignore
+generic-cluster-config:
+  ######################
+  # IDENTITY PROVIDERS #
+  ######################
+  idp:
+    enabled: true
+    # Define provider. Currently htpasswd and LDAP are supported
+    providers:
+      enabled: true
+      htpasswd:
+        - name: Emergency
+          enabled: true
+          secretname: htpasswd-secret
+
+# Subchart helper-operator
+# Simply installs the operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    rhsso-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: keycloak-system
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: rhsso-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+# Subchart helper-status-checker
+helper-status-checker:
+  enabled: true
+
+  checks:
+
+    - operatorName: rhsso-operator
+      namespace:
+        name: keycloak-system
+      syncwave: 3
+
+      serviceAccount:
+        name: "status-checker-rhsso"

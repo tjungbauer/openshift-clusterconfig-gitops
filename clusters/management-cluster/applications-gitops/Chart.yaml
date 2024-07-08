@@ -6,5 +6,8 @@ dependencies:
   - name: openshift-gitops
     version: ~1.0.5
     repository: https://charts.stderr.at
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer

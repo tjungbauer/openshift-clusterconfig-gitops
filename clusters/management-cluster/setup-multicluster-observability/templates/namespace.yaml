@@ -6,5 +6,5 @@ metadata:
   name: open-cluster-management-observability
   labels:
     openshift.io/cluster-monitoring: "true"
-    {{- include "common.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
 {{- end }}

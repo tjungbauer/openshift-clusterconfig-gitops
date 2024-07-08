@@ -1,0 +1,30 @@
+apiVersion: v2
+name: cert-manager
+description: Setup and configure the cert Manager operator
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/cert-manager
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.21
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+  - name: generic-cluster-config
+    version: ~1.0.25
+    repository: https://charts.stderr.at
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - compliance
+  - security
