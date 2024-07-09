@@ -8,7 +8,7 @@ helper-operator:
         name: openshift-operators
         create: false
       subscription:
-        channel: stable-3.10
+        channel: stable-3.11
         approval: Automatic
         operatorName: container-security-operator
         source: redhat-operators

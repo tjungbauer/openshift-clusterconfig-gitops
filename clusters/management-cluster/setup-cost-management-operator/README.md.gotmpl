@@ -1,0 +1,71 @@
+{{ template "doc.header" . }}
+
+This "wrapper" Helm Chart is used to deploy and configure the CostManagement Operator.
+This Operator can be used to get information about the usage (cpu, memory, etc) of different Namespace.
+
+Per default, it would like to upload the results to cloud.redhat.com. In the example below the airgapped method is used. In such a case, results must be downloaded manually from the persistent volume. 
+
+It mainly uses the Chart [cost-management](https://github.com/tjungbauer/helm-charts/tree/main/charts/cost-management) which takes care of configuring the Operator.
+The [values-file](https://github.com/tjungbauer/helm-charts/tree/main/charts/cost-management) of the main chart provides further examples of possible settings.
+
+
+Three additional Charts are required as a dependency and are responsible for installing and verifying the Operator itself as well as providing a template library. 
+Verify the README and/or the values files for further information.
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+
+cost-management:
+  costmgmt:
+    enabled: true
+
+    name: costmanagementmetricscfg
+
+    airgapped: true
+
+    max_reports_to_store: 60
+
+    # must be less or equal to 100
+    # Default: 100
+    # max_size_MB: 100
+    upload_cycle: 360
+
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    cost-management-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: costmanagement-metrics-operator
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: costmanagement-metrics-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: costmanagement-metrics-operator
+      namespace:
+        name: costmanagement-metrics-operator
+      serviceAccount:
+        name: "sa-costmanagement-metrics"
+```
+
+{{ template "doc.footer" . }}

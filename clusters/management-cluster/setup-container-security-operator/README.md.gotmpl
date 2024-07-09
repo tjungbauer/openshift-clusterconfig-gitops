@@ -1,0 +1,50 @@
+{{ template "doc.header" . }}
+
+This "wrapper" Helm Chart is used to deploy Quay Container Security Operator using a GitOps approach. 
+It calls the Chart [setup-container-security-operator](https://github.com/tjungbauer/helm-charts/tree/main/charts/setup-container-security-operator) which takes care to deploy the Operator that does not require any additional configuration.
+
+The Operator does not require any additional configuration. It is installed... that's all.
+However, for the sake of consistency, I am still checking if the Operator deployment was successful (user helper-status-checker).
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+helper-operator:
+  operators:
+    security-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-operators
+        create: false
+      subscription:
+        channel: stable-3.10
+        approval: Automatic
+        operatorName: container-security-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+
+    - operatorName: container-security-operator
+      namespace:
+        name: openshift-operators
+      syncwave: 3
+
+      serviceAccount:
+        name: "status-security-operator"
+```
+
+{{ template "doc.footer" . }}
