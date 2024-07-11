@@ -39,7 +39,7 @@ jobs:
   lint-test:
     runs-on: ubuntu-latest
     container:
-            image: quay.io/tjungbau/linter-image:v1.0.0@sha256:7261df441959b0e2053a6c2a33e76b1ff7c508f2e2c4bc018fa6b202ac9f7374
+            image: quay.io/tjungbau/linter-image:v1.0.2@sha256:c0bb67983d796c9004edf6a28fa580cb94fa030e5f0fbb05193c2b8b74fb715e
     steps:
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
