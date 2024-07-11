@@ -16,8 +16,8 @@ repobranch: &branch main
 dummy_rev: &rev 1.0.0
 
 argocd_projects:
-  - *mgmtclustername
-  - *prodclustername
+  - name: *mgmtclustername
+  - name: *prodclustername
 
 applicationsets:
 
