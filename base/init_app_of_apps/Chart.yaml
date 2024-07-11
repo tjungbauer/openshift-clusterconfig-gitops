@@ -1,11 +1,18 @@
 apiVersion: v2
 name: init_app_of_apps
 description: Installs a single application into Argo CD, which automatically syncs all other applications and ApplicationSets.
-version: 1.0.1
+version: 2.0.0
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
     url: https://blog.stderr.at/
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-argocd
+    version: ~2.0.35
+    repository: https://charts.stderr.at/
 sources:
   - https://github.com/tjungbauer/openshift-clusterconfig-gitops
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/base/init_app_of_apps

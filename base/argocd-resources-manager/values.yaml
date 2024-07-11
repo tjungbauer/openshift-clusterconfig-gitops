@@ -17,7 +17,9 @@ dummy_rev: &rev 1.0.0
 
 argocd_projects:
   - name: *mgmtclustername
+    enabled: true
   - name: *prodclustername
+    enabled: true
 
 applicationsets:
 

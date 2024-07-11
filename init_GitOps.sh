@@ -121,7 +121,7 @@ function configure_argocd() {
 # Deploy the Application of Applications
 function deploy_app_of_apps() {
     printf "\n"
-    $HELM_BIN upgrade --install --values ./base/init_app_of_apps/values.yaml --set 'namespace=openshift-gitops' app-of-apps ./base/init_app_of_apps
+    $HELM_BIN upgrade --install --dependency-update --values ./base/init_app_of_apps/values.yaml --set 'namespace=openshift-gitops' app-of-apps ./base/init_app_of_apps
 }
 
 command -v $HELM_BIN >/dev/null 2>&1 || error "Could not execute helm binary!"
