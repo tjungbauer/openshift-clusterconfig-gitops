@@ -14,19 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
       - name: Set up Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4
         with:
           python-version: 3.7
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.0
+        uses: helm/chart-testing-action@b43128a8b25298e1e7b043b78ea6613844e079b1 # v2.6.0
 
       - name: Run chart-testing (lint)
         run: |
@@ -39,10 +39,10 @@ jobs:
   lint-test:
     runs-on: ubuntu-latest
     container:
-            image: quay.io/tjungbau/linter-image:v1.0.0
+            image: quay.io/tjungbau/linter-image:v1.0.0@sha256:7261df441959b0e2053a6c2a33e76b1ff7c508f2e2c4bc018fa6b202ac9f7374
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
          
       - name: Run helm lint on found Charts
         run: |
