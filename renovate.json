@@ -4,5 +4,6 @@
     "config:best-practices",
     "schedule:earlyMondays"
   ],
-  "bumpVersion": "patch",  
+  "bumpVersion": "patch",
+  "prHourlyLimit": 4
 }
