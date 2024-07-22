@@ -1,13 +1,13 @@
 apiVersion: v2
 name: setup-quay
 description: Setup Qay Registry
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: tpl
     version: ~1.0.0
     repository: https://charts.stderr.at/
   - name: quay-registry-setup
-    version: ~1.0.0
+    version: ~2.0.0
     repository: https://charts.stderr.at/
   - name: helper-operator
     version: ~1.0.0
