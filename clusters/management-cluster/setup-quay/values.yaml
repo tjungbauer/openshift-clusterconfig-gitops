@@ -66,12 +66,12 @@ quay-registry-setup:
     bucketClaim:
       enabled: true
       name: *bucketname
-  
+
       # Name of the storageclass
       # Default: openshift-storage.noobaa.io
       # a separate StorageClass with BackingStore and BackingClass can be created.
       storageclass: *storageclassname
-  
+
       # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
       # Default: 2
       syncwave: 2
