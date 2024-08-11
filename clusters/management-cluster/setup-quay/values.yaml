@@ -152,6 +152,8 @@ quay-registry-setup:
     storage:
       instance: RHOCSStorage
 
+    ldap_auth_secret: ldap-authentication
+
     bucket:
       name: *bucketname
 
@@ -185,12 +187,18 @@ quay-registry-setup:
     # Values:
     #    One of Database, LDAP, JWT, Keystone, OIDC
     # Default: Database
-    # authentication_type: database
+    # authentication_type: Database
+    authentication_type: Database
 
     # If enabled, only API calls marked as being made by an XHR will be allowed from browsers
     # Default: false
     browser_api_calls_xhr_only: false
 
+    #branding:
+    #  logo: 'xxx'
+    #  footer_img: 'yyy'
+    #  footer_url: 'xxx'
+  
     # Additional features that can be activated or deactivated
     feature:
 
@@ -209,10 +217,6 @@ quay-registry-setup:
       # Whether to allow anonymous users to browse and pull public repositories
       # Default: true
       anonymous_access: false
-
-      # When set, allows users to try the beta UI environment.
-      # Default: true
-      # ui_v2: false
 
       # If enabled, users can create tokens for use by the Docker CLI
       # Default: true
@@ -302,6 +306,10 @@ quay-registry-setup:
       # Default: false
       proxy_storage: true
 
+      # Whether Quay will act as a pull through cache for upstream registries.
+      # Default: false
+      proxy_cache: true
+
       # If set to true, the _catalog endpoint returns public repositories. Otherwise, only private repositories can be returned.
       # Default: false
       # public_catalog: false
@@ -324,8 +332,8 @@ quay-registry-setup:
       # recaptcha: false
 
       # If set to true, enables repository mirroring.
-      # Default: true
-      # repo_mirror: true
+      # Default: false
+      repo_mirror: true
 
       # If set to true, only namespaces listed in V1_PUSH_WHITELIST support V1 push
       # Default: true
@@ -349,11 +357,11 @@ quay-registry-setup:
 
       # When set, allows users to try the beta UI environment.
       # Default: true
-      # ui_v2: true
+      ui_v2: true
 
       # Enables repository settings in the beta UI Environment
       # Default: false
-      # ui_v2_repo_settings: false
+      ui_v2_repo_settings: true
 
       # Whether users can be created (by non-superusers)
       # Default: true
@@ -438,7 +446,7 @@ quay-registry-setup:
     # Whether the secure property should be set on session cookies
     # Set to True for all installations using SSL
     # Default: false
-    # session_cookie_secure: false
+    session_cookie_secure: true
 
     # If specified, nginx is configured to enabled a list of SSL protocols defined in the list.
     # Removing an SSL protocol from the list disables the protocol during Red Hat Quay startup.
@@ -512,6 +520,85 @@ quay-registry-setup:
     # Enables system default quota reject byte allowance for all organizations.
     # By default, no limit is set. --> 1.073741824e+11
     # default_system_reject_quota_bytes: 1.073741824e+11
+
+    # feature_team_syncing: true 
+    # feature_nonsuperuser_team_syncing_setup: false
+    # ldap_allow_insecure_fallback: false
+    # ldap_base_dn:
+    #   - o=<organization_id>
+    #   - dc=<example_domain_component>
+    #   - dc=com
+    # ldap_email_attr: mail
+    # ldap_uid_attr: uid
+    # ldap_uri: ldap://ldapserver.com
+    # ldap_user_filter: (memberof=cn=developers,ou=Users,dc=<domain_name>,dc=com)
+    # ldap_user_rdn:
+    #   - ou=<example_organization_unit>
+    #   - o=<organization_id>
+    #   - dc=<example_domain_component>
+    #   - dc=com
+    # team_resync_stale_time: 30m
+    # ldap_superuser_filter: (memberof=cn=developers,ou=Users,o=<example_organization_unit>,dc=<example_domain_component>,dc=com)
+    # ldap_restricted_user_filter: (<filterField>=<value>)
+    # ldap_timeout: 10
+    # ldap_network_timeout: 10
+
+    github_login_config:
+
+      enabled: true
+
+      # -- When GitHub OAuth is used, a secret with the keys GH_CLIENT_ID and GH_CLIENT_SECRET must be created
+      # @section -- Quay Configuration Generic
+      # @default -- N/A
+      github_oauth_secret: github-oauth
+
+      # -- The names of the GitHub (Enterprise) organizations whitelisted to work with the ORG_RESTRICT option.
+      # @section -- GitHub Oauth
+      # @default -- N/A
+      allowed_organizations: []
+
+      # -- The endpoint of the GitHub (Enterprise) API to use. Must be overridden for github.com
+      # <b>Example<b>: https://api.github.com/
+      # @section -- GitHub Oauth
+      # @default -- N/A
+      api_enpoint: 'https://api.github.com/'
+
+      # -- The endpoint for GitHub (Enterprise).
+      # <b>Example<b>: https://github.com/
+      # @section -- GitHub Oauth
+      # @default -- N/A
+      github_endpoint: 'https://github.com/'
+
+      # -- If true, only users within the organization whitelist can login using this provider.
+      # @section -- GitHub Oauth
+      # @default -- false
+      org_restrict: false
+
+    oidc_login_config:
+      enabled: false
+      oidc_name: 'Azure'
+      github_oauth_secret: github-oauth
+      oidc_debuglog: false
+      oidc_login_binding_fields: ''
+      oidc_login_scopes: ''
+      oidc_endpoint_custom_params: ''
+      oidc_issuer: ''
+      oidc_server: https://server
+      oidc_preferred_username_claim_name: ''
+      oidc_service_icon: ''
+      oidc_service_name: ''
+      oidc_verified_email_claim_name: ''
+      oidc_preferred_group_claim_name: ''
+      oidc_disable_user_endpoint: false
+
+    mailing_config:
+      enabled: false
+      mail_auth_secret: mail-auth
+      mail_default_sender: 'support@quay.io'
+      mail_port: 587
+      mail_server: ''
+      mail_use_tls: true
+
 
 # Install Quay Operator
 # Deploys Operator --> Subscription and Operatorgroup
