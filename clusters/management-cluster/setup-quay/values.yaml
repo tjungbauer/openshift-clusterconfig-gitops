@@ -194,7 +194,7 @@ quay-registry-setup:
     # Default: false
     browser_api_calls_xhr_only: false
 
-    #branding:
+    # branding:
     #  logo: 'xxx'
     #  footer_img: 'yyy'
     #  footer_url: 'xxx'
