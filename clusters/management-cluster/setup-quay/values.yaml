@@ -198,7 +198,7 @@ quay-registry-setup:
     #  logo: 'xxx'
     #  footer_img: 'yyy'
     #  footer_url: 'xxx'
-  
+
     # Additional features that can be activated or deactivated
     feature:
 
@@ -521,7 +521,7 @@ quay-registry-setup:
     # By default, no limit is set. --> 1.073741824e+11
     # default_system_reject_quota_bytes: 1.073741824e+11
 
-    # feature_team_syncing: true 
+    # feature_team_syncing: true
     # feature_nonsuperuser_team_syncing_setup: false
     # ldap_allow_insecure_fallback: false
     # ldap_base_dn:
