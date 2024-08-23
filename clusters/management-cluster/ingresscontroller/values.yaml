@@ -17,6 +17,13 @@ ingresscontrollers:
     # @default -- N/A
     defaultCertificate: router-certificate
 
+    # -- Additional annotations for the IngressController
+    # For example to enable HTTP/2 add the following:
+    # ingress.operator.openshift.io/default-enable-http2: true
+    # @default -- N/A
+    annotations:
+      ingress.operator.openshift.io/default-enable-http2: true
+
     # -- Bind IngressController to specific nodes
     # Here as example for Infrastructure nodes.
     # @default -- empty

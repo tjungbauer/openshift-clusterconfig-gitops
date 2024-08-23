@@ -39,6 +39,7 @@ Source code: https://github.com/tjungbauer/helm-charts/tree/main/charts/generic-
 | ingresscontrollers[0].nodePlacement | object | empty | Bind IngressController to specific nodes Here as example for Infrastructure nodes. |
 | ingresscontrollers[0].nodePlacement.tolerations | list | `[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Equal","value":"reserved"},{"effect":"NoExecute","key":"node-role.kubernetes.io/infra","operator":"Equal","value":"reserved"}]` | Tolerations, required if the nodes are tainted.   |
 | ingresscontrollers[0].replicas | int | 2 | Number of replicas for this IngressController |
+| ingresscontrollers[0].annotations | struct |  | Allowes the definition of additional annoations for the IngressController |
 
 ## Example values
 
@@ -62,6 +63,13 @@ ingresscontrollers:
     # -- The name of the secret that stores the certificate information for the IngressController
     # @default -- N/A
     defaultCertificate: router-certificate
+
+    # -- Additional annotations for the IngressController
+    # For example to enable HTTP/2 add the following:
+    # ingress.operator.openshift.io/default-enable-http2: true
+    # @default -- N/A
+    annotations:
+      ingress.operator.openshift.io/default-enable-http2: true
 
     # -- Bind IngressController to specific nodes
     # Here as example for Infrastructure nodes.
