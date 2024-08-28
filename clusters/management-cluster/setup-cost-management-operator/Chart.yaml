@@ -1,6 +1,6 @@
 apiVersion: v2
-name: setup-file-integrity-operator
-description: Setup File Integrity Operator
+name: setup-cost-management-operator
+description: Setup Cost Management Operator
 version: 1.0.0
 dependencies:
   - name: tpl
