@@ -7,7 +7,7 @@ generic-cluster-config:
         text: 'Management Cluster'
         location: BannerTop
         color: "#FFFFFF"
-        backgroundcolor: '#ff0000'
+        backgroundcolor: '#0088ee'
       bottombanner:
         enabled: false
         text: Copyright © 2024 Sample Company, Inc. |
