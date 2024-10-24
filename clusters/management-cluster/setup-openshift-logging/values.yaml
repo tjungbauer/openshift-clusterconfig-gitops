@@ -4,8 +4,8 @@ bucketname: &bucketname logging-bucket
 lokisecret: &loki-secret-name logging-loki-s3
 storageclassname: &storageclassname logging-bucket-storage-class
 lokistack: &lokistackname logging-loki
-loki: &channel-loki stable-5.8
-logging: &channel-logging stable
+loki: &channel-loki stable-6.0
+logging: &channel-logging stable-6.0
 
 ######################################
 # SUBCHART: helper-operator
