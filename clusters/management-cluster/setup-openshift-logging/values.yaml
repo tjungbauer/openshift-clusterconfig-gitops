@@ -286,13 +286,13 @@ helper-lokistack:
     # Schemas for reading and writing logs.
     # schemas:
       # -- Version for writing and reading logs.
-      # Can be v11 or v12
-      # @default -- v12
-      #  - version: v12
+      # Can be v11, v12 or v13
+      # @default -- v13
+      #  - version: v13
 
       # -- EffectiveDate is the date in UTC that the schema will be applied on. To ensure readibility of logs, this date should be before the current date in UTC.
-      # @default -- 2022-06-01
-      #    effectiveDate: "2022-06-01"
+      # @default -- 2020-10-11
+      #    effectiveDate: "2020-10-11"
 
   # -- Storage class name defines the storage class for ingester/querier PVCs.
   # @default -- gp3-csi
