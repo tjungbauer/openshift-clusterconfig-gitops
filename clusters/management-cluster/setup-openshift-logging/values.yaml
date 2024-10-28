@@ -6,6 +6,14 @@ storageclassname: &storageclassname logging-bucket-storage-class
 lokistack: &lokistackname logging-loki
 loki: &channel-loki stable-6.0
 logging: &channel-logging stable-6.0
+observability-operator: &channel-coo development
+
+observability_ui_plugin:
+  enabled: true
+  name: logging
+  logsLimit: 50
+  timeout: 30s
+  type: Logging
 
 ######################################
 # SUBCHART: helper-operator
@@ -80,6 +88,20 @@ helper-operator:
         create: true
         notownnamespace: true
 
+    cluster-observability-operator:
+      enabled: true
+      namespace:
+        name: openshift-operators
+        create: true
+      subscription:
+        channel: *channel-coo
+        approval: Automatic
+        operatorName: cluster-observability-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: false
 
 ########################################
 # SUBCHART: helper-status-checker
@@ -405,50 +427,64 @@ openshift-logging:
   loggingConfig:
     enabled: true
     syncwave: '4'
+    operatorVersion: '6.0'
+    managementState: Managed
 
-    # Indicator if the resource is 'Managed' or 'Unmanaged' by the operator
-    # managementState: Managed
+    collectorServiceAccount:
+      name: cluster-logging-operator
+      create: false
+      bindings:
+        - collect-audit-logs
+        - collect-application-logs
+        - collect-infrastructure-logs
 
-    # Specification of the Log Storage component for the cluster
-    logStore:
-      # The Type of Log Storage to configure. The operator currently supports either using ElasticSearch managed by elasticsearch-operator or Loki managed by loki-operator (LokiStack) as a default log store.
-      type: lokistack
+    additionalClusterRoles:
+      - type: application
+        name: cluster-logging-write-application-logs
+        enabled: true
+      - type: audit
+        name: cluster-logging-write-audit-logs
+        enabled: true
+      - type: infrastructure
+        name: cluster-logging-write-infrastructure-logs
+        enabled: true
+      - type: editor
+        name: clusterlogforwarder-editor-role
+        enabled: true
 
-      # Name of the LokiStack resource.
-      lokistack: *lokistackname
+    outputs:
+      - name: default-lokistack
+        type: lokiStack
+        tls:
+          ca:
+            configMapName: openshift-service-ca.crt
+            key: service-ca.crt
 
-      retentionPolicy:
-        application:
-          maxAge: 4d
-        audit:
-          maxAge: 4d
-        infra:
-          maxAge: 4d
+        lokiStack:
+          authentication:
+            token:
+              from: serviceAccount
 
-      visualization:
-        # The type of Visualization to configure
-        # Could be either Kibana or ocp-console
-        type: ocp-console
+          target:
+            name: logging-loki
+            namespace: openshift-logging
 
-      collection:
-        # The type of Log Collection to configure
-        # Vector in case of Loki...
-        type: vector
+    pipelines:
+      - name: default-lokistack
+        inputRefs:
+          - application
+          - infrastructure
+          - audit
+        outputRefs:
+          - default-lokistack
+        filterRefs:
+          - detectexception
+          - parse-json
 
-        # The resource requirements for the collector
-        resources: {}
-        #   limits:
-        #     cpu: '500m'
-        #     memory: '1Gi'
-        #     ephemeral-storage: '50Mi'
-        #   requests:
-        #     cpu: '500m'
-        #     memory: '1Gi'
-        #     ephemeral-storage: '500Mi'
+    filters:
+    - name: detectexception
+      type: detectMultilineException
+    - name: parse-json
+      type: parse
 
-        # Define the tolerations the Pods will accept
-        # tolerations:
-        #  - effect: NoSchedule
-        #    key: infra
-        #    operator: Equal
-        #    value: 'reserved'
+    collector: {}
