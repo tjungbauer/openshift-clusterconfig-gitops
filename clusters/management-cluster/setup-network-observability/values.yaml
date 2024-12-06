@@ -263,3 +263,15 @@ helper-operator:
       operatorgroup:
         create: true
         notownnamespace: true
+
+
+helper-status-checker:
+  enabled: true
+  approver: false
+
+  checks:
+    - operatorName: netobserv-operator
+      namespace:
+        name: *namespace
+      serviceAccount:
+        name: "sa-file-netobserv-checker"
