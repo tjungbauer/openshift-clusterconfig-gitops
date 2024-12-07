@@ -14,9 +14,9 @@ dependencies:
   - name: helper-operator
     version: ~1.0.0
     repository: https://charts.stderr.at/
-  - name: helper-status-checker
-    version: ~4.0.0
-    repository: https://charts.stderr.at/
+#  - name: helper-status-checker
+#    version: ~4.0.0
+#    repository: https://charts.stderr.at/
   - name: helper-objectstore
     version: ~1.0.0
     repository: https://charts.stderr.at/
