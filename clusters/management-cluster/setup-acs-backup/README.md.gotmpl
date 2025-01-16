@@ -1,0 +1,273 @@
+{{ template "doc.header" . }}
+
+
+This "wrapper" Helm Chart is used to deploy and configure Advanced Cluster Security (ACS) using a GitOps approach. 
+It uses the Chart [RHACS Setup](https://github.com/tjungbauer/helm-charts/tree/main/charts/rhacs-setup) which mainly takes care to
+
+- Setup the Central resource (UI of ACS)
+- Create an init-bundle
+- Create a ConsoleLink
+- Setup SecuredCluster resource
+- Configure OpenShift authentication
+
+The values.yaml provides an example of possible settings.
+
+**NOTE**: Verify the article [Setup & Configure Advanced Cluster Security using GitOps](https://blog.stderr.at/gitopscollection/2024-04-28-installing-advanced-cluster-security/) for more detailed information.
+
+There are two additional Charts that are required as a dependency and that are responsible to install and verify the Operator itself. 
+Verify the README and/or the values files for further information.
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+override-rhacs-operator-version: &rhacsversion stable
+operatornamespace: &operatornamespace rhacs-operator
+clustername: &clustername local-cluster
+
+#########################################
+# Settings for Advanced Cluster Security
+#########################################
+rhacs-setup:
+  rhacs:
+
+    namespace:
+      # -- Namespace where ACS shall be deployed. Typically, this is stackrox. This is not the Operator itself, that is usually deployed in "rhacs-operator".
+      name: stackrox
+
+      # -- Syncwave to deploy the ACS namespace.
+      # @default -- 0
+      syncwave: '0'
+
+      # -- Description of the Namespace.
+      descr: 'Red Hat Advanced Cluster Security'
+
+    ################
+    # CENTRAL of ACS
+    ################
+    # Settings for the Central of ACS
+    central:
+
+      # -- Enabled yes or not. Typically, a Central is installed only once (maybe on the management cluster) and will manage different external clusters.
+      # @default -- false
+      enabled: true
+
+      # -- Syncwave for Argo CD to create the Central
+      # @default -- 3
+      syncwave: '3'
+
+      # -- Configures whether Red Hat Advanced Cluster Security should run in online or
+      # offline (disconnected) mode. In offline mode, automatic updates of
+      # vulnerability definitions and kernel modules are disabled.
+      # This parameter is MANDATORY
+
+      # default -- Online
+      egress:
+        connectivityPolicy: Online
+
+      ###############
+      # CENTRAL DB
+      ###############
+      # Settings for Central DB, which is responsible for data persistence.
+      db:
+
+        # resources for Central DB ...
+        # Default values are:
+        #   - limits cpu 8, memory 16Gi
+        #   - requests: cpu: 4, memory 8Gi
+        # limit it to have more resourcen on demo systems (not suitable for production environments)
+
+        # -- Set Central DB resources.requests for a DEMO environment to save resources.
+        resources:
+          requests:
+            cpu: '1'
+            memory: '1Gi'
+
+        # -- If you want this component to only run on specific nodes, you can
+        # configure tolerations of tainted nodes.
+        tolerations: {}
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
+        #   - effect: NoSchedule
+        #     key: infra
+        #     operator: Equal
+        #     value: reserved
+
+    ###############
+    # SCANNER
+    ###############
+    scanner:
+      # -- If you do not want to deploy the Red Hat Advanced Cluster Security Scanner,
+      # you can disable it here (not recommended).
+      # @default -- false
+      enabled: true
+
+      analyzer:
+        # Controls the number of analyzer replicas and autoscaling.
+        # If nothing is set, the operator will create a default configuration
+        # Parameters:
+        #   - status: Enabled
+        #   - min: 2
+        #   - max: 5
+        #   - replicas: 3
+
+        # The following settings are NOT suitable for a production environment
+        autoscaling:
+          status: "Disabled"
+          max: 1
+          min: 1
+          # When autoscaling is disabled, the number of replicas will always be
+          # configured to match this value.
+          replicas: 1
+
+        # -- If you want this component to only run on specific nodes, you can
+        # configure tolerations of tainted nodes.
+        tolerations: {}
+
+      ###############
+      # SCANNER DB
+      ###############
+      db:
+        # -- If you want this component to only run on specific nodes, you can
+        # configure tolerations of tainted nodes.
+        tolerations: {}
+
+    #################
+    # SECURED CLUSTER
+    #################
+    secured_cluster:
+      # -- Enable SecuredCluster yes or no ... typically yes
+      # @default -- false
+      enabled: true
+
+      # -- Syncwave for Argo CD to deploy the SecureCluster
+      # @default -- 4
+      syncwave: '4'
+
+      # -- Name of the cluster
+      # @default -- local-cluster"
+      clustername: *clustername
+
+      # -- Settings for Sensor
+      sensor:
+        # -- If you want this component to only run on specific nodes, you can
+        # configure tolerations of tainted nodes.
+        tolerations: {}
+
+      # -- Settings for AdmissionControl
+      admissioncontrol:
+        listenOn:
+          # -- Set this to true to enable preventive policy enforcement for object creations.
+          creates: true
+
+          # -- Set this to 'true' to enable monitoring and enforcement for Kubernetes events (port-forward and exec).
+          events: true
+
+          # -- Set this to 'true' to enable preventive policy enforcement for object updates.
+          # Note: this will not have any effect unless 'Listen On Creates' is set to 'true' as well.
+          updates: true
+
+        # -- If you want this component to only run on specific nodes, you can
+        # configure tolerations of tainted nodes.
+        tolerations: {}
+
+    # -- Basic settings for ACS authentication
+    # This configuration is done by a Job, that will configure the OpenShift oauth for ACS.
+    basic_acs_settings:
+      auth_provider: 'OpenShift'
+      auth_provider_type: 'openshift'
+      min_access_role: 'None'
+      syncwave: 5
+
+    ####################################################
+    # Additional settings for Central and possible Jobs
+    ####################################################
+    # -- Variables for Jobs
+    job_vars:
+      # -- Maximum retries for Jobs that need to check a certain state.
+      # @default -- 20
+      max_attempts: 20
+
+    # -- Run the Job to initialze an ACS secrued cluster and creates a init bundle.
+    job_init_bundle:
+      # -- Enable this Job
+      # @default -- false
+      enabled: true
+
+      # -- Syncwave for Argo CD to create this Job.
+      # @default -- 3
+      syncwave: '3'
+
+    # -- Job that creates a console link in OpenShift
+    consolelink:
+      # -- Enable this Job
+      # @default -- false
+      enabled: true
+
+      # -- Syncwave for Argo CD to create this Job.
+      # @default -- 3
+      syncwave: '3'
+
+      # -- Location of the ConsoleLink
+      location: ApplicationMenu
+
+      # -- Text of the ConsoleLink
+      text: Advanced Cluster Security
+
+      # -- Section of the ConsoleLink
+      section: Observability
+
+# Service account name used in Jobs
+serviceAccount:
+  create: true
+  name: "create-cluster-init"
+
+# Subchart helper-operator
+# Simply installs the operator
+# Install Operator RHACS
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    rhacs-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: *operatornamespace
+        create: true
+      subscription:
+        channel: *rhacsversion
+        approval: Automatic
+        operatorName: rhacs-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        # rhacs does not support to monitor own namespace,
+        # therefor the spec in the OperatorGroup must be empty
+        notownnamespace: true
+
+# Subchart helper-status-checker
+# checks if ACS operator is ready
+helper-status-checker:
+  enabled: true
+
+  checks:
+
+    - operatorName: rhacs-operator
+      namespace:
+        name: rhacs-operator
+      syncwave: 3
+
+      serviceAccount:
+        name: "status-checker-acs"
+```
+
+{{ template "doc.footer" . }}

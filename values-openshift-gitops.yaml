@@ -2,9 +2,11 @@
 # Configure openshift-gitops operator. This will be enabled via init_GitOps.sh script
 gitopsinstances:
   openshift_gitops:
-    enabled: false
+    enabled: true
     namespace: openshift-gitops
     clusterAdmin: disabled
+    global_project:
+      enabled: false
     syncwave: 10
     server:
       route:
