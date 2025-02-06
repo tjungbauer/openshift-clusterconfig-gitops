@@ -26,3 +26,6 @@ helper-argocd:
           # Path to the values file
           helm:
             default_values_file: $values/base/argocd-resources-manager/values.yaml
+
+  general:
+    server: dummy
