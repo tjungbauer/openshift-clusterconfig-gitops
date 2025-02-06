@@ -266,7 +266,7 @@ helper-operator:
 
 
 helper-status-checker:
-  enabled: false
+  enabled: true
   approver: false
 
   checks:
