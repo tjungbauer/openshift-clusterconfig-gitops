@@ -1,6 +1,6 @@
 
 
-# setup-acs
+# setup-acs-backup
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Linting](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml/badge.svg)](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml)
@@ -12,7 +12,7 @@
 
   ## Description
 
-  Deploys Advanced Cluster Security (ACS) on target cluster. If enabled Central will be deployed too.
+  Deploys Backup for Advanced Cluster Security (ACS) on target cluster.
 
 This "wrapper" Helm Chart is used to deploy and configure Advanced Cluster Security (ACS) using a GitOps approach.
 It uses the Chart [RHACS Setup](https://github.com/tjungbauer/helm-charts/tree/main/charts/rhacs-setup) which mainly takes care to
@@ -36,9 +36,8 @@ This chart has the following dependencies:
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.stderr.at/ | helper-operator | ~1.0.23 |
-| https://charts.stderr.at/ | helper-status-checker | ~4.0.0 |
-| https://charts.stderr.at/ | rhacs-setup | ~1.0.0 |
+| https://charts.stderr.at/ | rhacs-backup | ~1.0.0 |
+| https://charts.stderr.at/ | tpl | ~1.0.0 |
 
 ## Maintainers
 
@@ -52,7 +51,7 @@ Source:
 * <https://charts.stderr.at/>
 * <https://github.com/tjungbauer/openshift-clusterconfig-gitops>
 
-Source code: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-acs
+Source code: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-acs-backup
 
 ## Example values files
 
