@@ -6,83 +6,83 @@ rhacs-backup:
   # -- Enable ACS backup.
   # @default -- false
   enabled: true
-  
+
   # Variables for the Namespace where ACS backup shall be executed.
   # Only required when not running in the ACS namespace (stackrox)
   namespace: stackrox
-  
+
   serviceAccount:
     # -- ServiceAccount to run the backup
     # @default -- default
     name: *bu_name
-  
+
     # -- Create service account or not
     # @default -- false
     create: true
-  
+
   # Settings for the CronJob
   cronjob:
     # -- Name of the CronJob
     # @default -- acs-backup
     name: *bu_name
-  
+
     # -- Namespace of the CronJob
     # @default -- stackrox
     namespace: stackrox
-  
+
     # -- Syncwave for the CronJob
     # @default -- 5
     syncwave: 5
-  
+
     # -- Schedule of the Cronjob, for example: daily at 4am
     schedule: "0 4 * * *"
-  
+
     # Retention period for backup files (in days)
     # @default -- 30
     retention: 30
-  
+
     # -- mount point inside the cronjob pod
     nfs_mountpath: /acs-backup
-  
+
     # -- Image to use for the CronJob
     # @default -- registry.redhat.io/openshift4/ose-cli
     image: registry.redhat.io/openshift4/ose-cli
-  
+
     # -- Custom annotations that shall be applied to the Cronjob
     # Add required key-value pairs as needed
     # @default -- {}
     annotations: {}
-  
+
   # Settings for the PVC
   pvc:
     # -- Name of the PVC
     # @default -- acs-backup
     name: *bu_name
-  
+
     # -- Syncwave for the PVC
     # @default -- 5
     syncwave: 5
-  
+
     # -- using RWO accessMode, which is usually sufficient
     # @default -- ReadWriteOnce
     accessMode: "ReadWriteOnce"
-  
+
     # -- Size of the Storage
     # @default -- 100Gi
     size: *backup_storage_size
-  
+
     # -- StorageClass must be provided as empty value here, since NFS mount is not provided as storageclass.
     # @default -- N/A
     storageClass: "gp3-csi"
-  
+
     # -- Set the name of the PV, only required if the PV will be created (see below)
     # @default -- false
     setVolumeName: false
-  
+
     # -- Name of the PV
     # @default -- ''
     # volumeName: ''
-  
+
     # -- Custom annotations that shall be applied to the PVC
     # Add required key-value pairs as needed
     # @default -- {}
