@@ -4,9 +4,9 @@ bucketname: &bucketname logging-bucket
 lokisecret: &loki-secret-name logging-loki-s3
 storageclassname: &storageclassname logging-bucket-storage-class
 lokistack: &lokistackname logging-loki
-loki: &channel-loki stable-6.0
-logging: &channel-logging stable-6.0
-observability-operator: &channel-coo development
+loki: &channel-loki stable-6.1
+logging: &channel-logging stable-6.1
+observability-operator: &channel-coo stable
 
 observability_ui_plugin:
   enabled: true
