@@ -1,0 +1,32 @@
+---
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    rhbk-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: rhbk-operator
+        create: true
+      subscription:
+        channel: 22.0.9-opr.1
+        approval: Automatic
+        operatorName: rhbk-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: rhbk-operator
+      namespace:
+        name: rhbk-operator
+      serviceAccount:
+        name: "status-checker-rhbk"
