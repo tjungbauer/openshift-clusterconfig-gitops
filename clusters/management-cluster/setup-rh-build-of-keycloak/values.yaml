@@ -12,7 +12,7 @@ helper-operator:
         name: rhbk-operator
         create: true
       subscription:
-        channel: 22.0.9-opr.1
+        channel: stable-v22
         approval: Automatic
         operatorName: rhbk-operator
         source: redhat-operators
