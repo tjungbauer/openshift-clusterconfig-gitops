@@ -1,6 +1,6 @@
 ---
 namespace: &namespace "keycloak"
-ssohostname: &ssohostname sss.apps.ocp.aws.ispworld.at
+ssohostname: &ssohostname sso.apps.ocp.aws.ispworld.at
 
 cert-manager:
   enabled: true
