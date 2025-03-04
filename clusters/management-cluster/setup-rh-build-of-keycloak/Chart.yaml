@@ -2,7 +2,7 @@ apiVersion: v2
 name: setup-rh-build-of-keycloak
 description: Deploy and configure the operator Red Hat Build of Keycloak
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-rh-build-of-keycloak
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: tpl
     version: ~1.0.0
