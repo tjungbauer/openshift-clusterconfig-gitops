@@ -20,7 +20,7 @@ dependencies:
     condition: cert-manager.enabled
   - name: rh-build-keycloak
     version: ~1.0.0
-    repository: https://charts.stderr.at/  
+    repository: https://charts.stderr.at/
     condition: keycloak.enabled
 maintainers:
   - name: tjungbauer
