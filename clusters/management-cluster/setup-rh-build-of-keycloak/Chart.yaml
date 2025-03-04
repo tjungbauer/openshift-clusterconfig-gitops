@@ -14,6 +14,14 @@ dependencies:
     version: ~4.0.0
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
+  - name: cert-manager
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: cert-manager.enabled
+  - name: rh-build-keycloak
+    version: ~1.0.0
+    repository: file://../../../../helm-charts/charts/rh-build-keycloak/   
+    condition: keycloak.enabled
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
