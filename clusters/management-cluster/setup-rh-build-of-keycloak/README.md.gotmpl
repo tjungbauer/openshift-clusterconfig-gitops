@@ -1,3 +1,19 @@
+{{ template "doc.header" . }}
+
+This chart will perform:
+1. Installation of RH build of Keycloak Operator 
+2. Configuration of Keycloak instance
+3. Installation of an example database (optional)
+4. Reqesting a Certificate using cert-manager (optional) 
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
 ---
 namespace: &namespace "keycloak"
 ssohostname: &ssohostname sss.apps.ocp.aws.ispworld.at
@@ -77,3 +93,6 @@ helper-status-checker:
         name: rhbk-operator
       serviceAccount:
         name: "status-checker-rhbk"
+```
+
+{{ template "doc.footer" . }}
