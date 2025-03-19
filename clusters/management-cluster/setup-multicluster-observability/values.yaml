@@ -32,6 +32,15 @@ multicluster_observability:
 
     # Advanced configurations for observability
     advanced:
+
+      # Specifies Alertmanager additional configuration
+      # @default -- empty
+      alertmanager: {}
+
+      # For exmaple mount additional secrets:
+      #  secrets:
+      #    - smtp-config
+
       # Specifies the data retention configurations to be used by Observability
       retentionConfig:
         # configure --tsdb.block-duration in rule (Block duration for TSDB block)

@@ -18,6 +18,10 @@ spec:
     storeStorageSize: {{ .config.storage.storeStorageSize | default "10Gi" }}
     storageClass: {{ .config.storage.storageClass | default "gp2" }}
   advanced:
+    {{- if .config.advanced.alertmanager }}
+    alertmanager:
+{{ toYaml .config.advanced.alertmanager | indent 6 }}
+    {{- end }}
     retentionConfig:
       blockDuration: {{ .config.advanced.retentionConfig.blockDuration | default "2h" }}
       deleteDelay: {{ .config.advanced.retentionConfig.deleteDelay | default "48h" }}

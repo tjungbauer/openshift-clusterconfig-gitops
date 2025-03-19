@@ -1,7 +1,7 @@
 apiVersion: v2
 name: setup-multicluster-observability
 description: Enabled MutliClusterObservability once ACM has been installed
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: tpl
     version: ~1.0.0
