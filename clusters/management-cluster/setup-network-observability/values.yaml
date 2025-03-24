@@ -89,7 +89,7 @@ helper-lokistack:
   name: *lokistackname
 
   # -- Namespace of the LokiStack object
-  namespace: *namespace
+  namespace: netobserv
 
   # -- Syncwave for the LokiStack object.
   # @default -- 3
@@ -264,7 +264,7 @@ helper-objectstore:
   bucket:
     enabled: true
     name: *bucketname
-    namespace: *namespace
+    namespace: netobserv
 
     # is_secure: true
     # port: 443
@@ -289,7 +289,7 @@ helper-loki-bucket-secret:
   syncwave: 2
 
   # Namespace for logging
-  namespace: *namespace
+  namespace: netobserv
 
   # Secretname that shall be created
   secretname: *loki-secret-name
