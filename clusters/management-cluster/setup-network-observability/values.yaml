@@ -70,11 +70,6 @@ netobserv:
       # @default -- loki
       name: loki
 
-
-
-
-
-
 ########################################
 # SUBCHART: helper-lokistack
 # Renders a LokiStack object.
