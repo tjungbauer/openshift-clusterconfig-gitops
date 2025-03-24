@@ -1,0 +1,284 @@
+{{- if eq ( .Values.netobserv.enabled | toString) "true" }}
+{{- with .Values.netobserv }}
+---
+apiVersion: flows.netobserv.io/v1beta2
+kind: FlowCollector
+metadata:
+  name: cluster
+  namespace: {{ .namespace | default "netobserv" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "10" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    {{- include "tpl.additionalAnnotations" .additionalAnnotations | indent 4 }}
+  labels:
+    {{- include "tpl.additionalLabels" .additionalLabels | indent 4 }}
+spec:
+  namespace: {{ .namespace | default "netobserv" }}
+  {{- include "validate.deploymentModel" .deploymentModel }}
+  deploymentModel: {{ .deploymentModel | default "Direct" }}
+
+  {{- /* ──────────────────── AGENT CONFIGURATION ──────────────────── */}}
+  {{- with .agent }}
+  agent:
+    {{- if eq .type "eBPF" }}
+    {{- with .ebpf }}
+    ebpf:
+      {{- if eq (.privileged | toString) "true" }}
+      privileged: {{ .privileged }}
+      {{- end }}
+      {{- if .features }}
+      features:
+      {{- range .features }}
+        - {{ . }}
+      {{- end }}
+      {{- end }}
+      {{- include "validate.logLevel" .logLevel }}
+      logLevel: {{ .logLevel | default "info" }}
+      cacheMaxFlows: {{ .cacheMaxFlows | default "100000" }}
+      {{- if .resources }}
+{{ include "tpl.resources" .resources  | indent 6 }}
+      {{- end }}
+      sampling: {{ .sampling | default "50" }}
+      imagePullPolicy: {{ .imagePullPolicy | default "IfNotPresent" }}
+      excludeInterfaces:
+      {{- range .excludeInterfaces }}
+        - {{ . }}
+      {{- end }}
+      kafkaBatchSize: {{ .kafkaBatchSize | default "10485760" | int }}
+      cacheActiveTimeout: {{ .cacheActiveTimeout | default "5s" }}
+      {{- if .interfaces }}
+      interfaces:
+      {{- range .interfaces }}
+        - {{ . }}
+      {{- end }}
+      {{- else }}
+      interfaces: []
+      {{- end }}
+      {{- if .metrics }}
+      metrics:
+        {{- if .metrics.disableAlerts }}
+        disableAlerts:
+        {{- range .metrics.disableAlerts }}
+          - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- with .metrics.server }}
+        server:
+          port: {{ .port | default "9400" | int }}
+{{ include "tlsMetricsConfig" (dict "tls" .tls) | indent 8 }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    type: {{ .type }}
+  {{- end }}
+
+  {{- /* ──────────────────── LOKI CONFIGURATION ──────────────────── */}}
+  {{- with .loki }}
+  loki:
+    {{- if eq (.enabled | toString) "true" }}
+    enabled: true
+    {{- end }}
+    readTimeout: {{ .readTimeout | default "30s" }}
+    writeBatchWait: {{ .writeBatchWait | default "1s" }}
+    writeBatchSize: {{ .writeBatchSize | default "10485760" | int }}
+    writeTimeout: {{ .writeTimeout | default "10s" }}
+    mode: {{ .mode | default "Monolithic" }}
+
+    {{- if eq (.mode) "Monolithic" }}
+    monolithic:
+      url: {{ .monolithic.url | default "http://loki.netobserv.svc:3100/" | quote }}
+      tenantID: {{ .monolithic.tenantID | default "netobserv" | quote }}
+      {{- if  .monolithic.tls }}
+{{ include "tlsConfig" (dict "mode" .mode "tls" .monolithic.tls) | indent 6 }}
+      {{- end }}
+    {{- end }}
+
+    {{- if eq (.mode) "LokiStack" }}
+    lokiStack:
+      name: {{ .lokiStack.name | default "loki" }}
+      namespace: {{ .lokiStack.namespace | default "" | quote }}
+    {{- end }}
+
+    {{- if eq (.mode) "Microservices" }}
+    microservices:
+      ingesterUrl: {{ .microservices.ingesterUrl | default "http://loki-distributor:3100/" | quote }}
+      querierUrl: {{ .microservices.ingesterUrl | default "http://loki-query-frontend:3100/" | quote }}
+      tenantID: {{ .microservices.tenantID | default "netobserv" | quote }}
+      {{- if  .microservices.tls }}
+{{ include "tlsConfig" (dict "mode" .mode "tls" .microservices.tls) | indent 6 }}
+      {{- end }}
+    {{- end }}
+
+    {{- if eq (.mode) "Manual" }}
+    manual:
+      authtoken: {{ .manual.authtoken | default "Disabled" }}
+      ingesterUrl: {{ .manual.ingesterUrl | default "http://loki:3100/" | quote}}
+      querierUrl: {{ .manual.querierUrl | default "http://loki:3100/" | quote }}
+      statusUrl: {{ .manual.statusUrl | default "" | quote }}
+      tenantID: {{ .manual.tenantID | default "netobserv" | quote }}
+      {{- if  .manual.statusTls }}
+{{ include "tlsConfig" (dict "mode" .mode "tls" .manual.statusTls) | indent 6 }}
+      {{- end }}
+      {{- if  .manual.tls }}
+{{ include "tlsConfig" (dict "mode" .mode "tls" .manual.tls) | indent 6 }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- /* ──────────────────── NETWORKPOLICY CONFIGURATION ──────────────────── */}}
+  {{- if .networkPolicy }}
+  networkPolicy:
+    enabled: {{ .networkPolicy.enabled | default "false" }}
+    {{- if .networkPolicy.additionalNamespaces }}
+    additionalNamespaces:
+    {{- range .networkPolicy.additionalNamespaces }}
+      - {{ . }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- with .consolePlugin }}
+  consolePlugin:
+    enabled: {{ .enabled | default "true" }}
+    replicas: {{ .replicas | default "1" }}
+    {{- include "validate.logLevel" .logLevel }}
+    logLevel: {{ .logLevel | default "info" }}
+    imagePullPolicy: {{ .imagePullPolicy | default "IfNotPresent" }}
+    {{- if eq (.enabled | toString ) "true" }}
+    portNaming:
+      enabled: {{ .portNaming.enabled | default "false" }}
+      portNames:
+      {{- .portNaming.portNames | toYaml | nindent 8 }}
+    {{- end }}
+    quickFilters: 
+      {{- .quickFilters | toYaml | nindent 6 }}
+    {{- if .resources }}
+    resources:
+{{ include "tpl.resources" .resources  | indent 6 }}
+    {{- end }}
+
+    {{- if .autoscaler }}
+    autoscaler:
+      status: {{ .autoscaler.status | default "Disabled" }}
+      minReplicas: {{ .autoscaler.minReplicas | default "1" }}
+      maxReplicas: {{ .autoscaler.maxReplicas | default "3" }}
+      metrics:
+       {{- .autoscaler.metrics | toYaml | nindent 8 }}
+    {{- end }}
+    advanced:
+      register: {{ .register | default "true" }}
+      {{- /* Set placement and tolerations for the consolePlugin */}}
+      {{- if .advanced.scheduling }}
+      scheduling:
+        {{- if .advanced.scheduling.nodeSelector }}
+{{- include "tpl.nodeSelector" .advanced.scheduling | indent 8 }}
+        {{- end}}
+        {{- if .advanced.scheduling.tolerations }}
+{{ include "tpl.tolerations" .advanced.scheduling.tolerations | indent 8 }}
+        {{- end }}
+      {{- end }}
+  {{- end }}
+
+  {{- /* ──────────────────── PROCESSOR CONFIGURATION ──────────────────── */}}
+  {{- with .processor }}
+  processor:
+    {{- if eq (.addZone | toString) "true" }}
+    addZone: true
+    {{- end }}
+    logTypes: {{ .logTypes | default "Flows" }}
+    {{- if .deduper }}
+    deduper:
+      mode: {{ .deduper.mode | default "Disabled" }}
+      sampling: {{ .deduper.sampling | default "50" }}
+    {{- end }}
+    {{- if .resources }}
+    resources:
+{{ include "tpl.resources" .resources  | indent 6 }}
+    {{- end }}
+    {{- if .metrics }}
+    metrics:
+      {{- if .metrics.disableAlerts }}
+      disableAlerts:
+      {{- range .metrics.disableAlerts }}
+        - {{ . }}
+      {{- end }}
+      {{- else }}
+      disableAlerts: []
+      {{- end }}
+      {{- if .metrics.includeList }}
+      includeList:
+      {{- range .metrics.includeList }}
+        - {{ . }}
+      {{- end }}
+      {{- else }}
+      includeList: []
+      {{- end }}
+      {{- with .metrics.server }}
+      server:
+        port: {{ .port | default "9401" | int }}
+{{ include "tlsMetricsConfig" (dict "tls" .tls) | indent 6 }}
+      {{- end }}
+    {{- end }}
+    {{- if .filters }}
+    filters:
+      {{- .filters | toYaml | nindent 6 }}
+    {{- end }}
+    {{- if .subnetLabels }}
+    {{- if .subnetLabels.customLabels }}
+    subnetLabels:
+      customLabels:
+        {{- .subnetLabels.customLabels | toYaml | nindent 8 }}
+    {{- end }}
+    {{- end }}
+    {{- include "validate.logLevel" .logLevel }}
+    logLevel: {{ .logLevel | default "info" }}
+    imagePullPolicy: {{ .imagePullPolicy | default "IfNotPresent" }}
+    multiClusterDeployment: {{ .multiClusterDeployment | default "false" }}
+    {{- if eq (.multiClusterDeployment | toString) "true" }}
+    clusterName: {{ .clusterName | default "" }}
+    {{- end }}
+  {{- end }}
+
+  {{- /* ──────────────────── PROMETHEUS CONFIGURATION ──────────────────── */}}
+  {{- with .prometheus }}
+  prometheus:
+    querier:
+      {{- if eq (.querier.mode | toString) "Manual" }}
+      manual:
+{{ include "tlsConfig" (dict "mode" .querier.mode "tls" .querier.manual.tls) | indent 8 }}
+        url: {{ .querier.manual.url | default "http://prometheus:9090" }}
+        forwardUserToken: {{ .querier.manual.forwardUserToken | default "false" }}
+      {{- end }}
+      mode: {{ .querier.mode | default "Auto" }}
+      timeout: {{ .querier.timeout | default "30s" }}
+      enable: {{ .querier.enable | default "true" }}
+  {{- end }}
+
+  {{- /* ──────────────────── EXPORTERS CONFIGURATION ──────────────────── */}}
+  {{- if .exporters }}
+  {{- with .exporters }}
+  exporters:
+    {{- range . }}
+    - type: {{ .type | default "OpenTelemetry" }}
+      {{- if eq (.type | toString) "OpenTelemetry" }}
+      openTelemetry:
+{{ include "tlsConfig" (dict "mode" .type "tls" .openTelemetry.tls) | indent 8 }}
+      {{- end }}
+      logs:
+        enable: {{ .openTelemetry.logs.enable | default "true" }}
+      metrics:
+        enable: {{ .openTelemetry.metrics.enable | default "true" }}
+        pushTimeInterval: {{ .openTelemetry.metrics.pushTimeInterval | default "20s" }}
+      targetHost: {{ .openTelemetry.targetHost | default "" }}
+      targetPort: {{ .openTelemetry.targetPort | default "" }}
+      protocol: {{ .openTelemetry.protocol | default "" }}
+      {{- if .openTelemetry.fieldsMapping }}
+      fieldsMapping:
+        {{- .openTelemetry.fieldsMapping | toYaml | nindent 8 }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

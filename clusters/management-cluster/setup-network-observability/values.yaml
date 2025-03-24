@@ -5,9 +5,9 @@ lokisecret: &loki-secret-name netobserv-loki-s3
 storageclassname: &storageclassname netobserv-bucket-storage-class
 lokistack_name: &lokistackname netobserv-loki
 
-network-observability:
-  enabled: true
-  netobserv:
+#network-observability:
+enabled: true
+netobserv:
     enabled: true
     namespace:
       name: *namespace
