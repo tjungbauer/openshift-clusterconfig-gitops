@@ -51,7 +51,7 @@ netobserv:
     # are disabled as well, if Loki is disabled.
     # If Prometheus and Loki are enabled, then Prometheus will take precedence and Loki is used as a fallback.
     # @default -- true
-    enabled: true
+    enable: true
 
     # -- Mode must be set according to the deployment mode of Loki.
     # Possible values: <br />

@@ -97,7 +97,9 @@ spec:
     {{- if eq (.mode) "LokiStack" }}
     lokiStack:
       name: {{ .lokiStack.name | default "loki" }}
-      namespace: {{ .lokiStack.namespace | default "" | quote }}
+      {{- if .lokiStack.namespace }}
+      namespace: {{ .lokiStack.namespace | quote }}
+      {{- end }}
     {{- end }}
 
     {{- if eq (.mode) "Microservices" }}
