@@ -100,11 +100,16 @@ netobserv:
         - DNSTracking
         - NetworkEvents
 
+      # -- Interfaces to exclude from the eBPF agent.
+      # @default -- ['lo']
+      excludeInterfaces:
+        - lo
+
   # -- Console Plugin configuration related to the OpenShift Console integration.
   consolePlugin:
     # -- Enable the console plugin.
     # @default -- true
-    enabled: true
+    enable: true
 
     # -- Quick filters configures quick filters presents for the console plugin.
     # You can define any filter you like, but the following filters are available by default:
@@ -140,21 +145,21 @@ netobserv:
       scheduling:
         # -- Set nodeSelector to place the consolePlugin on specific nodes
         # @default -- {}
-        nodeSelector:
-          key: node-role.kubernetes.io/infra
-          value: ''
+        # nodeSelector:
+        #   key: node-role.kubernetes.io/infra
+        #   value: ''
 
         # -- Set tolerations for the consolePlugin
         # @default -- []
-        tolerations:
-          - effect: NoSchedule
-            key: node-role.kubernetes.io/infra
-            operator: Equal
-            value: reserved
-          - effect: NoExecute
-            key: node-role.kubernetes.io/infra
-            operator: Equal
-            value: reserved
+        # tolerations:
+        #   - effect: NoSchedule
+        #     key: node-role.kubernetes.io/infra
+        #     operator: Equal
+        #     value: reserved
+        #   - effect: NoExecute
+        #     key: node-role.kubernetes.io/infra
+        #     operator: Equal
+        #     value: reserved
 
   # Processor Configuration of the component that receives the flows from the agent, enriches them, and sends them to the storage.
   processor:

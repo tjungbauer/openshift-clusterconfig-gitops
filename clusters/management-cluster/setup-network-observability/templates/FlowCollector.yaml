@@ -143,7 +143,7 @@ spec:
   {{- /* ──────────────────── CONSOLE PLUGIN CONFIGURATION ──────────────────── */}}
   {{- with .consolePlugin }}
   consolePlugin:
-    enabled: {{ .enabled | default "true" }}
+    enable: {{ .enable | default "true" }}
     replicas: {{ .replicas | default "1" }}
     {{- include "validate.logLevel" .logLevel }}
     logLevel: {{ .logLevel | default "info" }}
