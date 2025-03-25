@@ -139,6 +139,8 @@ spec:
     {{- end }}
     {{- end }}
   {{- end }}
+
+  {{- /* ──────────────────── CONSOLE PLUGIN CONFIGURATION ──────────────────── */}}
   {{- with .consolePlugin }}
   consolePlugin:
     enabled: {{ .enabled | default "true" }}
@@ -147,10 +149,12 @@ spec:
     logLevel: {{ .logLevel | default "info" }}
     imagePullPolicy: {{ .imagePullPolicy | default "IfNotPresent" }}
     {{- if eq (.enabled | toString ) "true" }}
+    {{- if .portNaming }}
     portNaming:
       enabled: {{ .portNaming.enabled | default "false" }}
       portNames:
       {{- .portNaming.portNames | toYaml | nindent 8 }}
+    {{- end }}
     {{- end }}
     quickFilters: 
       {{- .quickFilters | toYaml | nindent 6 }}
@@ -173,7 +177,7 @@ spec:
       {{- if .advanced.scheduling }}
       scheduling:
         {{- if .advanced.scheduling.nodeSelector }}
-{{- include "tpl.nodeSelector" .advanced.scheduling | indent 8 }}
+{{- include "tpl.nodeSelector" .advanced.scheduling | indent 6 }}
         {{- end}}
         {{- if .advanced.scheduling.tolerations }}
 {{ include "tpl.tolerations" .advanced.scheduling.tolerations | indent 8 }}

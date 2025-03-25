@@ -49,6 +49,7 @@ tls:
 {{- end }}
 
 {{- define "validate.logLevel" -}}
+  {{- if . }}
   {{- if not 
     ( or 
       (eq . "info")
@@ -61,6 +62,7 @@ tls:
     ) 
   }}
     {{- fail "loglevel must be either trace, debug, info, warn, error, fatal or panic" }}
+  {{- end }}
   {{- end }}
 {{- end }}
 

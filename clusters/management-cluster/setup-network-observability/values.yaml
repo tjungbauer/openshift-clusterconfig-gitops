@@ -106,6 +106,34 @@ netobserv:
     # @default -- true
     enabled: true
 
+    # -- Quick filters configures quick filters presents for the console plugin.
+    # You can define any filter you like, but the following filters are available by default:
+    # <ul> 
+    # <li>Applications: filter flows by the application layer</li>
+    # <li>Infrastructure: filter flows by the infrastructure layer</li>
+    # <li>Pods network: filter flows by the source and destination kind of Pod</li>
+    # <li>Services network: filter flows by the destination kind of Service</li>
+    # </ul>
+    # It is not recommended to remove the default filters.
+    # @default -- []
+    quickFilters:
+      - default: true
+        filter:
+          flow_layer: '"app"'
+        name: Applications
+      - filter:
+          flow_layer: '"infra"'
+        name: Infrastructure
+      - default: true
+        filter:
+          dst_kind: '"Pod"'
+          src_kind: '"Pod"'
+        name: Pods network
+      - filter:
+          dst_kind: '"Service"'
+        name: Services network
+        default: true
+
     # -- Advanced Parameters for the Console Plugin
     advanced:
       # -- Set placement and tolerations for the consolePlugin
