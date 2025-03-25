@@ -44,7 +44,7 @@ spec:
       {{- range .excludeInterfaces }}
         - {{ . }}
       {{- end }}
-      kafkaBatchSize: {{ .kafkaBatchSize | default "10485760" | int }}
+      kafkaBatchSize: {{ .kafkaBatchSize | default "0" | int }}
       cacheActiveTimeout: {{ .cacheActiveTimeout | default "5s" }}
       {{- if .interfaces }}
       interfaces:
