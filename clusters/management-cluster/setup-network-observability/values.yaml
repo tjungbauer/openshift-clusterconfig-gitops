@@ -1,5 +1,6 @@
 ---
-namespace: &namespace openshift-netobserv-operator
+namespace-operator: &namespace-operator openshift-netobserv-operator
+namespace: &namespace netobserv
 bucketname: &bucketname netobserv-bucket
 lokisecret: &loki-secret-name netobserv-loki-s3
 storageclassname: &storageclassname netobserv-bucket-storage-class
@@ -15,7 +16,7 @@ netobserv:
 
   # -- Namespace where Network Observability FlowCollector shall be installed.
   # @default -- 'netobserv'
-  namespace: netobserv
+  namespace: *namespace
 
   # -- Additional labels to add to the Keycloak instance as key: value pairs.
   # @section -- namespace
@@ -68,7 +69,7 @@ netobserv:
     lokiStack:
       # -- Name of an existing LokiStack resource to use.
       # @default -- loki
-      name: netobserv-loki
+      name: *lokistackname
 
   # -- Agent configuration for flows extraction
   agent:
@@ -187,7 +188,7 @@ helper-lokistack:
   name: *lokistackname
 
   # -- Namespace of the LokiStack object
-  namespace: netobserv
+  namespace: *namespace
 
   # -- Syncwave for the LokiStack object.
   # @default -- 3
@@ -362,7 +363,7 @@ helper-objectstore:
   bucket:
     enabled: true
     name: *bucketname
-    namespace: netobserv
+    namespace: *namespace
 
     # is_secure: true
     # port: 443
@@ -387,7 +388,7 @@ helper-loki-bucket-secret:
   syncwave: 2
 
   # Namespace for logging
-  namespace: netobserv
+  namespace: *namespace
 
   # Secretname that shall be created
   secretname: *loki-secret-name
@@ -411,7 +412,7 @@ helper-operator:
       enabled: true
       syncwave: '0'
       namespace:
-        name: *namespace
+        name: *namespace-operator
         create: true
       subscription:
         channel: stable
@@ -431,6 +432,6 @@ helper-status-checker:
   checks:
     - operatorName: netobserv-operator
       namespace:
-        name: *namespace
+        name: *namespace-operator
       serviceAccount:
         name: "sa-file-netobserv-checker"

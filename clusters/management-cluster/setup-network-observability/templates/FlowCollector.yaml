@@ -76,8 +76,8 @@ spec:
   {{- /* ──────────────────── LOKI CONFIGURATION ──────────────────── */}}
   {{- with .loki }}
   loki:
-    {{- if eq (.enabled | toString) "true" }}
-    enabled: true
+    {{- if eq (.enable | toString) "true" }}
+    enable: true
     {{- end }}
     readTimeout: {{ .readTimeout | default "30s" }}
     writeBatchWait: {{ .writeBatchWait | default "1s" }}
