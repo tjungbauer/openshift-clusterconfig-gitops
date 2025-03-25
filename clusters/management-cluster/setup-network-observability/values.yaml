@@ -137,7 +137,6 @@ netobserv:
       - filter:
           dst_kind: '"Service"'
         name: Services network
-        default: true
 
     # -- Advanced Parameters for the Console Plugin
     advanced:
