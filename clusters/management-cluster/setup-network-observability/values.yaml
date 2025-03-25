@@ -114,7 +114,7 @@ netobserv:
 
     # -- Quick filters configures quick filters presents for the console plugin.
     # You can define any filter you like, but the following filters are available by default:
-    # <ul> 
+    # <ul>
     # <li>Applications: filter flows by the application layer</li>
     # <li>Infrastructure: filter flows by the infrastructure layer</li>
     # <li>Pods network: filter flows by the source and destination kind of Pod</li>
