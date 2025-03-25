@@ -6,173 +6,178 @@ lokisecret: &loki-secret-name netobserv-loki-s3
 storageclassname: &storageclassname netobserv-bucket-storage-class
 lokistack_name: &lokistackname netobserv-loki
 
-
-# Network Observability settings.
-netobserv:
-  # -- Enable Network Observability configuration?
-  # This will also create the reader/writer rolebanding for multi-tenancy
-  # @default -- false
-  enabled: true
-
-  # -- Namespace where Network Observability FlowCollector shall be installed.
-  # @default -- 'netobserv'
-  namespace: *namespace
-
-  # -- Additional labels to add to the Keycloak instance as key: value pairs.
-  # @section -- namespace
-  # @default -- {}
-  additionalAnnotations: {}
-  #  additionalAnnotation1: "My Annotation"
-  #  additionalAnnotation2: "My Annotation 2"
-
-  # -- Additional labels to add to the Keycloak instance as key: value pairs.
-  # @section -- namespace
-  # @default -- {}
-  additionalLabels: {}
-  #  additionalLabel1: "My Label"
-  #  additionalLabel2: "My Label 2"
-
-  # -- Syncwave for the FlowCollector resource.
-  # @default -- 10
-  syncwave: 10
-
-  # -- Ddefines the desired type of deployment for flow processing.
-  # Possible values: <br />
-  # <ul>
-  # <li>Direct</li>
-  # <li>Kafka</li>
-  # </ul>
-  # @default -- Direct
-  deploymentModel: Direct
-
-  # -- Loki client settings
-  loki:
-    # -- Enable storing flows in Loki. Loki and/or Prometheus can be used. However,
-    # mot everything is transposable from Loki to Prometheus. Therefor some features of the plugin
-    # are disabled as well, if Loki is disabled.
-    # If Prometheus and Loki are enabled, then Prometheus will take precedence and Loki is used as a fallback.
-    # @default -- true
-    enable: true
-
-    # -- Mode must be set according to the deployment mode of Loki.
+network-observability:
+  # Network Observability settings.
+  netobserv:
+    # -- Enable Network Observability configuration?
+    # This will also create the reader/writer rolebanding for multi-tenancy
+    # @default -- false
+    enabled: true
+  
+    # -- Namespace where Network Observability FlowCollector shall be installed.
+    # @default -- 'netobserv'
+    namespace: 
+      name: *namespace
+      create: true
+ 
+    # -- Additional labels to add to the Keycloak instance as key: value pairs.
+    # @section -- namespace
+    # @default -- {}
+    additionalAnnotations: {}
+    #  additionalAnnotation1: "My Annotation"
+    #  additionalAnnotation2: "My Annotation 2"
+  
+    # -- Additional labels to add to the Keycloak instance as key: value pairs.
+    # @section -- namespace
+    # @default -- {}
+    additionalLabels: {}
+    #  additionalLabel1: "My Label"
+    #  additionalLabel2: "My Label 2"
+  
+    # -- Syncwave for the FlowCollector resource.
+    # @default -- 10
+    syncwave: 10
+  
+    # -- Ddefines the desired type of deployment for flow processing.
     # Possible values: <br />
     # <ul>
-    # <li>LokiStack: when Loki is managed using the Loki Operator</li>
-    # <li>Microservices: when Loki is installed as a microservice, but without the Loki Operator</li>
-    # <li>Monolithic: when Loki is installed as a monolithic workload</li>
-    # <li>Manual: if none of the options above match</li>
+    # <li>Direct</li>
+    # <li>Kafka</li>
     # </ul>
-    # @default -- Monolithic
-    mode: LokiStack
-
-    # -- Configuration for LOKI STACK MODE
-    lokiStack:
-      # -- Name of an existing LokiStack resource to use.
-      # @default -- loki
-      name: *lokistackname
-
-  # -- Agent configuration for flows extraction
-  agent:
-
-    # -- Type of the agent.
-    # @default -- eBPF
-    type: eBPF
-
-    # -- Settings related to the eBPF-based flow reporter.
-    ebpf:
-      # -- Enable privileged mode for the eBPF agent.
-      # @default -- false
-      privileged: true
-
-      # -- Features to enable for the eBPF agent.<br />
+    # @default -- Direct
+    deploymentModel: Direct
+  
+    # -- Loki client settings
+    loki:
+      # -- Enable storing flows in Loki. Loki and/or Prometheus can be used. However,
+      # mot everything is transposable from Loki to Prometheus. Therefor some features of the plugin
+      # are disabled as well, if Loki is disabled.
+      # If Prometheus and Loki are enabled, then Prometheus will take precedence and Loki is used as a fallback.
+      # @default -- true
+      enable: true
+  
+      # -- Mode must be set according to the deployment mode of Loki.
       # Possible values: <br />
       # <ul>
-      # <li>PacketDrop: Enable the packets drop flows logging feature. This feature requires mounting the kernel debug filesystem, so the eBPF agent pods must run as privileged. If the spec.agent.ebpf.privileged parameter is not set, an error is reported.</li>
-      # <li>DNSTracking: Enable the DNS tracking feature.</li>
-      # <li>FlowRTT: Enable flow latency (sRTT) extraction in the eBPF agent from TCP traffic.</li>
-      # <li>NetworkEvents: Enable the network events monitoring feature, such as correlating flows and network policies. This feature requires mounting the kernel debug filesystem, so the eBPF agent pods must run as privileged. It requires using the OVN-Kubernetes network plugin with the Observability feature. IMPORTANT: This feature is available as a Technology Preview.</li>
-      # <li>PacketTranslation: Enable enriching flows with packet translation information, such as Service NAT.</li>
-      # <li>EbpfManager: [Unsupported (*)]. Use eBPF Manager to manage network observability eBPF programs. Pre-requisite: the eBPF Manager operator (or upstream bpfman operator) must be installed.</li>
-      # <li>UDNMapping: [Unsupported (*)]. Enable interfaces mapping to User Defined Networks (UDN). This feature requires mounting the kernel debug filesystem, so the eBPF agent pods must run as privileged. It requires using the OVN-Kubernetes network plugin with the Observability feature.</li>
+      # <li>LokiStack: when Loki is managed using the Loki Operator</li>
+      # <li>Microservices: when Loki is installed as a microservice, but without the Loki Operator</li>
+      # <li>Monolithic: when Loki is installed as a monolithic workload</li>
+      # <li>Manual: if none of the options above match</li>
       # </ul>
-      # @default -- []
-      features:
-        - PacketDrop
-        - DNSTracking
-        - NetworkEvents
-
-      # -- Interfaces to exclude from the eBPF agent.
-      # @default -- ['lo']
-      excludeInterfaces:
-        - lo
-
-  # -- Console Plugin configuration related to the OpenShift Console integration.
-  consolePlugin:
-    # -- Enable the console plugin.
-    # @default -- true
-    enable: true
-
-    # -- Quick filters configures quick filters presents for the console plugin.
-    # You can define any filter you like, but the following filters are available by default:
-    # <ul>
-    # <li>Applications: filter flows by the application layer</li>
-    # <li>Infrastructure: filter flows by the infrastructure layer</li>
-    # <li>Pods network: filter flows by the source and destination kind of Pod</li>
-    # <li>Services network: filter flows by the destination kind of Service</li>
-    # </ul>
-    # It is not recommended to remove the default filters.
-    # @default -- []
-    quickFilters:
-      - default: true
-        filter:
-          flow_layer: '"app"'
-        name: Applications
-      - filter:
-          flow_layer: '"infra"'
-        name: Infrastructure
-      - default: true
-        filter:
-          dst_kind: '"Pod"'
-          src_kind: '"Pod"'
-        name: Pods network
-      - filter:
-          dst_kind: '"Service"'
-        name: Services network
-
-    # -- Advanced Parameters for the Console Plugin
-    advanced:
-      # -- Set placement and tolerations for the consolePlugin
-      scheduling:
-        # -- Set nodeSelector to place the consolePlugin on specific nodes
-        # @default -- {}
-        # nodeSelector:
-        #   key: node-role.kubernetes.io/infra
-        #   value: ''
-
-        # -- Set tolerations for the consolePlugin
+      # @default -- Monolithic
+      mode: LokiStack
+  
+      # -- Configuration for LOKI STACK MODE
+      lokiStack:
+        # -- Name of an existing LokiStack resource to use.
+        # @default -- loki
+        name: *lokistackname
+  
+    # -- Agent configuration for flows extraction
+    agent:
+  
+      # -- Type of the agent.
+      # @default -- eBPF
+      type: eBPF
+  
+      # -- Settings related to the eBPF-based flow reporter.
+      ebpf:
+        # -- Enable privileged mode for the eBPF agent.
+        # @default -- false
+        privileged: true
+  
+        # -- Features to enable for the eBPF agent.<br />
+        # Possible values: <br />
+        # <ul>
+        # <li>PacketDrop: Enable the packets drop flows logging feature. This feature requires mounting the kernel debug filesystem, so the eBPF agent pods must run as privileged. If the spec.agent.ebpf.privileged parameter is not set, an error is reported.</li>
+        # <li>DNSTracking: Enable the DNS tracking feature.</li>
+        # <li>FlowRTT: Enable flow latency (sRTT) extraction in the eBPF agent from TCP traffic.</li>
+        # <li>NetworkEvents: Enable the network events monitoring feature, such as correlating flows and network policies. This feature requires mounting the kernel debug filesystem, so the eBPF agent pods must run as privileged. It requires using the OVN-Kubernetes network plugin with the Observability feature. IMPORTANT: This feature is available as a Technology Preview.</li>
+        # <li>PacketTranslation: Enable enriching flows with packet translation information, such as Service NAT.</li>
+        # <li>EbpfManager: [Unsupported (*)]. Use eBPF Manager to manage network observability eBPF programs. Pre-requisite: the eBPF Manager operator (or upstream bpfman operator) must be installed.</li>
+        # <li>UDNMapping: [Unsupported (*)]. Enable interfaces mapping to User Defined Networks (UDN). This feature requires mounting the kernel debug filesystem, so the eBPF agent pods must run as privileged. It requires using the OVN-Kubernetes network plugin with the Observability feature.</li>
+        # </ul>
         # @default -- []
-        # tolerations:
-        #   - effect: NoSchedule
-        #     key: node-role.kubernetes.io/infra
-        #     operator: Equal
-        #     value: reserved
-        #   - effect: NoExecute
-        #     key: node-role.kubernetes.io/infra
-        #     operator: Equal
-        #     value: reserved
+        features:
+          - PacketDrop
+          - DNSTracking
+          - NetworkEvents
+  
+        # -- Interfaces to exclude from the eBPF agent.
+        # @default -- ['lo']
+        excludeInterfaces:
+          - lo
+  
+    # -- Console Plugin configuration related to the OpenShift Console integration.
+    consolePlugin:
+      # -- Enable the console plugin.
+      # @default -- true
+      enable: true
+  
+      # -- Quick filters configures quick filters presents for the console plugin.
+      # You can define any filter you like, but the following filters are available by default:
+      # <ul>
+      # <li>Applications: filter flows by the application layer</li>
+      # <li>Infrastructure: filter flows by the infrastructure layer</li>
+      # <li>Pods network: filter flows by the source and destination kind of Pod</li>
+      # <li>Services network: filter flows by the destination kind of Service</li>
+      # </ul>
+      # It is not recommended to remove the default filters.
+      # @default -- []
+      quickFilters:
+        - default: true
+          filter:
+            flow_layer: '"app"'
+          name: Applications
+        - filter:
+            flow_layer: '"infra"'
+          name: Infrastructure
+        - default: true
+          filter:
+            dst_kind: '"Pod"'
+            src_kind: '"Pod"'
+          name: Pods network
+        - filter:
+            dst_kind: '"Service"'
+          name: Services network
+  
+      # -- Advanced Parameters for the Console Plugin
+      advanced:
+        # -- Set placement and tolerations for the consolePlugin
+        scheduling:
+          # -- Set nodeSelector to place the consolePlugin on specific nodes
+          # @default -- {}
+          # nodeSelector:
+          #   key: node-role.kubernetes.io/infra
+          #   value: ''
+  
+          # -- Set tolerations for the consolePlugin
+          # @default -- []
+          # tolerations:
+          #   - effect: NoSchedule
+          #     key: node-role.kubernetes.io/infra
+          #     operator: Equal
+          #     value: reserved
+          #   - effect: NoExecute
+          #     key: node-role.kubernetes.io/infra
+          #     operator: Equal
+          #     value: reserved
+  
+    # Processor Configuration of the component that receives the flows from the agent, enriches them, and sends them to the storage.
+    processor:
+  
+      # -- Log types defines the desired record types to generate. Possible values are:<br>
+      # <ul>
+      # <li>Flows to export regular network flows. This is the default.</li>
+      # <li>Conversations to generate events for started conversations, ended conversations as well as periodic "tick" updates.</li>
+      # <li>EndedConversations to generate only ended conversations events.</li>
+      # <li>All to generate both network flows and all conversations events. It is not recommended due to the impact on resources footprint.</li>
+      # </ul>
+      # @default -- Flows
+      logTypes: Flows
 
-  # Processor Configuration of the component that receives the flows from the agent, enriches them, and sends them to the storage.
-  processor:
-
-    # -- Log types defines the desired record types to generate. Possible values are:<br>
-    # <ul>
-    # <li>Flows to export regular network flows. This is the default.</li>
-    # <li>Conversations to generate events for started conversations, ended conversations as well as periodic "tick" updates.</li>
-    # <li>EndedConversations to generate only ended conversations events.</li>
-    # <li>All to generate both network flows and all conversations events. It is not recommended due to the impact on resources footprint.</li>
-    # </ul>
-    # @default -- Flows
-    logTypes: Conversations
+    # -- additional optional exporters for custom consumption or storage.
+    exporters: []
 
 ########################################
 # SUBCHART: helper-lokistack
