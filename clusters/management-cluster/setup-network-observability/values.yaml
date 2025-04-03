@@ -13,31 +13,31 @@ network-observability:
     # This will also create the reader/writer rolebanding for multi-tenancy
     # @default -- false
     enabled: true
-  
+
     # -- Namespace where Network Observability FlowCollector shall be installed.
     # @default -- 'netobserv'
-    namespace: 
+    namespace:
       name: *namespace
       create: true
- 
+
     # -- Additional labels to add to the Keycloak instance as key: value pairs.
     # @section -- namespace
     # @default -- {}
     additionalAnnotations: {}
     #  additionalAnnotation1: "My Annotation"
     #  additionalAnnotation2: "My Annotation 2"
-  
+
     # -- Additional labels to add to the Keycloak instance as key: value pairs.
     # @section -- namespace
     # @default -- {}
     additionalLabels: {}
     #  additionalLabel1: "My Label"
     #  additionalLabel2: "My Label 2"
-  
+
     # -- Syncwave for the FlowCollector resource.
     # @default -- 10
     syncwave: 10
-  
+
     # -- Ddefines the desired type of deployment for flow processing.
     # Possible values: <br />
     # <ul>
@@ -46,7 +46,7 @@ network-observability:
     # </ul>
     # @default -- Direct
     deploymentModel: Direct
-  
+
     # -- Loki client settings
     loki:
       # -- Enable storing flows in Loki. Loki and/or Prometheus can be used. However,
@@ -55,7 +55,7 @@ network-observability:
       # If Prometheus and Loki are enabled, then Prometheus will take precedence and Loki is used as a fallback.
       # @default -- true
       enable: true
-  
+
       # -- Mode must be set according to the deployment mode of Loki.
       # Possible values: <br />
       # <ul>
@@ -66,26 +66,26 @@ network-observability:
       # </ul>
       # @default -- Monolithic
       mode: LokiStack
-  
+
       # -- Configuration for LOKI STACK MODE
       lokiStack:
         # -- Name of an existing LokiStack resource to use.
         # @default -- loki
         name: *lokistackname
-  
+
     # -- Agent configuration for flows extraction
     agent:
-  
+
       # -- Type of the agent.
       # @default -- eBPF
       type: eBPF
-  
+
       # -- Settings related to the eBPF-based flow reporter.
       ebpf:
         # -- Enable privileged mode for the eBPF agent.
         # @default -- false
         privileged: true
-  
+
         # -- Features to enable for the eBPF agent.<br />
         # Possible values: <br />
         # <ul>
@@ -102,18 +102,18 @@ network-observability:
           - PacketDrop
           - DNSTracking
           - NetworkEvents
-  
+
         # -- Interfaces to exclude from the eBPF agent.
         # @default -- ['lo']
         excludeInterfaces:
           - lo
-  
+
     # -- Console Plugin configuration related to the OpenShift Console integration.
     consolePlugin:
       # -- Enable the console plugin.
       # @default -- true
       enable: true
-  
+
       # -- Quick filters configures quick filters presents for the console plugin.
       # You can define any filter you like, but the following filters are available by default:
       # <ul>
@@ -140,7 +140,7 @@ network-observability:
         - filter:
             dst_kind: '"Service"'
           name: Services network
-  
+
       # -- Advanced Parameters for the Console Plugin
       advanced:
         # -- Set placement and tolerations for the consolePlugin
@@ -150,7 +150,7 @@ network-observability:
           # nodeSelector:
           #   key: node-role.kubernetes.io/infra
           #   value: ''
-  
+
           # -- Set tolerations for the consolePlugin
           # @default -- []
           # tolerations:
@@ -162,10 +162,10 @@ network-observability:
           #     key: node-role.kubernetes.io/infra
           #     operator: Equal
           #     value: reserved
-  
+
     # Processor Configuration of the component that receives the flows from the agent, enriches them, and sends them to the storage.
     processor:
-  
+
       # -- Log types defines the desired record types to generate. Possible values are:<br>
       # <ul>
       # <li>Flows to export regular network flows. This is the default.</li>
