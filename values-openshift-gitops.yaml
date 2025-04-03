@@ -19,6 +19,7 @@ gitopsinstances:
     repo: {}
     controller: {}
     sso:
+      enabled: true
       dex:
         openShiftOAuth: true
     ha: {}
