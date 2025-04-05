@@ -5,7 +5,7 @@
 # Syncwave: 0
 helper-operator:
   operators:
-    compliance-operator:
+    cert-manager-operator:
       enabled: true
       syncwave: '0'
       namespace:
