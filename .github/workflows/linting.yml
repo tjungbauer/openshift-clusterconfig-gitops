@@ -21,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
         with:
           python-version: 3.13
 
