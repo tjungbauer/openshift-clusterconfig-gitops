@@ -10,7 +10,7 @@ openshift-data-foundation:
     # There are two options:
     # Either install the multigateway only. This is useful if you just need S3 for Quay registry for example.
     multigateway_only:
-      enabled: true
+      enabled: false
 
       # Name of the stroageclass
       # The class must exist upfront and is currently not created by this chart.
@@ -18,7 +18,7 @@ openshift-data-foundation:
 
     # Second option is a full deployment, which will provide Block, File and Object Storage
     full_deployment:
-      enabled: false
+      enabled: true
 
       # Enable NFS or not
       nfs: enabled
