@@ -9,7 +9,7 @@ openshift-gitops:
       clusterAdmin: disabled
 
       server:
-        # host: *hostname
+        host: *hostname
         route:
           enabled: true
 
@@ -24,6 +24,7 @@ openshift-gitops:
       repo: {}
       appset: {}
       sso:
+        enabled: true
         dex:
           openShiftOAuth: true
 
