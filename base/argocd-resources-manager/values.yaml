@@ -49,7 +49,7 @@ applicationsets:
 
     # Switch to set the namespace to '.namespace' ... must be defined in config.json
     use_configured_namespace: true
-    
+
     # Definition of Matrix Generator. Only 2 generators are supported at the moment
     generatormatrix:
       # Git: Walking through the specific folder and take whatever is there.
