@@ -22,7 +22,7 @@ helper-argocd:
           # Define Helm Chart repository
         - repoUrl: "https://charts.stderr.at/"
           chart: helper-argocd
-          targetRevision: 2.0.35
+          targetRevision: 2.0.41
           # Path to the values file
           helm:
             default_values_file: $values/base/argocd-resources-manager/values.yaml

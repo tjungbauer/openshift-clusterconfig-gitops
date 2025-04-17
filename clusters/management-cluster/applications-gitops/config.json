@@ -1,0 +1,4 @@
+{
+  "namespace": "application-gitops",
+  "environment": "in-cluster"
+}

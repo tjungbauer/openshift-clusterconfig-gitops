@@ -1,5 +1,4 @@
 {
   "namespace": "default",
   "environment": "in-cluster",
-  "cluster": "in-cluster"
 }
