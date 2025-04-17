@@ -1,0 +1,4 @@
+{
+  "namespace": "quay-enterprise",
+  "environment": "in-cluster"
+}

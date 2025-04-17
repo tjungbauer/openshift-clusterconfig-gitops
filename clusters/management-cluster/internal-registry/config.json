@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-image-registry",
+  "environment": "in-cluster"
+}

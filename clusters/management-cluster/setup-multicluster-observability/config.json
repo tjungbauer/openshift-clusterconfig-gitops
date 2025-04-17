@@ -1,0 +1,4 @@
+{
+  "namespace": "open-cluster-management-observability",
+  "environment": "in-cluster"
+}

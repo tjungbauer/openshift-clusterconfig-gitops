@@ -1,0 +1,4 @@
+{
+  "namespace": "stackrox",
+  "environment": "in-cluster"
+}

@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-file-integrity",
+  "environment": "in-cluster"
+}

@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-netobserv-operator",
+  "environment": "in-cluster"
+}

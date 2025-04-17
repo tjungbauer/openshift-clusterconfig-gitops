@@ -1,0 +1,4 @@
+{
+  "namespace": "keycloak",
+  "environment": "in-cluster"
+}

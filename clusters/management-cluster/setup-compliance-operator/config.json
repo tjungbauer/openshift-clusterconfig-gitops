@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-compliance",
+  "environment": "in-cluster"
+}
