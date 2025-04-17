@@ -22,6 +22,69 @@ argocd_projects:
     enabled: true
 
 applicationsets:
+  ######################################
+  # MATRIX GENERATOR EXAMPLE Git Files #
+  ######################################
+  # The idea behind the GIT Generate (File) is to walk over a folder, for example /clusters/management-cluster and fetch a config.json from each folder.
+  # This is more or less similar as the Matrix generator (see below), but reqires a bit more configuration ... the config.json.
+  # The advantage is that you can configure individual namespaces for example in this config.json and provide an additional information
+  mgmt-cluster-matrix-gitfiles:
+    enabled: true
+
+    # Description - always usful
+    description: "ApplicationSet that Deploys on Management Cluster Configuration (using Git Generator)"
+    # Any labels you would like to add to the Application. Good to filter it in the Argo CD UI.
+    labels:
+      category: configuration
+      env: mgmt-cluster
+
+    # Using go text template. See: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/GoTemplate/
+    goTemplate: true
+    argocd_project: *mgmtclustername
+
+    environment: *mgmtclustername
+
+    # preserve all resources when the application get deleted. This is useful to keep that workload even if Argo CD is removed or severely changed.
+    preserveResourcesOnDeletion: true
+
+    # Switch to set the namespace to '.namespace' ... must be defined in config.json
+    use_configured_namespace: true
+    
+    # Definition of Matrix Generator. Only 2 generators are supported at the moment
+    generatormatrix:
+      # Git: Walking through the specific folder and take whatever is there.
+      - git:
+          files:
+            - path: clusters/management-cluster/**/config.json
+          repoURL: *repourl
+          revision: *branch
+      # List: simply define the targetCluster. The name of the cluster must be known by Argo CD
+      - list:
+          elements:
+              # targetCluster is important, this will define on which cluster it will be rolled out.
+              # The cluster name must be known in Argo CD
+            - targetCluster: *mgmtclustername
+
+    syncPolicy:
+      autosync_enabled: false
+
+    # Retrying in case the sync failed.
+    retries:
+      # number of failed sync attempt retries; unlimited number of attempts if less than 0
+      limit: 5
+      backoff:
+        # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+        # Default: 5s
+        duration: 5s
+        # a factor to multiply the base duration after each failed retry
+        # Default: 2
+        factor: 2
+        # the maximum amount of time allowed for the backoff strategy
+        # Default: 3m
+        maxDuration: 3m
+  ##########################################
+  # END MATRIX GENERATOR EXAMPLE GIT Files #
+  ##########################################
 
   ############################
   # MATRIX GENERATOR EXAMPLE #
@@ -39,7 +102,7 @@ applicationsets:
   # Don't forget that the Matrix Generator supports only 2 generators at the moment.
   mgmt-cluster:
     # Is the ApplicationSet enabled or not
-    enabled: true
+    enabled: false
 
     # Description - always useful
     description: "ApplicationSet that Deploys on Management Cluster Configuration (using Matrix Generator)"
@@ -202,7 +265,7 @@ applicationsets:
 
   # Install Base Operators
   enable-base-operators:
-    enabled: true
+    enabled: false
     description: "Install BASE Operators for later use. There is no Health Check in Place, be sure that the Operators have been deployed."
     labels:
       category: operators
@@ -236,7 +299,7 @@ applicationsets:
 
   # Install RHACS Demo
   rhacs-demo-app:
-    enabled: true
+    enabled: false
     description: "Deploy a vulnerable demo application to show results in RHACS"
     labels:
       category: security
@@ -254,7 +317,7 @@ applicationsets:
 
   # Install Pipeline Demo
   pipeline-demo:
-    enabled: true
+    enabled: false
     description: "Deploy a demo pipeline about linting to show possibilities"
     labels:
       category: cicd
