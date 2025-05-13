@@ -78,6 +78,6 @@ helper-status-checker:
   checks:
     - operatorName: rhbk-operator
       namespace:
-        name: rhbk-operator
+        name: *namespace
       serviceAccount:
         name: "status-checker-rhbk"
