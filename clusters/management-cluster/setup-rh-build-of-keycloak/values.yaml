@@ -33,7 +33,7 @@ rh-build-keycloak:
     create: true
 
   keycloak:
-    name: example-keycloak
+    name: keycloak
     namespace: *namespace
 
     hostname:
@@ -46,6 +46,10 @@ rh-build-keycloak:
       use_example_db_sta: true
       exmple_db_user: testuser
       example_db_pass: ""
+
+    additionalAnnotations:
+      argocd.argoproj.io/sync-wave: '10'
+      argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 
 # Install Operator Compliance Operator
 # Deploys Operator --> Subscription and Operatorgroup
