@@ -1,6 +1,6 @@
 ---
 ###########################
-# Enable and configura ODF
+# Enable and configure ODF
 ###########################
 openshift-data-foundation:
   storagecluster:
@@ -8,11 +8,11 @@ openshift-data-foundation:
     syncwave: 3
 
     # There are two options:
-    # Either install the multigateway only. This is useful if you just need S3 for Quay registry for example.
+    # Either install the MultiCloudGateway only. This is useful if you just need S3 for Quay registry for example.
     multigateway_only:
       enabled: false
 
-      # Name of the stroageclass
+      # Name of the storageclass
       # The class must exist upfront and is currently not created by this chart.
       storageclass: gp3-csi
 
@@ -27,19 +27,20 @@ openshift-data-foundation:
       # Default: cluster.ocs.openshift.io/openshift-storage
       # default_node_label: cluster.ocs.openshift.io/openshift-storage
 
+      # -- In the Configure performance. The following profiles are available: <br />
+      # <ul>
+      # <li>lean (24 CPU, 72GiB): Use this in a resource constrained environment with minimum resources that are lower than the recommended. This profile minimizes resource consumption by allocating fewer CPUs and less memory.</li>
+      # <li>balanced (30 CPU, 72 GiB, default): Use this when recommended resources are available. This profile provides a balance between resource consumption and performance for diverse workloads.</li>
+      # <li>performance (45 CPU, 96 GiB): Use this in an environment with sufficient resources to get the best performance. This profile is tailored for high performance by allocating ample memory and CPUs to ensure optimal execution of demanding workloads.</li>
+      # </ul>
+      # <br />
+      # @default -- balanced
+      resourceProfile: balanced
+
       # Define the DeviceSets
       storageDeviceSets:
           # Name of the DeviceSet
         - name: ocs-deviceset
-          # Resources for the DeviceSets Pods.
-          # Limits and Requests can be defined
-          # Default:
-          #   Limit: cpu: 1, memory: 5Gi
-          #   Requests: cpu: 1, memory: 5Gi
-          resources:
-            requests:
-              cpu: '1'
-              memory: 5Gi
 
           # Definitions of the PVC Template
           dataPVCTemplate:
@@ -50,6 +51,7 @@ openshift-data-foundation:
               #   - ReadWriteOnce
 
               # Size of the Storage. Might be 512Gi, 2Ti, 4Ti
+              # Usually not required to define, only set when you know what you are doing.
               # Default: 512Gi
               resources:
                 requests:
