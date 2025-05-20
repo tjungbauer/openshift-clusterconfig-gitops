@@ -31,7 +31,7 @@ helper-objectstore:
   # syncwave: 1
 
   # Name of the BackingStore
-  backingstore_name: quay-backingstore
+  backingstore_name: tpa-backingstore
   # Size of the BackingStore
   backingstore_size: 700Gi
   # numOfVolumes: 1
