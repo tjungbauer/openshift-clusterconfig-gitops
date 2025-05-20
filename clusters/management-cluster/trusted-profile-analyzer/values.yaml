@@ -6,8 +6,8 @@ storageclassname: &storageclassname tpa-bucket-storage-class
 
 enabled: true
 
-namespace: 
-  create: true 
+namespace:
+  create: true
   name: *namespace
 
 #######################################################
