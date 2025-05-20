@@ -10,6 +10,11 @@ namespace:
   create: true
   name: *namespace
 
+db:
+  use_example_db_sts: true
+  example_db_user: testuser
+  example_db_pass: thisisonly4testingNOT4prod
+
 #######################################################
 # If ODF is used, the Chart helper-objectstore
 # is able to create the S3 storage for Quay.

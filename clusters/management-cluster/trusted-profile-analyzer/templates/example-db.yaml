@@ -1,0 +1,56 @@
+{{ if eq (.Values.db.use_example_db_sts | toString) "true" }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-db
+  namespace: {{ .Values.namespace.name | default "trusted-profile-analyzer" }}
+spec:
+  serviceName: postgresql-db-service
+  selector:
+    matchLabels:
+      app: postgresql-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresql-db
+    spec:
+      containers:
+        - name: postgresql-db
+          image: postgres:17
+          volumeMounts:
+            - mountPath: /data
+              name: psql
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.db.example_db_user | default "testuser" }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.db.example_db_pass | default "thisisonly4testingNOT4prod" }}
+            - name: PGDATA
+              value: /data/pgdata
+            - name: POSTGRES_DB
+              value: keycloak
+  volumeClaimTemplates:
+  - metadata:
+      name: psql
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "gp3-csi"
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  namespace: {{ .Values.namespace.name | default "trusted-profile-analyzer" }}
+spec:
+  selector:
+    app: postgresql-db
+  type: LoadBalancer
+  ports:
+  - port: 5432
+    targetPort: 5432
+{{- end }}

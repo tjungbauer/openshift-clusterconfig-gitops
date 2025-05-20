@@ -4,7 +4,7 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: {{ .Values.namespace.name | default "etcd-backup" }}
+  name: {{ .Values.namespace.name | default "trusted-profile-analyzer" }}
   annotations:
     {{- include "tpl.namespaceDescr" .Values.namespace.descr | nindent 4 }}
     {{- include "tpl.namespaceDisplay" .Values.namespace.display | nindent 4 }}
