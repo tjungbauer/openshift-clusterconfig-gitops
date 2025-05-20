@@ -1,6 +1,6 @@
 apiVersion: v2
 name: setup-quay
-description: Setup Qay Registry
+description: Setup Quay Registry
 version: 2.0.0
 dependencies:
   - name: tpl

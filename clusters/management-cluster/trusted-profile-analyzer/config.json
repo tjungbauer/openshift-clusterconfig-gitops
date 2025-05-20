@@ -1,0 +1,4 @@
+{
+  "namespace": "trusted-profile-analyzer",
+  "environment": "in-cluster"
+}

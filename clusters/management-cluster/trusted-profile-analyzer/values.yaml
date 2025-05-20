@@ -1,0 +1,44 @@
+---
+target_namespace: &namespace trusted-profile-analyzer
+s3_hostname: &s3_hostname s3-openshift-storage.apps.ocp.aws.ispworld.at
+storageclassname: &storageclassname tpa-bucket-storage-class
+
+
+enabled: true
+
+namespace: 
+  create: true 
+  name: *namespace
+
+#######################################################
+# If ODF is used, the Chart helper-objectstore
+# is able to create the S3 storage for Quay.
+#
+# It is a helper chart that simply creates another
+# backingstore.
+# This is a chart in an early state, and not everything
+# can be customized for now.
+#
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+#######################################################
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: quay-backingstore
+  # Size of the BackingStore
+  backingstore_size: 700Gi
+  # numOfVolumes: 1
+  # type: py-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname

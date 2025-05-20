@@ -1,0 +1,18 @@
+{{- if eq (.Values.enabled | toString) "true" }}
+{{- if eq (.Values.namespace.create | toString) "true" }}
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: {{ .Values.namespace.name | default "etcd-backup" }}
+  annotations:
+    {{- include "tpl.namespaceDescr" .Values.namespace.descr | nindent 4 }}
+    {{- include "tpl.namespaceDisplay" .Values.namespace.display | nindent 4 }}
+    {{- include "tpl.additionalAnnotations" .Values.namespace.additionalAnnotations | indent 4 }}
+  labels:
+    openshift.io/cluster-monitoring: "true"
+    {{- include "tpl.labels" $ | nindent 4 }}
+    {{- include "tpl.additionalLabels" .Values.namespace.additionalLabels | indent 4 }}
+spec: {}
+{{- end }}
+{{- end }}
