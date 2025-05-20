@@ -2,7 +2,7 @@
 target_namespace: &namespace trusted-profile-analyzer
 s3_hostname: &s3_hostname s3-openshift-storage.apps.ocp.aws.ispworld.at
 storageclassname: &storageclassname tpa-bucket-storage-class
-
+bucketname: &bucketname trusted-profile-analyzer
 
 enabled: true
 
@@ -42,3 +42,23 @@ helper-objectstore:
 
   # Name of the StorageClass that shall be enabled.
   storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    # -- Shall a new bucket be enabled?
+    # @default -- false
+    enabled: true
+
+    # -- Name of the bucket that shall be created
+    name: *bucketname
+
+    # -- Target Namespace for that bucket.
+    namespace: *namespace
+
+    # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # @default -- 2
+    syncwave: 2
+
+    # -- Name of the storageclass for our bucket
+    # @default -- openshift-storage.noobaa.io
+    storageclass: *storageclassname
