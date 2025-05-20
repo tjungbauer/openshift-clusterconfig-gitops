@@ -10,5 +10,8 @@ dependencies:
     version: ~1.0.0
     repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
+  - name: redhat-trusted-profile-analyzer
+    version: ~1.0.0
+    repository: https://charts.openshift.io/
 maintainers:
   - name: tjungbauer
