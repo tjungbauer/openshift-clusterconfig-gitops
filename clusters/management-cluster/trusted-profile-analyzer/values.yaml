@@ -93,7 +93,7 @@ redhat-trusted-profile-analyzer:
           key: AWS_SECRET_ACCESS_KEY
 
   database:
-    sslMode: require
+    #sslMode: require
     host:
       valueFrom:
         secretKeyRef:
