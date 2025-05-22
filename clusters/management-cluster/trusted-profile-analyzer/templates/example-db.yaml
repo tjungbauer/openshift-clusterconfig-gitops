@@ -30,7 +30,7 @@ spec:
             - name: PGDATA
               value: /data/pgdata
             - name: POSTGRES_DB
-              value: keycloak
+              value: rhtpadb
   volumeClaimTemplates:
   - metadata:
       name: psql
