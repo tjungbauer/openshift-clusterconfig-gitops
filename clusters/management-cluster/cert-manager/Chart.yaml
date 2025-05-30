@@ -2,7 +2,7 @@ apiVersion: v2
 name: cert-manager
 description: Setup and configure the cert Manager operator
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/cert-manager
-version: 1.0.0
+version: 2.0.0
 dependencies:
   - name: tpl
     version: ~1.0.0
@@ -15,7 +15,7 @@ dependencies:
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
   - name: cert-manager
-    version: ~1.0.0
+    version: ~2.0.0
     repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer

@@ -36,8 +36,10 @@ cert-manager:
     enable_patch: true
 
     overrideArgs:
-      - '--dns01-recursive-nameservers-only'
-      - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
+      enabled: true
+      args:
+        - '--dns01-recursive-nameservers-only'
+        - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
 
   issuer:
     - name: letsencrypt-prod
