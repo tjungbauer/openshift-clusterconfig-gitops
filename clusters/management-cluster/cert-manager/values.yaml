@@ -116,8 +116,6 @@ cert-manager-approver-policy:
     approveSignerNames:
       - 'issuers.cert-manager.io/*'
       - 'clusterissuers.cert-manager.io/*'
-      - 'clusterissuers.ejbca-issuer.keyfactor.com/*'
-      - 'issuers.ejbca-issuer.keyfactor.com/*'
   
   # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
   # matching labels.
