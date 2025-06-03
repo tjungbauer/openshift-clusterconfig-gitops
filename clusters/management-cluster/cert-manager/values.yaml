@@ -125,15 +125,15 @@ cert-manager-approver-policy:
     node-role.kubernetes.io/infra: ''
 
   # Tolerations ... placing on infra nodes
-  tolerations:
-    - effect: NoSchedule
-      key: node-role.kubernetes.io/infra
-      operator: Equal
-      value: reserved
-    - effect: NoExecute
-      key: node-role.kubernetes.io/infra
-      operator: Equal
-      value: reserved
+  tolerations: []
+#    - effect: NoSchedule
+#      key: node-role.kubernetes.io/infra
+#      operator: Equal
+#      value: reserved
+#    - effect: NoExecute
+#      key: node-role.kubernetes.io/infra
+#      operator: Equal
+#      value: reserved
 
 #########################################################
 # CERT-Manager Approver Policy Configuration
