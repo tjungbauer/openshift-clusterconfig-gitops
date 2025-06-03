@@ -121,8 +121,8 @@ cert-manager-approver-policy:
   
   # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
   # matching labels.
-  nodeSelector:
-    node-role.kubernetes.io/infra: ''
+  #nodeSelector:
+  #  node-role.kubernetes.io/infra: ''
 
   # Tolerations ... placing on infra nodes
   tolerations: []
