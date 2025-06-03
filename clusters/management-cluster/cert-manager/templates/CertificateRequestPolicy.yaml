@@ -1,0 +1,156 @@
+---
+{{- $subjects := list "organizations" "countries" "organizationalUnits" "localities" "provinces" "streetAddresses" "postalCodes" }}
+{{- $coreinfo := list "dnsNames" "emailAddresses" "ipAddresses" "uris" }}
+
+{{- range .Values.policies }}
+{{- if eq (.enabled | toString) "true" }}
+apiVersion: policy.cert-manager.io/v1alpha1
+kind: CertificateRequestPolicy
+metadata:
+  name: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default 10 | quote }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+spec:
+  allowed:
+    {{- if .allowed.commonName }}
+    commonName:
+      required: {{ .allowed.commonName.required | default false }}
+      value: {{ .allowed.commonName.value | default "*" | quote }}
+      {{- if .allowed.commonName.validations }}
+      {{- range .allowed.commonName.validations }}
+      validations:
+        - rule: {{ .rule | quote }}
+          message: {{ .message | quote }}
+      {{- end }}
+      {{- else }}
+      validations: []
+      {{- end }}
+    {{- else }}
+    commonName:
+      required: false
+      value: "*"
+      validations: []
+    {{- end }}
+
+
+    {{- $corefield := .allowed | default dict }}
+    {{- range $coreinfofield := $coreinfo}}
+    {{- $entry := get $corefield $coreinfofield | default dict }}
+    {{ $coreinfofield }}:
+      required: {{- if and $entry (hasKey $entry "required") }} {{ $entry.required | default false }}
+                {{- else }} false {{- end }}
+      values: {{- if and $entry (hasKey $entry "values") }} 
+        {{- range $entry.values }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- else }} ["*"] {{- end }}
+      validations: {{- if and $entry (hasKey $entry "validations") }} 
+        {{- if gt (len $entry.validations) 0 }}
+        {{- range $entry.validations }}
+        - rule: {{ .rule | quote }}
+          message: {{ .message | quote }}
+        {{- end }}
+        {{- else }} [] {{- end }}
+      {{- else }} [] {{- end }}
+    {{- end }}
+    isCA: {{ .allowed.isCA | default false }}
+    subject:
+      {{- $subject := .allowed.subject | default dict }}
+      {{- range $subjectfield := $subjects}}
+      {{- $entry := get $subject $subjectfield | default dict }}
+      {{ $subjectfield }}:
+        required: {{- if and $entry (hasKey $entry "required") }} {{ $entry.required | default false }}
+                  {{- else }} false {{- end }}
+        values: {{- if and $entry (hasKey $entry "values") }} 
+          {{- range $entry.values }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- else }} ["*"] {{- end }}
+        validations: {{- if and $entry (hasKey $entry "validations") }} 
+          {{- if gt (len $entry.validations) 0 }}
+          {{- range $entry.validations }}
+          - rule: {{ .rule | quote }}
+            message: {{ .message | quote }}
+          {{- end }}
+          {{- else }} [] {{- end }}
+        {{- else }} [] {{- end }}
+      {{- end }}
+
+      {{- if .allowed.subject.serialNumber }}
+      serialNumber:
+        required: {{ .allowed.subject.serialNumber.required | default false }}
+        value: {{ .allowed.subject.serialNumber.value | default "*" | quote }}
+        {{- if .allowed.subject.serialNumber.validations }}
+        {{- range .allowed.subject.serialNumber.validations }}
+        validations:
+          - rule: {{ .rule | quote }}
+            message: {{ .message | quote }}
+        {{- end }}
+        {{- else }}
+        validations: []
+        {{- end }}
+      {{- else }}
+      serialNumber:
+        required: false
+        value: "*"
+        validations: []
+      {{- end }}
+      
+    {{- if .allowed.usages }}
+    usages:
+      {{- range .allowed.usages }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- else }}
+    usages:
+      - "signing"
+      - "digital signature"
+      - "content commitment"
+      - "key encipherment"
+      - "key agreement"
+      - "data encipherment"
+      - "cert sign"
+      - "crl sign"
+      - "encipher only"
+      - "decipher only"
+      - "any"
+      - "server auth"
+      - "client auth"
+      - "code signing"
+      - "email protection"
+      - "s/mime"
+      - "ipsec end system"
+      - "ipsec tunnel"
+      - "ipsec user"
+      - "timestamping"
+      - "ocsp signing"
+      - "microsoft sgc"
+      - "netscape sgc"
+    {{- end }}
+
+  {{- if .constraints }}
+  {{- with .constraints }}
+  constraints:
+    minDuration: {{ .minDuration | default "1h" }}
+    maxDuration: {{ .maxDuration | default "24h" }}
+    {{- if .privateKey }}
+    privateKey:
+      algorithm: {{ .privateKey.algorithm | default "RSA" }}
+      minSize: {{ .privateKey.minSize | default 3072 }}
+      maxSize: {{ .privateKey.maxSize | default 4096 }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .selector }}
+  selector:
+{{ .selector | toYaml | indent 4 }}
+  {{- else }}
+  selector:
+    issuerRef: {}
+  {{- end }}
+
+{{- end }}
+{{- end }}

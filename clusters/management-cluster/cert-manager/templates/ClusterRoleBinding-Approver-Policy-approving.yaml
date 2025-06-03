@@ -1,0 +1,14 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.role | quote }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount }}
+    namespace: {{ .Values.cert_manager_Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.role | quote }}

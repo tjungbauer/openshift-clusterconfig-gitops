@@ -1,0 +1,19 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.role | quote }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+rules:
+  - verbs:
+      - use
+    apiGroups:
+      - policy.cert-manager.io
+    resources:
+      - certificaterequestpolicies
+    resourceNames:
+    {{- range .Values.policies }}
+      {{- if eq (.enabled | toString) "true" }}
+      - {{ .name }}
+      {{- end }}
+    {{- end }}

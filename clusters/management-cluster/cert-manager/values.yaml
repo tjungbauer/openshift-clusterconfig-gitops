@@ -31,9 +31,22 @@ helper-status-checker:
       serviceAccount:
         name: "status-checker-cert-manager"
 
+
+#########################################################
+# CERT-Manager configuration
+#########################################################
+# Configure/patch the default cert-amanger instance and add unsupported configuration.
+# The Auto-Approver controller must be disabled, to approver policy can be used. 
 cert-manager:
   certManager:
     enable_patch: true
+
+    syncwave: '10'
+
+    unsupportedConfigOverrides:
+      controller:
+        args:
+          - '--controllers=*,-certificaterequests-approver'
 
     overrideArgs:
       enabled: true
@@ -63,3 +76,129 @@ cert-manager:
             selector:
               dnsZones:
                 - aws.ispworld.at
+
+#########################################################
+# CERT-Manager Approver Policy Deployment (extra chart)
+#########################################################
+cert-manager-approver-policy:
+
+  crds:
+    # This option decides if the CRDs should be installed
+    # as part of the Helm installation.
+    enabled: true
+    # This option makes it so that the "helm.sh/resource-policy": keep
+    # annotation is added to the CRD. This will prevent Helm from uninstalling
+    # the CRD when the Helm release is uninstalled.
+    # WARNING: when the CRDs are removed, all cert-manager-approver-policy custom resources
+    # (CertificateRequestPolicy) will be removed too by the garbage collector.
+    keep: true
+
+  # Number of replicas of approver-policy to run.
+  replicaCount: 1
+ 
+  image:
+    # Target image repository.
+    repository: quay.io/jetstack/cert-manager-approver-policy
+    # Kubernetes imagePullPolicy on Deployment.
+    pullPolicy: IfNotPresent
+    tag: v0.19.0
+
+  app:
+    # The format of approver-policy logging. Accepted values are text or json.
+    logFormat: text
+    # Verbosity of approver-policy logging. This is a value from 1 to 5.
+    logLevel: 1
+
+    # List of signer names that approver-policy will be given permission to
+    # approve and deny. CertificateRequests referencing these signer names can be
+    # processed by approver-policy. Defaults to an empty array, allowing approval
+    # for all signers.
+    approveSignerNames:
+      - 'issuers.cert-manager.io/*'
+      - 'clusterissuers.cert-manager.io/*'
+      - 'clusterissuers.ejbca-issuer.keyfactor.com/*'
+      - 'issuers.ejbca-issuer.keyfactor.com/*'
+  
+  # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
+  # matching labels.
+  nodeSelector:
+    node-role.kubernetes.io/infra: ''
+
+  # Tolerations ... placing on infra nodes
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Equal
+      value: reserved
+    - effect: NoExecute
+      key: node-role.kubernetes.io/infra
+      operator: Equal
+      value: reserved
+
+#########################################################
+# CERT-Manager Approver Policy Configuration
+#########################################################
+role: cert-manager-policy:global-approver
+serviceAccount: cert-manager
+cert_manager_Namespace: cert-manager
+
+policies:
+  - name: my-approver-policy
+    enabled: true
+
+    allowed:
+
+      commonName:
+        required: false
+        value: "*"
+        validations: []
+      dnsNames:
+        required: true
+        values:
+          - "*"
+        validations: []
+      ipAddresses:
+        required: false
+        values: ["*"]
+        validations: []
+      uris:
+        required: false
+        values:
+          - "*"
+        validations: []
+      emailAddresses:
+        required: false
+        values:
+          - "*"
+        validations: []
+
+      # isCA: false
+      subject:
+        organizations:
+          required: true
+          values:
+            - "MyOrganization"
+          validations:
+            - rule: self.matches("MyOrganization")
+              message: Organization must be MyOrganization
+        countries:
+          required: true
+          values:
+            - AT
+          validations:
+            - rule: self.matches("AT")
+              message: Country code must be AT
+      usages:
+        - "server auth"
+        - "client auth"
+
+    constraints:
+      minDuration: 1h
+      maxDuration: 24h
+      privateKey:
+        algorithm: RSA
+        minSize: 2048
+        maxSize: 4096
+
+    selector:
+      issuerRef: {}

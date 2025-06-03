@@ -1,5 +1,5 @@
 {
-  "namespace": "cert-manager-operator",
+  "namespace": "cert-manager",
   "environment": "in-cluster",
   "cluster": "in-cluster"
 }
