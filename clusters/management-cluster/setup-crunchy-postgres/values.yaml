@@ -13,7 +13,7 @@ helper-operator:
       enabled: true
       namespace:
         name: *namespace
-        create: false
+        create: true
       subscription:
         channel: v5
         approval: Manual
@@ -87,7 +87,7 @@ postgresql:
       # -- Options for that user
       # @section -- PostgresCluster
       options: SUPERUSER
- 
+
       # -- Databases the user shall have access to.
       # @section -- PostgresCluster
       databases:
