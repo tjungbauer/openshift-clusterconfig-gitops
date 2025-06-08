@@ -1,0 +1,4 @@
+{
+  "namespace": "crunchy-postgres",
+  "environment": "in-cluster"
+}

@@ -1,0 +1,189 @@
+---
+namespace: &namespace "crunchy-postgres-operator"
+s3endpoint: &s3endpoint "not-there-yet"
+
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
+helper-operator:
+ 
+  operators:
+    crunchy-postgres-operator:
+      enabled: true
+      namespace:
+        name: *namespace
+        create: false
+      subscription:
+        channel: v5
+        approval: Manual
+        operatorName: crunchy-postgres-operator
+        source: certified-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+ 
+########################################
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator.
+########################################
+helper-status-checker:
+  enabled: true
+  approver: true
+ 
+  # List of checks that shall be performed.
+  checks:
+    - operatorName: postgresoperator
+      subscriptionName: postgresoperator
+      sleeptimer: 60
+      maxretries: 100
+      syncwave: '0'
+      namespace:
+        name: *namespace
+ 
+      serviceAccount:
+        name: "status-checker-crunchy-postgres-operator"
+
+###################################################
+# Postgres Cluster Settings
+# This will configure the PostgresCluster resource
+###################################################
+postgresql:
+  # -- Enable PostgresCluster Configuration
+  # @section -- PostgresCluster
+  # @default -- false
+  enabled: false
+ 
+  # -- Argo CD Syncwave for PostgresCluster resource<br />
+  # <b>ATTN</b>: Must be set to "0" as the Atlassian charts currently to not support annotations.
+  # @section -- PostgresCluster
+  # @default -- 0
+  syncwave: "0"
+ 
+  # -- Name of the PostgresCluster instance
+  # @section -- PostgresCluster
+  name: nexus-shared-db-dev
+ 
+  # -- PostgresCluster version
+  # @section -- PostgresCluster
+  version: 16
+ 
+  # -- Initialize Database
+  # This will pick up the data from the "key" from the configmap "name"
+  # @section -- PostgresCluster
+  databaseInitSQL: {}
+ 
+  # -- List of initial users
+  # @section -- PostgresCluster
+  users:
+      # -- Create "minio" User
+      # @section -- PostgresCluster
+    - name: nexus
+      # -- Be sure the password type is set to "AlphaNumeric"
+      # @section -- PostgresCluster
+      password:
+        type: AlphaNumeric
+      # -- Options for that user
+      # @section -- PostgresCluster
+      options: SUPERUSER
+ 
+      # -- Databases the user shall have access to.
+      # @section -- PostgresCluster
+      databases:
+        - nexus_repo
+        - nexus_iq
+    - name: postgres
+ 
+  # Base configuration of the Postgres instances
+  # There are no default values, so all of these must be set
+  instances:
+ 
+      # -- Instance Name
+      # @section -- PostgresCluster
+    - name: instance1
+ 
+      # -- Replicas for this Postgres instance
+      # @section -- PostgresCluster
+      replicas: 2
+ 
+      # Information about the PVC
+      dataVolumeClaimSpec:
+        # -- Create a RWX storage with this size.
+        # @section -- PostgresCluster
+        storageSize: 30Gi
+ 
+        # -- StorageClass for the PVC. Must support RWX
+        # @section -- PostgresCluster
+        storageClass: netapp-volume
+ 
+      # -- Resource specification for this Postgres instance
+      # @section -- PostgresCluster
+      resources:
+        limits_cpu: 4
+        requests_cpu: 4
+        limits_memory: 8Gi
+        requests_memory: 8Gi
+ 
+  ###########################################################################################
+  # POSTGRES BACKUP SETTINGS
+  # S3 backup using repo2 is assumed
+  # This here shall only help to set some parameters and does not provide full fledged logic
+  ###########################################################################################
+  backup:
+ 
+    # -- Name of the Secret that contains the information about the S3 storage. It must contain the keys: "repo2-ca.crt" and "s3.conf"<br />
+    # <b>Do NOT create this Secret object manually!</b> It is created during the Tenant onboarding instad.
+    # @section -- PostgresCluster
+    secretName: postgres-pgbackrest-config
+ 
+    # Global Backup settings
+    global:
+      # -- Image for pgBackRest image
+      # @section -- PostgresCluster
+      image: registry.connect.redhat.com/crunchydata/crunchy-pgbackrest:ubi8-2.47-2
+ 
+      # -- Path inside the object storage to store the backup
+      # @section -- PostgresCluster
+      repo2_path: /pgo/chvk8devval/sontatype-nexus-repo/postgres/repo2
+ 
+      # -- Retention period for full backups
+      # @section -- PostgresCluster
+      repo2_retention_full: '30'
+ 
+      # -- Calculation of retetion period (could be time or amount)
+      # @section -- PostgresCluster
+      repo2_retention_full_type: time
+ 
+      # -- S3 URI Style
+      # @section -- PostgresCluster
+      repo2_s3_uri_style: path
+ 
+      # -- Path to the CA of Minio Storage
+      # @section -- PostgresCluster
+      repo2_storage_ca_file: /etc/pgbackrest/conf.d/repo2-ca.crt
+ 
+    # Repo definition
+    repos:
+      # -- Name of the S3 bucket
+      # @section -- PostgresCluster
+      bucket: sontatype-nexus-pgbackup-dev
+ 
+      # -- Endpoint of S3 Storage
+      # @section -- PostgresCluster
+      endpoint: *s3endpoint
+
+  ###########################################################################################
+  # POSTGRES MONITRING SETTINGS
+  # This will start the exporter container and enabled monitoring and alerting on DB issues
+  ###########################################################################################
+  monitoring:
+ 
+    # -- Enable monitoring true/false
+    # @section -- PostgresCluster
+    # @default -- false
+    enabled: true
+ 
+    # -- URL to the image for the exporter container
+    # @section -- PostgresCluster
+    image: 'registry.connect.redhat.com/crunchydata/crunchy-postgres-exporter:ubi8-5.5.0-0'

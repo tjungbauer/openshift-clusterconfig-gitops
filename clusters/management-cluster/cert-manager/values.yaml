@@ -36,7 +36,7 @@ helper-status-checker:
 # CERT-Manager configuration
 #########################################################
 # Configure/patch the default cert-amanger instance and add unsupported configuration.
-# The Auto-Approver controller must be disabled, to approver policy can be used. 
+# The Auto-Approver controller must be disabled, to approver policy can be used.
 cert-manager:
   certManager:
     enable_patch: true
@@ -95,7 +95,7 @@ cert-manager-approver-policy:
 
   # Number of replicas of approver-policy to run.
   replicaCount: 1
- 
+
   image:
     # Target image repository.
     repository: quay.io/jetstack/cert-manager-approver-policy
@@ -116,11 +116,11 @@ cert-manager-approver-policy:
     approveSignerNames:
       - 'issuers.cert-manager.io/*'
       - 'clusterissuers.cert-manager.io/*'
-  
+
   # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
   # matching labels.
-  #nodeSelector:
-  #  node-role.kubernetes.io/infra: ''
+  # nodeSelector:
+  #   node-role.kubernetes.io/infra: ''
 
   # Tolerations ... placing on infra nodes
   tolerations: []

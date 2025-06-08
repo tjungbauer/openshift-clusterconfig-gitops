@@ -1,0 +1,158 @@
+{{- with .Values.postgresql }}
+{{ if eq (.enabled | toString) "true" }}
+---
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | quote | default "0" }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true  
+spec:
+  {{- if .databaseInitSQL }}
+  databaseInitSQL:
+    key: {{ .databaseInitSQL.key }}
+    name: {{ .databaseInitSQL.name }}
+  {{- end }}
+  backups:
+    pgbackrest:
+      configuration:
+        - secret:
+            name: {{ .backup.secretName }}
+      global:
+        image: {{ .backup.global.image }}
+        repo2-path: {{ .backup.global.repo2_path }}
+        repo2-retention-full: {{ .backup.global.repo2_retention_full | quote }}
+        repo2-retention-full-type: {{ .backup.global.repo2_retention_full_type }}
+        repo2-s3-uri-style: {{ .backup.global.repo2_s3_uri_style }}
+        repo2-storage-ca-file: {{ .backup.global.repo2_storage_ca_file }}
+        repo2-block: 'y'
+        backup-standby: 'prefer'
+        repo2-bundle: 'y'
+        repo2-bundle-limit: 50MiB
+        repo2-bundle-size: 200MiB
+      manual:
+        options:
+          - '--type=diff'
+          - '--log-level-console=info'
+        repoName: repo2
+      repos:
+        - name: repo2
+          s3:
+            bucket: {{ .backup.repos.bucket }}
+            endpoint: {{ .backup.repos.endpoint }}
+            region: CHV
+  instances:
+    {{- range .instances }}
+    - dataVolumeClaimSpec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .dataVolumeClaimSpec.storageSize }}
+        storageClassName: {{ .dataVolumeClaimSpec.storageClass }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/cluster: {{ $.Values.postgresql.name }}
+                  postgres-operator.crunchydata.com/instance-set: {{ .name }}
+              topologyKey: kubernetes.io/hostname
+      name: {{ .name }}
+      replicas: {{ .replicas }}
+      {{- if .resources }}
+      resources:
+        limits:
+          cpu: {{ .resources.limits_cpu }}
+          memory: {{ .resources.limits_memory }}
+        requests:
+          cpu: {{ .resources.requests_cpu }}
+          memory: {{ .resources.requests_memory }}
+      {{- end }}
+      sidecars:
+        replicaCertCopy:
+          resources:
+            limits:
+              cpu: 50m
+              memory: 64Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+    {{- end }}
+  openshift: true
+  port: 5432
+  postgresVersion: {{ .version }}
+  {{- if .users }}
+  users:
+    {{- range .users }}
+    - name: {{ .name }}
+      {{- if .password }}
+      password:
+        {{- if .password.type }}
+        type: {{ .password.type }}
+        {{- end }}
+      {{- end }}
+      {{- if .options }}
+      options: {{ .options }}
+      {{- end }}
+      {{- if .databases }}
+      databases:
+        {{- range .databases }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  proxy:
+    pgBouncer:
+      config:
+        global:
+          max_client_conn: '300'
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        pg_hba:
+          - host all all 0.0.0.0/0 md5
+        parameters:
+          synchronous_standby_names: '*'
+          max_pred_locks_per_transaction: 2048
+          max_parallel_workers_per_gather: 2
+          work_mem: 100MB
+          wal_level: replica
+          shared_preload_libraries: 'pgaudit,timescaledb'
+          max_locks_per_transaction: 2048
+          listen_addresses: '*'
+          synchronous_commit: 'on'
+          timescaledb.license: timescale
+          timescaledb.max_background_workers: 16
+          max_worker_processes: 26
+          max_parallel_workers: 8
+          shared_buffers: 2GB
+          wal_keep_size: 2048
+    leaderLeaseDurationSeconds: 30
+    port: 8008
+    switchover:
+      enabled: true
+      type: Switchover
+    syncPeriodSeconds: 10
+  {{- if .monitoring }}
+  {{- if eq (.monitoring.enabled | toString) "true" }}
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: {{ .monitoring.image }}
+        resources:
+          limits:
+            cpu: 200m
+            memory: 50Mi
+          requests:
+            cpu: 50m
+            memory: 10Mi
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
