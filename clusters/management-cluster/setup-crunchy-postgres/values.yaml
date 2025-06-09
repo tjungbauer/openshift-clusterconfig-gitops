@@ -1,6 +1,11 @@
 ---
 namespace: &namespace "crunchy-postgres-operator"
 s3endpoint: &s3endpoint "not-there-yet"
+baseStorageClass: &baseStorageClass "gp3-csi"
+# Idea for the name would be <something>-<NAMESPACE>
+bucketname: &bucketname pg-crunchy-postgres-operator
+# Idea for the name would be <something>-<NAMESPACE>
+storageclassname: &storageclassname pg-crunchy-postgres-operator
 
 ######################################
 # SUBCHART: helper-operator
@@ -44,6 +49,77 @@ helper-status-checker:
 
       serviceAccount:
         name: "status-checker-crunchy-postgres-operator"
+
+########################################
+# SUBCHART: helper-objectstore
+
+# A helper chart that simply creates another backingstore.
+# Not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+########################################
+helper-objectstore:
+
+  # -- Enable objectstore configuration
+  # @default -- false
+  enabled: true
+
+  # -- Syncwave for Argo CD
+  # @default - 1
+  syncwave: 1
+
+  # -- Name of the BackingStore
+  backingstore_name: logging-backingstore
+
+  # -- Size of the BackingStore that each volume shall have.
+  backingstore_size: 700Gi
+
+  # -- CPU Limit for the Noobaa Pod
+  # @default -- 500m
+  limits_cpu: 500m
+
+  # -- Memory Limit for the Noobaa Pod.
+  # @default -- 2Gi
+  limits_memory: 2Gi
+
+  pvPool:
+    # -- Number of volumes that shall be used
+    # @default -- 1
+    numOfVolumes: 1
+
+    # Type of BackingStore. Currently pv-pool is the only one supported by this Helm Chart.
+    # @default -- pv-pool
+    type: pv-pool
+
+  # -- The StorageClass the BackingStore is based on
+  baseStorageClass: *baseStorageClass
+
+  # -- Name of the StorageClass that shall be created for the bucket.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    # -- Shall a new bucket be enabled?
+    # @default -- false
+    enabled: true
+
+    # -- Name of the bucket that shall be created
+    name: *bucketname
+
+    # -- Target Namespace for that bucket.
+    namespace: *namespace
+
+    # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # @default -- 2
+    syncwave: 2
+
+    # -- Name of the storageclass for our bucket
+    # @default -- openshift-storage.noobaa.io
+    storageclass: *storageclassname
 
 ###################################################
 # Postgres Cluster Settings
