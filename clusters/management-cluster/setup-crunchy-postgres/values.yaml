@@ -73,7 +73,7 @@ helper-objectstore:
   syncwave: 1
 
   # -- Name of the BackingStore
-  backingstore_name: logging-backingstore
+  backingstore_name: pg-backingstore
 
   # -- Size of the BackingStore that each volume shall have.
   backingstore_size: 700Gi
