@@ -1,0 +1,33 @@
+
+{{- with .Values.postgresql }}
+{{ if eq (.enabled | toString) "true" }}
+{{- if .monitoring }}
+{{- if eq (.monitoring.enabled | toString) "true" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: postgres-monitor
+  namespace: {{ $.Values.namespace }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | quote | default "0" }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true  
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ $.Values.namespace }}
+  podMetricsEndpoints:
+    - interval: 30s
+      path: /metrics
+      port: exporter
+      scheme: http
+      scrapeTimeout: 29s
+  selector:
+    matchLabels:
+      postgres-operator.crunchydata.com/cluster: {{ .name }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
