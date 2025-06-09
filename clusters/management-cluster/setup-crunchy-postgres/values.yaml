@@ -3,9 +3,9 @@ namespace: &namespace "crunchy-postgres-operator"
 s3endpoint: &s3endpoint "s3.openshift-storage.svc:443"
 baseStorageClass: &baseStorageClass "gp3-csi"
 # Idea for the name would be <something>-<NAMESPACE>
-bucketname: &bucketname pg-crunchy-postgres-operator
+bucketname: &bucketname pg-crunchy-postgres-operator-s3
 # Idea for the name would be <something>-<NAMESPACE>
-storageclassname: &storageclassname pg-crunchy-postgres-operator
+storageclassname: &storageclassname pg-crunchy-postgres-operator-s3
 
 ######################################
 # SUBCHART: helper-operator
