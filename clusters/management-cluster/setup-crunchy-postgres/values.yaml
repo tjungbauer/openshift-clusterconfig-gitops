@@ -1,6 +1,6 @@
 ---
 namespace: &namespace "crunchy-postgres-operator"
-s3endpoint: &s3endpoint "not-there-yet"
+s3endpoint: &s3endpoint "s3.openshift-storage.svc:443"
 baseStorageClass: &baseStorageClass "gp3-csi"
 # Idea for the name would be <something>-<NAMESPACE>
 bucketname: &bucketname pg-crunchy-postgres-operator
@@ -129,17 +129,17 @@ postgresql:
   # -- Enable PostgresCluster Configuration
   # @section -- PostgresCluster
   # @default -- false
-  enabled: false
+  enabled: true
 
   # -- Argo CD Syncwave for PostgresCluster resource<br />
   # <b>ATTN</b>: Must be set to "0" as the Atlassian charts currently to not support annotations.
   # @section -- PostgresCluster
   # @default -- 0
-  syncwave: "0"
+  syncwave: "10"
 
   # -- Name of the PostgresCluster instance
   # @section -- PostgresCluster
-  name: nexus-shared-db-dev
+  name: test-db
 
   # -- PostgresCluster version
   # @section -- PostgresCluster
@@ -155,7 +155,7 @@ postgresql:
   users:
       # -- Create "minio" User
       # @section -- PostgresCluster
-    - name: nexus
+    - name: myuser
       # -- Be sure the password type is set to "AlphaNumeric"
       # @section -- PostgresCluster
       password:
@@ -167,8 +167,8 @@ postgresql:
       # -- Databases the user shall have access to.
       # @section -- PostgresCluster
       databases:
-        - nexus_repo
-        - nexus_iq
+        - mydb1
+        - mydb2
     - name: postgres
 
   # Base configuration of the Postgres instances
@@ -191,7 +191,7 @@ postgresql:
 
         # -- StorageClass for the PVC. Must support RWX
         # @section -- PostgresCluster
-        storageClass: netapp-volume
+        storageClass: *baseStorageClass
 
       # -- Resource specification for this Postgres instance
       # @section -- PostgresCluster
@@ -208,10 +208,9 @@ postgresql:
   ###########################################################################################
   backup:
 
-    # -- Name of the Secret that contains the information about the S3 storage. It must contain the keys: "repo2-ca.crt" and "s3.conf"<br />
-    # <b>Do NOT create this Secret object manually!</b> It is created during the Tenant onboarding instad.
+    # -- Name of the Secret that contains the information about the S3 storage.<br />
     # @section -- PostgresCluster
-    secretName: postgres-pgbackrest-config
+    secretName: pgbackrest-config
 
     # Global Backup settings
     global:
@@ -221,11 +220,11 @@ postgresql:
 
       # -- Path inside the object storage to store the backup
       # @section -- PostgresCluster
-      repo2_path: /pgo/chvk8devval/sontatype-nexus-repo/postgres/repo2
+      repo2_path: /pgo/management-cluster/crunchy-postgres-operator/test-db/repo2
 
       # -- Retention period for full backups
       # @section -- PostgresCluster
-      repo2_retention_full: '30'
+      repo2_retention_full: '5'
 
       # -- Calculation of retetion period (could be time or amount)
       # @section -- PostgresCluster
@@ -237,13 +236,13 @@ postgresql:
 
       # -- Path to the CA of Minio Storage
       # @section -- PostgresCluster
-      repo2_storage_ca_file: /etc/pgbackrest/conf.d/repo2-ca.crt
+      # repo2_storage_ca_file: /etc/pgbackrest/conf.d/repo2-ca.crt
 
     # Repo definition
     repos:
       # -- Name of the S3 bucket
       # @section -- PostgresCluster
-      bucket: sontatype-nexus-pgbackup-dev
+      bucket: *bucketname
 
       # -- Endpoint of S3 Storage
       # @section -- PostgresCluster

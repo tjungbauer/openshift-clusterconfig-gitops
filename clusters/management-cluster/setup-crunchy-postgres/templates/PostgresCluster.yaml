@@ -9,7 +9,7 @@ metadata:
   labels:
     {{- include "tpl.labels" $ | nindent 4 }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .syncwave | quote | default "0" }}
+    argocd.argoproj.io/sync-wave: {{ .syncwave | quote | default "10" }}
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true  
 spec:
   {{- if .databaseInitSQL }}
