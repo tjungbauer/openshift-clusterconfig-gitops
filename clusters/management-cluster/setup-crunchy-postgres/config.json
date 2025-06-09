@@ -1,4 +1,4 @@
 {
-  "namespace": "crunchy-postgres",
+  "namespace": "crunchy-postgres-operator",
   "environment": "in-cluster"
 }

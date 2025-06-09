@@ -38,7 +38,7 @@ helper-status-checker:
       subscriptionName: postgresoperator
       sleeptimer: 60
       maxretries: 100
-      #syncwave: '0'
+      syncwave: '0'
       namespace:
         name: *namespace
 
