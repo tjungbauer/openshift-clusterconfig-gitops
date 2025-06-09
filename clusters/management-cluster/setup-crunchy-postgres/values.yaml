@@ -34,8 +34,8 @@ helper-status-checker:
 
   # List of checks that shall be performed.
   checks:
-    - operatorName: postgresoperator
-      subscriptionName: postgresoperator
+    - operatorName: crunchy-postgres-operator
+      subscriptionName: crunchy-postgres-operator
       sleeptimer: 60
       maxretries: 100
       syncwave: '0'
