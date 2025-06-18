@@ -1,6 +1,7 @@
 ---
 cluster_admin_list:
   - emergency
+  - tjungbau@redhat.com
 
 # @ignore
 generic-cluster-config:
