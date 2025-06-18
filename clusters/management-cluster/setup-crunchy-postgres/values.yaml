@@ -242,7 +242,7 @@ postgresql:
     repos:
       # -- Name of the S3 bucket
       # @section -- PostgresCluster
-      bucket: *bucketname
+      bucket: pg-crunchy-postgres-operat-01a5b17a-ad1c-482c-9f2b-d4e73d4c46a6
 
       # -- Endpoint of S3 Storage
       # @section -- PostgresCluster

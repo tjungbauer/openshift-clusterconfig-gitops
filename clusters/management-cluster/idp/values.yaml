@@ -16,3 +16,11 @@ generic-cluster-config:
         - name: Emergency
           enabled: true
           secretname: htpasswd-secret
+
+      google:
+        - name: sso
+          enabled: false
+          secretname: google-secret
+          clientID: '297036956546-il71s971lnqgs5ehrifdel5b3vh4tudb.apps.googleusercontent.com'
+          hostedDomain: 'redhat.com'
+          mappingMethod: claim
