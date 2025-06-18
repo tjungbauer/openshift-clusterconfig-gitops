@@ -19,7 +19,7 @@ generic-cluster-config:
 
       google:
         - name: sso
-          enabled: false
+          enabled: true
           secretname: google-secret
           clientID: '297036956546-il71s971lnqgs5ehrifdel5b3vh4tudb.apps.googleusercontent.com'
           hostedDomain: 'redhat.com'
