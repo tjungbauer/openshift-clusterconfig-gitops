@@ -43,10 +43,10 @@ cert-manager:
 
     syncwave: '10'
 
-    unsupportedConfigOverrides:
-      controller:
-        args:
-          - '--controllers=*,-certificaterequests-approver'
+    # unsupportedConfigOverrides:
+    #   controller:
+    #     args:
+    #       - '--controllers=*,-certificaterequests-approver'
 
     overrideArgs:
       enabled: true
