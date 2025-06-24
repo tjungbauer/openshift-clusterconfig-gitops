@@ -76,6 +76,12 @@ rhacs-setup:
     ###############
     # SCANNER
     ###############
+
+    # -- Enable scanner V4. Valid settings are: Default, Enabled, Disabled
+    # NOTE: In ACS 4.8 scannerV4 will be enabled by default.
+    # @default -- Default
+    scannerV4: Enabled
+
     scanner:
       # -- If you do not want to deploy the Red Hat Advanced Cluster Security Scanner,
       # you can disable it here (not recommended).
@@ -123,6 +129,11 @@ rhacs-setup:
       # -- Syncwave for Argo CD to deploy the SecureCluster
       # @default -- 4
       syncwave: '4'
+
+      # -- Enable Scanner V4 for the Secured Cluster. Valid values are: Default, AutoSense, Disabled
+      # NOTE: In ACS 4.8 scannerV4 will be enabled by default.
+      # @default -- Default
+      scannerV4: "Default"
 
       # -- Name of the cluster
       # @default -- local-cluster"
