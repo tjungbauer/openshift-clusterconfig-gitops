@@ -133,7 +133,7 @@ rhacs-setup:
       # -- Enable Scanner V4 for the Secured Cluster. Valid values are: Default, AutoSense, Disabled
       # NOTE: In ACS 4.8 scannerV4 will be enabled by default.
       # @default -- Default
-      scannerV4: "Default"
+      scannerV4: "AutoSense"
 
       # -- Name of the cluster
       # @default -- local-cluster"
