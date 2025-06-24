@@ -17,9 +17,9 @@ dependencies:
   - name: cert-manager
     version: ~2.0.0
     repository: https://charts.stderr.at/
-  - name: cert-manager-approver-policy
-    version: v0.21.0
-    repository: https://charts.jetstack.io
+#  - name: cert-manager-approver-policy
+#    version: v0.21.0
+#    repository: https://charts.jetstack.io
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
