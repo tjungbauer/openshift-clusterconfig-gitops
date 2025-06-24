@@ -1,9 +1,4 @@
 ---
-# -- List of cluster administrators. These users will automatically get the role cluster-admin assigned.
-# @default -- []
-cluster_admin_list:
-  - emergency
-
 # -- Enable the settings and configuration of a project template.
 # The information of the template can be found in templates/projecttempalte.yaml
 # @default -- ''
@@ -23,19 +18,6 @@ generic-cluster-config:
   ############################
   self_provisioner:
     deactivate: true
-
-  ######################
-  # IDENTITY PROVIDERS #
-  ######################
-  idp:
-    enabled: true
-    # Define provider. Currently htpasswd and LDAP are supported
-    providers:
-      enabled: true
-      htpasswd:
-        - name: HTPASSWD
-          enabled: true
-          secretname: htpasswd-secret
 
   ##############
   # MONITORING #
