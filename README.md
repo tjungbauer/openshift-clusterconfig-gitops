@@ -1,6 +1,6 @@
 [![Linting](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml/badge.svg)](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml)
 
-# openshift-clusterconfig-gitops
+# openshift-clusterconfig-gitops 
 
 This repository demonstrates the usage of OpenShift-GitOps and a secrets manager like Sealed Secrets or Hashicorp Vault.  
 The focus lies on main cluster configuration.
