@@ -142,7 +142,7 @@ cert_manager_Namespace: cert-manager
 
 policies:
   - name: my-approver-policy
-    enabled: true
+    enabled: false
 
     allowed:
 

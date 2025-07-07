@@ -21,7 +21,6 @@ function add_helm_repo() {
     printf "\nAdding Helm Repo %s\n" "${HELM_CHARTS}"
     $HELM_BIN repo add --force-update tjungbauer ${HELM_CHARTS}
     $HELM_BIN repo update > /dev/null
-
 }
 
 # check if operator is already installed
