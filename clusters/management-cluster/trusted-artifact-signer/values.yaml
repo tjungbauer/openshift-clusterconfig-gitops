@@ -1,0 +1,34 @@
+---
+rhtas-channel: &rhtas-channel stable
+
+
+# Install Quay Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    rhtas-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-operators
+        create: false
+      subscription:
+        channel: *rhtas-channel
+        approval: Automatic
+        operatorName: rhtas-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: rhtas-operator
+      namespace:
+        name: openshift-operators
+      serviceAccount:
+        name: "tas-operator-checker"

@@ -1,0 +1,4 @@
+{
+  "namespace": "trusted-artifact-signer",
+  "environment": "in-cluster"
+}
