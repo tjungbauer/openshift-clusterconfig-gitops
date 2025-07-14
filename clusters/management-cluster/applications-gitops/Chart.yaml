@@ -1,10 +1,10 @@
 apiVersion: v2
 name: gitops-deployment
 description: Deployment of a GitOps for Application Management
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: openshift-gitops
-    version: ~1.0.5
+    version: ~1.1.0
     repository: https://charts.stderr.at
   - name: tpl
     version: ~1.0.0
