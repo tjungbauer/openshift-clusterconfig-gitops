@@ -2,7 +2,7 @@
 apiVersion: v2
 name: clusterconfig-apiserver
 description: Enables ETCD encryption, customer certificate and audit-profile for APIServer
-version: 1.0.2
+version: 1.0.3
 dependencies:
   - name: tpl
     version: ~1.0.0
@@ -11,7 +11,7 @@ dependencies:
     version: ~1.0.10
     repository: https://charts.stderr.at
   - name: cert-manager
-    version: ~1.0.0
+    version: ~2.0.0
     repository: https://charts.stderr.at/
     condition: cert-manager.enabled
 maintainers:
