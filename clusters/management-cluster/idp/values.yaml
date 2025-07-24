@@ -15,7 +15,7 @@ generic-cluster-config:
       enabled: true
       htpasswd:
         - name: Emergency
-          enabled: false
+          enabled: true
           secretname: htpasswd-secret
 
       google:
