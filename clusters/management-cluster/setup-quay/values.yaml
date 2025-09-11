@@ -4,7 +4,7 @@ quay_route: &publicroute quay-registry-quay-quay-enterprise.apps.ocp.aws.ispworl
 s3_hostname: &s3_hostname s3-openshift-storage.apps.ocp.aws.ispworld.at
 storageclassname: &storageclassname quay-bucket-storage-class
 bucket: &bucketname quay-bucket
-quay-version: &quay-version stable-3.12
+quay-version: &quay-version stable-3.15
 
 #######################################################
 # If ODF is used, the Chart helper-objectstore
