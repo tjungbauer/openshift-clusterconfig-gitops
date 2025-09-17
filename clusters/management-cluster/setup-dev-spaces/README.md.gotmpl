@@ -1,0 +1,54 @@
+{{ template "doc.header" . }}
+
+  Deploy Dev Spaces using the Operator
+
+This chart will perform:
+1. Installation of Operator
+
+Currently this Chart does not fully configure the spaces (CheCluster Resource). If you need to do so, please add the resource to the templates folder. 
+
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+namespace: &namespace "openshift-devspaces"
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    devspaces:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: *namespace
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: devspaces
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: devspaces
+      namespace:
+        name: *namespace
+      serviceAccount:
+        name: "status-checker-devspaces"
+```
+
+{{ template "doc.footer" . }}
