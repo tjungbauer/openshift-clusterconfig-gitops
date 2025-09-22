@@ -299,7 +299,7 @@ applicationsets:
 
   # Install RHACS Demo
   rhacs-demo-app:
-    enabled: false
+    enabled: true
     description: "Deploy a vulnerable demo application to show results in RHACS"
     labels:
       category: security
