@@ -4,7 +4,7 @@ generic-cluster-config:
     console_banners:
       topbanner:
         enabled: true
-        text: 'Management Cluster'
+        text: 'Management Cluster Test Banner'
         location: BannerTop
         color: "#FFFFFF"
         backgroundcolor: '#FF0000'
