@@ -1,0 +1,20 @@
+apiVersion: v2
+name: setup-cert-utils-test
+description: Test Deployment of Cert Utils Operator. This is used to test new operator deployment methods.
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.36
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.16
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+keywords:
+  - sandbox

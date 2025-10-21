@@ -1,0 +1,32 @@
+---
+cert-utils: &channel-cert-utils alpha
+
+helper-operator:
+  operators:
+    cert-utils-operator:
+      enabled: false
+      namespace:
+        name: cert-utils-operator
+        create: true
+      subscription:
+        channel: *channel-cert-utils
+        approval: Manual
+        operatorName: cert-utils-operator
+        source: community-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+  approver: true
+
+  checks:
+    - operatorName: cert-utils-operator
+      sleeptimer: 60
+      namespace:
+        name: cert-utils-operator
+      serviceAccount:
+        name: "status-checker-cert-utils"
+

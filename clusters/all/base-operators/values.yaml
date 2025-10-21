@@ -22,7 +22,7 @@ helper-operator:
     #####################
     # Name of the operator (This name will be used as name of the Application in Argo CD)
     openshift-pipelines-operator-rh:
-      enabled: true
+      enabled: false
       # Namespace where the operator shall be installed into
       namespace:
         name: openshift-operators
@@ -53,7 +53,7 @@ helper-operator:
     # Loki
     #######
     loki-operator:
-      enabled: true
+      enabled: false
       namespace:
         name: openshift-operators-redhat
         create: true
@@ -71,7 +71,7 @@ helper-operator:
     # Cert-Utils
     ############
     cert-utils-operator:
-      enabled: true
+      enabled: false
       namespace:
         name: cert-utils-operator
         create: true
@@ -89,7 +89,7 @@ helper-operator:
     # Cert-Manager
     ##############
     openshift-cert-manager-operator:
-      enabled: true
+      enabled: false
       namespace:
         name: cert-manager-operator
         create: true
@@ -107,7 +107,7 @@ helper-operator:
     # OADP
     ######
     redhat-oadp-operator:
-      enabled: true
+      enabled: false
       namespace:
         name: openshift-adp
         create: false

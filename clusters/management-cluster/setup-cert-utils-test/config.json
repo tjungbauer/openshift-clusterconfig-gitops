@@ -1,0 +1,4 @@
+{
+  "namespace": "cert-utils-operator",
+  "environment": "in-cluster"
+}
