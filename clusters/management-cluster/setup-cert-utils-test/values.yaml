@@ -4,7 +4,7 @@ cert-utils: &channel-cert-utils alpha
 helper-operator:
   operators:
     cert-utils-operator:
-      enabled: false
+      enabled: true
       namespace:
         name: cert-utils-operator
         create: true
@@ -29,4 +29,3 @@ helper-status-checker:
         name: cert-utils-operator
       serviceAccount:
         name: "status-checker-cert-utils"
-
