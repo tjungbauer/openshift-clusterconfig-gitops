@@ -126,7 +126,7 @@ helper-operator:
         name: openshift-storage
         create: true
       subscription:
-        channel: stable-4.18
+        channel: stable-4.19
         approval: Automatic
         operatorName: odf-operator
         source: redhat-operators
