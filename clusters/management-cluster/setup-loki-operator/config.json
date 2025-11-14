@@ -1,4 +1,4 @@
 {
-  "namespace": "openshift-logging",
+  "namespace": "openshift-operators-redhat",
   "environment": "in-cluster"
 }
