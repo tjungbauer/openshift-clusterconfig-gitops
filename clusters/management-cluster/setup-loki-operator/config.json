@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-logging",
+  "environment": "in-cluster"
+}

@@ -1,0 +1,41 @@
+---
+loki: &channel-loki stable-6.3
+
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
+helper-operator:
+  operators:
+    loki-operator:
+      enabled: true
+      namespace:
+        name: openshift-operators-redhat
+        create: true
+      subscription:
+        channel: *channel-loki
+        approval: Automatic
+        operatorName: loki-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+########################################
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator.
+########################################
+helper-status-checker:
+  enabled: true
+
+  approver: false
+
+  checks:
+    - operatorName: loki-operator
+      namespace:
+        name: openshift-operators-redhat
+      syncwave: 1
+
+      serviceAccount:
+        name: "status-checker-loki"

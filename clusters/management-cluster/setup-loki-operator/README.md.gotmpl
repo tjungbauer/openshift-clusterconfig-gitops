@@ -1,0 +1,59 @@
+{{ template "doc.header" . }}
+
+
+This chart install the Loki Operator.
+It does not configure anything, it simply installs the operator and thats it.
+The actual configuration should be done by the services that want to use Loki. For example: logging or network-observability
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+loki: &channel-loki stable-6.3
+
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
+helper-operator:
+  operators:
+    loki-operator:
+      enabled: true
+      namespace:
+        name: openshift-operators-redhat
+        create: true
+      subscription:
+        channel: *channel-loki
+        approval: Automatic
+        operatorName: loki-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+########################################
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator.
+########################################
+helper-status-checker:
+  enabled: true
+
+  approver: false
+
+  checks:
+    - operatorName: loki-operator
+      namespace:
+        name: openshift-operators-redhat
+      syncwave: 1
+
+      serviceAccount:
+        name: "status-checker-loki"
+```
+
+{{ template "doc.footer" . }}
