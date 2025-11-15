@@ -36,7 +36,7 @@ helper-status-checker:
   approver: false
 
   checks:
-    - operatorName: tempo-product
+    - operatorName: tempo-operator
       namespace:
         name: *tempo-namespace
       syncwave: 1
