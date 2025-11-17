@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-opentelemetry-operator",
+  "environment": "in-cluster"
+}

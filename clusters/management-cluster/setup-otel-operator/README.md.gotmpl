@@ -1,0 +1,58 @@
+{{ template "doc.header" . }}
+
+
+This Chart will install and configure the OpenTelemetry Operator. 
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+otel: &channel-otel stable
+otel-namespace: &tempo-namespace openshift-opentelemetry-operator
+
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
+helper-operator:
+  operators:
+    otel-operator:
+      enabled: true
+      namespace:
+        name: *otel-namespace
+        create: true
+      subscription:
+        channel: *channel-otel
+        approval: Automatic
+        operatorName: opentelemetry-product
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+########################################
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator.
+########################################
+helper-status-checker:
+  enabled: true
+
+  approver: false
+
+  checks:
+    - operatorName: opentelemetry-product
+      namespace:
+        name: *otel-namespace
+      syncwave: 1
+
+      serviceAccount:
+        name: "status-checker-otel"
+```
+
+{{ template "doc.footer" . }}

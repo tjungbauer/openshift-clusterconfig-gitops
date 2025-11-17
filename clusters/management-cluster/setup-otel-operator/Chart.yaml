@@ -1,6 +1,6 @@
 apiVersion: v2
-name: setup-tempo-operator
-description: Installs and configures the Tempo Operator (distributed tracing). This Operator will require a S3 storage, which can be installed and provided using ODF and available Helm Sub-Charts.
+name: setup-otel-operator
+description: Installs and configures the OpenTelemetry Operator.
 version: 1.0.0
 dependencies:
   - name: tpl
@@ -13,14 +13,6 @@ dependencies:
     version: ~4.0.0
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
-  - name: helper-loki-bucket-secret
-    version: ~1.0.0
-    repository: https://charts.stderr.at/
-    condition: helper-loki-bucket-secret.enabled
-  - name: helper-objectstore
-    version: ~1.0.0
-    repository: https://charts.stderr.at/
-    condition: helper-objectstore.enabled
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
@@ -32,4 +24,5 @@ sources:
 home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-tempo-operator
 keywords:
   - tracing
-  - tempo
+  - observability
+  - otel
