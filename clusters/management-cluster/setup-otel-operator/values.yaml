@@ -1,6 +1,6 @@
 ---
 otel: &channel-otel stable
-otel-namespace: &tempo-namespace openshift-opentelemetry-operator
+otel-namespace: &otel-namespace openshift-opentelemetry-operator
 
 ######################################
 # SUBCHART: helper-operator
