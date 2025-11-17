@@ -1,0 +1,19 @@
+{{- if eq (.Values.tempostack.enabled | toString) "true" }}
+{{- if eq (.Values.tempostack.namespace.create | toString) "true" }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.tempostack.namespace.name }}
+  {{- with .Values.tempostack.namespace }}
+  annotations:
+    {{- include "tpl.namespaceDescr" .descr | nindent 4 }}
+    {{- include "tpl.namespaceDisplay" .display | nindent 4 }}
+    {{- include "tpl.additionalAnnotations" .additionalAnnotations | nindent 4 }}
+  {{- end }}
+  labels:
+    openshift.io/cluster-monitoring: "true"
+    {{- include "tpl.labels" $ | nindent 4 }}
+    {{- include "tpl.additionalLabels" .Values.tempostack.namespace.additionalLabels | nindent 4 }}
+{{- end }}
+{{- end }}

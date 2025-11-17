@@ -1,9 +1,10 @@
 {{ template "doc.header" . }}
 
 
-This chart install the Loki Operator.
-It does not configure anything, it simply installs the operator and thats it.
-The actual configuration should be done by the services that want to use Loki. For example: logging or network-observability
+This Chart will install and configure the Tempo Operator. 
+This operator will collect and store tracing data from an application.
+To store these data a S3 storage is required. 
+The Chart is able to automatically provision a S3 bucket when ODF is used. Otherwise please provide a bucket and be sure that the required access configuration is added to this chart's templates.
 
 {{ template "doc.deps" . }}
 
@@ -14,7 +15,12 @@ The actual configuration should be done by the services that want to use Loki. F
 
 ```yaml
 ---
-loki: &channel-loki stable-6.3
+---
+tempo: &channel-tempo stable
+tempo-namespace: &tempo-namespace openshift-tempo-operator
+bucketname: &bucketname tempo-bucket
+tempo-secret: &tempo-secret-name tempo-s3
+storageclassname: &storageclassname tempo-bucket-storage-class
 
 ######################################
 # SUBCHART: helper-operator
@@ -22,15 +28,15 @@ loki: &channel-loki stable-6.3
 ######################################
 helper-operator:
   operators:
-    loki-operator:
+    tempo-operator:
       enabled: true
       namespace:
-        name: openshift-operators-redhat
+        name: *tempo-namespace
         create: true
       subscription:
-        channel: *channel-loki
+        channel: *channel-tempo
         approval: Automatic
-        operatorName: loki-operator
+        operatorName: tempo-product
         source: redhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
@@ -47,13 +53,114 @@ helper-status-checker:
   approver: false
 
   checks:
-    - operatorName: loki-operator
+    - operatorName: tempo-operator
       namespace:
-        name: openshift-operators-redhat
+        name: *tempo-namespace
       syncwave: 1
 
       serviceAccount:
-        name: "status-checker-loki"
+        name: "status-checker-tempo"
+
+########################################
+# SUBCHART: helper-objectstore
+
+# A helper chart that simply creates another backingstore for logging.
+# This is a chart in a very early state, and not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+########################################
+helper-objectstore:
+
+  # -- Enable objectstore configuration
+  # @default -- false
+  enabled: true
+
+  # -- Syncwave for Argo CD
+  # @default - 1
+  syncwave: 1
+
+  # -- Name of the BackingStore
+  backingstore_name: tempo-backingstore
+
+  # -- Size of the BackingStore that each volume shall have.
+  backingstore_size: 400Gi
+
+  # -- CPU Limit for the Noobaa Pod
+  # @default -- 500m
+  limits_cpu: 500m
+
+  # -- Memory Limit for the Noobaa Pod.
+  # @default -- 2Gi
+  limits_memory: 2Gi
+
+  pvPool:
+    # -- Number of volumes that shall be used
+    # @default -- 1
+    numOfVolumes: 1
+
+    # Type of BackingStore. Currently pv-pool is the only one supported by this Helm Chart.
+    # @default -- pv-pool
+    type: pv-pool
+
+  # -- The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # -- Name of the StorageClass that shall be created for the bucket.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    # -- Shall a new bucket be enabled?
+    # @default -- false
+    enabled: true
+
+    # -- Name of the bucket that shall be created
+    name: *bucketname
+
+    # -- Target Namespace for that bucket.
+    namespace: *tempo-namespace
+
+    # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # @default -- 2
+    syncwave: 2
+
+    # -- Name of the storageclass for our bucket
+    # @default -- openshift-storage.noobaa.io
+    storageclass: *storageclassname
+
+
+##############################################
+# SUBCHART: helper-loki-bucket-secret
+# Creates a Secret that Loki requires
+#
+# A Kubernetes Job is created, that reads the
+# data from the Secret and ConfigMap and
+# creates a new secret for loki.
+##############################################
+helper-loki-bucket-secret:
+  # -- Enable Job to create a Secret for LokiStack.
+  # @default -- false
+  enabled: true
+
+  # -- Syncwave for Argo CD.
+  # @default -- 3
+  syncwave: 3
+
+  # -- Namespace where LokiStack is deployed and where the Secret shall be created.
+  namespace: *tempo-namespace
+
+  # -- Name of Secret that shall be created.
+  secretname: *tempo-secret-name
+
+  # Bucket Configuration
+  bucket:
+    # -- Name of the Bucket shall has been created.
+    name: *bucketname
+
 ```
 
 {{ template "doc.footer" . }}

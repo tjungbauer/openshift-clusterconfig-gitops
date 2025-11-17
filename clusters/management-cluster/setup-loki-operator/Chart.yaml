@@ -21,6 +21,6 @@ sources:
   - https://github.com/tjungbauer/helm-charts
   - https://charts.stderr.at/
   - https://github.com/tjungbauer/openshift-clusterconfig-gitops
-home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-openshift-logging
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-loki-operator
 keywords:
   - loki

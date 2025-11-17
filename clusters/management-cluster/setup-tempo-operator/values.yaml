@@ -4,6 +4,21 @@ tempo-namespace: &tempo-namespace openshift-tempo-operator
 bucketname: &bucketname tempo-bucket
 tempo-secret: &tempo-secret-name tempo-s3
 storageclassname: &storageclassname tempo-bucket-storage-class
+tempostack-namespace: &tempostack-namespace tempostack
+
+tempostack:
+  enabled: true
+  name: simplest
+  additionalAnnotations: {}
+  additionalLabels: {}
+
+  namespace:
+    create: true
+    name: *tempostack-namespace
+    descr: "Namespace for the TempoStack"
+    display: "TempoStack"
+    additionalAnnotations: {}
+    additionalLabels: {}
 
 ######################################
 # SUBCHART: helper-operator
