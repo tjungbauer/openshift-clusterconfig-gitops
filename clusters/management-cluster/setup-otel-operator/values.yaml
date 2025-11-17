@@ -8,7 +8,7 @@ otel-namespace: &otel-namespace openshift-opentelemetry-operator
 ######################################
 helper-operator:
   operators:
-    otel-operator:
+    opentelemetry-product:
       enabled: true
       namespace:
         name: *otel-namespace
