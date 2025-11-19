@@ -6,19 +6,71 @@ tempo-secret: &tempo-secret-name tempo-s3
 storageclassname: &storageclassname tempo-bucket-storage-class
 tempostack-namespace: &tempostack-namespace tempostack
 
-tempostack:
-  enabled: true
-  name: simplest
-  additionalAnnotations: {}
-  additionalLabels: {}
+tempo-tracing:
+  tempostack:
+    enabled: true
+    name: simplest
 
-  namespace:
-    create: true
-    name: *tempostack-namespace
-    descr: "Namespace for the TempoStack"
-    display: "TempoStack"
-    additionalAnnotations: {}
-    additionalLabels: {}
+    managementState: Managed
+
+    namespace:
+      create: true
+      name: *tempostack-namespace
+      descr: "Namespace for the TempoStack"
+      display: "TempoStack"
+      additionalAnnotations: {}
+      additionalLabels: {}
+
+    storage:
+      secret:
+        name: tempo-s3
+        type: s3
+        credentialMode: static
+
+    storageSize: 500Gi
+    replicationFactor: 1
+
+    tenants:
+      mode: openshift
+      enabled: true
+
+      authentication:
+        - tenantName: 'dev'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbfa'
+          permissions:
+            - read
+            - write
+
+        - tenantName: 'prod'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbfb'
+          permissions:
+            - write
+            - read
+
+    observability:
+      enabled: true
+
+      tracing:
+        jaeger_agent_endpoint: 'localhost:6831'
+        otlp_http_endpoint: 'http://localhost:4320'
+
+    template:
+      gateway:
+        enabled: true
+        rbac: false
+
+        ingress:
+          type: 'route'
+          termination: 'reencrypt'
+        component:
+          replicas: 1
+
+      queryFrontend:
+        jaegerQuery:
+          enabled: true
+        component:
+          replicas: 1
+
 
 ######################################
 # SUBCHART: helper-operator

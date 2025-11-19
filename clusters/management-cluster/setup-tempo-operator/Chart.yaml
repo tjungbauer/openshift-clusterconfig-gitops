@@ -13,14 +13,18 @@ dependencies:
     version: ~4.0.0
     repository: https://charts.stderr.at/
     condition: helper-status-checker.enabled
-  - name: helper-loki-bucket-secret
+  - name: helper-odf-bucket-secret
     version: ~1.0.0
     repository: https://charts.stderr.at/
-    condition: helper-loki-bucket-secret.enabled
+    condition: helper-odf-bucket-secret.enabled
   - name: helper-objectstore
     version: ~1.0.0
     repository: https://charts.stderr.at/
     condition: helper-objectstore.enabled
+  - name: tempo-tracing
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: tempo-tracing.enabled
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com
