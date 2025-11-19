@@ -29,6 +29,7 @@ tempo-tracing:
 
     storageSize: 500Gi
     replicationFactor: 1
+    serviceAccount: tempo-simplest
 
     tenants:
       mode: openshift
