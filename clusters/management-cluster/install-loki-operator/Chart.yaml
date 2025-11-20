@@ -1,6 +1,6 @@
 apiVersion: v2
 name: install-loki-operator
-description: Installs the Loki operator. Installation only - configuration is done by the appropriate service. 
+description: Installs the Loki operator. Installation only - configuration is done by the appropriate service.
 version: 1.0.0
 dependencies:
   - name: tpl
