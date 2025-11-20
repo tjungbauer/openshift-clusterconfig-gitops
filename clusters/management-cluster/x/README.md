@@ -1,19 +1,66 @@
+
+
+# setup-openshift-logging
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Linting](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml/badge.svg)](https://github.com/tjungbauer/openshift-clusterconfig-gitops/actions/workflows/linting.yml)
+[![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
+
+  ![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
+
+ 
+
+  ## Description
+
+  Installs and configures OpenShift Logging by deploying Logging and Loki Operator and configuring them accordingly. Example configuration is creating a Bucket using OpenShift Data Foundation.
+
+This "wrapper" Helm Chart is used to deploy and configure OpenShift Logging with the LokiStack using a GitOps approach.
+
+The values.yaml provides an example of possible settings.
+
+**NOTE**: Verify the article [Installing OpenShift Logging Using GitOps](https://blog.stderr.at/gitopscollection/2024-05-24-install-openshift-logging/) for more detailed information.
+
+There are 6(!) additional Charts that are required as a dependency when you want to use ODF and fully automate the deployment.
+Verify the README and/or the values files for further information.
+
+## Dependencies
+
+This chart has the following dependencies:
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://charts.stderr.at/ | helper-loki-bucket-secret | ~1.0.0 |
+| https://charts.stderr.at/ | helper-lokistack | ~1.0.0 |
+| https://charts.stderr.at/ | helper-objectstore | ~1.0.0 |
+| https://charts.stderr.at/ | helper-operator | ~1.0.18 |
+| https://charts.stderr.at/ | helper-status-checker | ~4.0.0 |
+| https://charts.stderr.at/ | openshift-logging | ~2.0.0 |
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| tjungbauer | <tjungbau@redhat.com> | <https://blog.stderr.at/> |
+
+## Sources
+Source:
+* <https://github.com/tjungbauer/helm-charts>
+* <https://charts.stderr.at/>
+* <https://github.com/tjungbauer/openshift-clusterconfig-gitops>
+
+Source code: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-openshift-logging
+
+## Example values files
+
+```yaml
 ---
 logging-namespace: &log-namespace openshift-logging
 bucketname: &bucketname logging-bucket
 lokisecret: &loki-secret-name logging-loki-s3
 storageclassname: &storageclassname logging-bucket-storage-class
 lokistack: &lokistackname logging-loki
-loki: &channel-loki stable-6.3
-logging: &channel-logging stable-6.3
-observability-operator: &channel-coo stable
-
-observability_ui_plugin:
-  enabled: true
-  name: logging
-  logsLimit: 50
-  timeout: 30s
-  type: Logging
+loki: &channel-loki stable-5.8
+logging: &channel-logging stable
 
 ######################################
 # SUBCHART: helper-operator
@@ -73,35 +120,20 @@ helper-operator:
         # @default -- false
         notownnamespace: false
 
-    # loki-operator:
-    #   enabled: true
-    #   namespace:
-    #     name: openshift-operators-redhat
-    #     create: true
-    #   subscription:
-    #     channel: *channel-loki
-    #     approval: Automatic
-    #     operatorName: loki-operator
-    #     source: redhat-operators
-    #     sourceNamespace: openshift-marketplace
-    #   operatorgroup:
-    #     create: true
-    #     notownnamespace: true
-
-    cluster-observability-operator:
+    loki-operator:
       enabled: true
       namespace:
-        name: openshift-operators
+        name: openshift-operators-redhat
         create: true
       subscription:
-        channel: *channel-coo
+        channel: *channel-loki
         approval: Automatic
-        operatorName: cluster-observability-operator
+        operatorName: loki-operator
         source: redhat-operators
         sourceNamespace: openshift-marketplace
       operatorgroup:
-        create: false
-        notownnamespace: false
+        create: true
+        notownnamespace: true
 
 ########################################
 # SUBCHART: helper-status-checker
@@ -143,14 +175,13 @@ helper-status-checker:
         # -- Name of the Service Account.
         name: "status-checker-logging"
 
-    # - operatorName: loki-operator
-    #   namespace:
-    #     name: openshift-operators-redhat
-    #   syncwave: 1
+    - operatorName: loki-operator
+      namespace:
+        name: openshift-operators-redhat
+      syncwave: 1
 
-    #   serviceAccount:
-    #     name: "status-checker-loki"
-
+      serviceAccount:
+        name: "status-checker-loki"
 
 ########################################
 # SUBCHART: helper-objectstore
@@ -223,7 +254,6 @@ helper-objectstore:
     # @default -- openshift-storage.noobaa.io
     storageclass: *storageclassname
 
-
 ##############################################
 # SUBCHART: helper-loki-bucket-secret
 # Creates a Secret that Loki requires
@@ -251,7 +281,6 @@ helper-loki-bucket-secret:
   bucket:
     # -- Name of the Bucket shall has been created.
     name: *bucketname
-
 
 ########################################
 # SUBCHART: helper-lokistack
@@ -286,8 +315,7 @@ helper-lokistack:
     #   - 1x.small
     #   - 1x.medium
     # @default -- 1x.extra-small
-    # size: 1x.extra-
-    size: 1x.pico
+    # size: 1x.extra-small
 
     # Secret for object storage authentication. Name of a secret in the same namespace as the LokiStack custom resource.
     secret:
@@ -309,13 +337,13 @@ helper-lokistack:
     # Schemas for reading and writing logs.
     # schemas:
       # -- Version for writing and reading logs.
-      # Can be v11, v12 or v13
-      # @default -- v13
-      #  - version: v13
+      # Can be v11 or v12
+      # @default -- v12
+      #  - version: v12
 
       # -- EffectiveDate is the date in UTC that the schema will be applied on. To ensure readibility of logs, this date should be before the current date in UTC.
-      # @default -- 2020-10-11
-      #    effectiveDate: "2020-10-11"
+      # @default -- 2022-06-01
+      #    effectiveDate: "2022-06-01"
 
   # -- Storage class name defines the storage class for ingester/querier PVCs.
   # @default -- gp3-csi
@@ -418,7 +446,6 @@ helper-lokistack:
           operator: Equal
           value: reserved
 
-
 ########################################
 # SUBCHART: openshift-logging
 # Finally, configure openshift-logging.
@@ -428,64 +455,54 @@ openshift-logging:
   loggingConfig:
     enabled: true
     syncwave: '4'
-    operatorVersion: '6.0'
-    managementState: Managed
 
-    collectorServiceAccount:
-      name: cluster-logging-operator
-      create: false
-      bindings:
-        - collect-audit-logs
-        - collect-application-logs
-        - collect-infrastructure-logs
+    # Indicator if the resource is 'Managed' or 'Unmanaged' by the operator
+    # managementState: Managed
 
-    additionalClusterRoles:
-      - type: application
-        name: cluster-logging-write-application-logs
-        enabled: true
-      - type: audit
-        name: cluster-logging-write-audit-logs
-        enabled: true
-      - type: infrastructure
-        name: cluster-logging-write-infrastructure-logs
-        enabled: true
-      - type: editor
-        name: clusterlogforwarder-editor-role
-        enabled: true
+    # Specification of the Log Storage component for the cluster
+    logStore:
+      # The Type of Log Storage to configure. The operator currently supports either using ElasticSearch managed by elasticsearch-operator or Loki managed by loki-operator (LokiStack) as a default log store.
+      type: lokistack
 
-    outputs:
-      - name: default-lokistack
-        type: lokiStack
-        tls:
-          ca:
-            configMapName: openshift-service-ca.crt
-            key: service-ca.crt
+      # Name of the LokiStack resource.
+      lokistack: *lokistackname
 
-        lokiStack:
-          authentication:
-            token:
-              from: serviceAccount
+      retentionPolicy:
+        application:
+          maxAge: 4d
+        audit:
+          maxAge: 4d
+        infra:
+          maxAge: 4d
 
-          target:
-            name: logging-loki
-            namespace: openshift-logging
+      visualization:
+        # The type of Visualization to configure
+        # Could be either Kibana or ocp-console
+        type: ocp-console
 
-    pipelines:
-      - name: default-lokistack
-        inputRefs:
-          - application
-          - infrastructure
-          - audit
-        outputRefs:
-          - default-lokistack
-        filterRefs:
-          - detectexception
-          - parse-json
+      collection:
+        # The type of Log Collection to configure
+        # Vector in case of Loki...
+        type: vector
 
-    filters:
-    - name: detectexception
-      type: detectMultilineException
-    - name: parse-json
-      type: parse
+        # The resource requirements for the collector
+        resources: {}
+        #   limits:
+        #     cpu: '500m'
+        #     memory: '1Gi'
+        #     ephemeral-storage: '50Mi'
+        #   requests:
+        #     cpu: '500m'
+        #     memory: '1Gi'
+        #     ephemeral-storage: '500Mi'
 
-    collector: {}
+        # Define the tolerations the Pods will accept
+        # tolerations:
+        #  - effect: NoSchedule
+        #    key: infra
+        #    operator: Equal
+        #    value: 'reserved'
+```
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.12.0](https://github.com/norwoodj/helm-docs/releases/v1.12.0)

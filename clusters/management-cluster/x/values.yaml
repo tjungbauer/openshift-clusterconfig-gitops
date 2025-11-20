@@ -1,0 +1,160 @@
+---
+tempo: &channel-tempo stable
+tempo-namespace: &tempo-namespace openshift-tempo-operator
+bucketname: &bucketname tempo-bucket-test
+tempo-secret: &tempo-secret-name tempo-s3
+storageclassname: &storageclassname tempo-bucket-test-storage-class
+tempostack-namespace: &tempostack-namespace tempostack-test
+
+tempostack:
+  enabled: true
+  name: simplest
+  additionalAnnotations: {}
+  additionalLabels: {}
+
+  namespace:
+    create: true
+    name: *tempostack-namespace
+    descr: "Namespace for the TempoStack"
+    display: "TempoStack"
+    additionalAnnotations: {}
+    additionalLabels: {}
+
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
+helper-operator:
+  operators:
+    tempo-operator:
+      enabled: false
+      namespace:
+        name: *tempo-namespace
+        create: true
+      subscription:
+        channel: *channel-tempo
+        approval: Automatic
+        operatorName: tempo-product
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+########################################
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator.
+########################################
+helper-status-checker:
+  enabled: false
+
+  approver: false
+
+  checks:
+    - operatorName: tempo-operator
+      namespace:
+        name: *tempo-namespace
+      syncwave: 1
+
+      serviceAccount:
+        name: "status-checker-tempo"
+
+########################################
+# SUBCHART: helper-objectstore
+
+# A helper chart that simply creates another backingstore for logging.
+# This is a chart in a very early state, and not everything can be customized for now.
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+########################################
+helper-objectstore:
+
+  # -- Enable objectstore configuration
+  # @default -- false
+  enabled: true
+
+  # -- Syncwave for Argo CD
+  # @default - 1
+  syncwave: 1
+
+  # -- Name of the BackingStore
+  backingstore_name: tempo-backingstore
+
+  # -- Size of the BackingStore that each volume shall have.
+  backingstore_size: 400Gi
+
+  # -- CPU Limit for the Noobaa Pod
+  # @default -- 500m
+  limits_cpu: 500m
+
+  # -- Memory Limit for the Noobaa Pod.
+  # @default -- 2Gi
+  limits_memory: 2Gi
+
+  pvPool:
+    # -- Number of volumes that shall be used
+    # @default -- 1
+    numOfVolumes: 1
+
+    # Type of BackingStore. Currently pv-pool is the only one supported by this Helm Chart.
+    # @default -- pv-pool
+    type: pv-pool
+
+  # -- The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # -- Name of the StorageClass that shall be created for the bucket.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    # -- Shall a new bucket be enabled?
+    # @default -- false
+    enabled: true
+
+    # -- Name of the bucket that shall be created
+    name: *bucketname
+
+    # -- Target Namespace for that bucket.
+    namespace: *tempo-namespace
+
+    # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # @default -- 2
+    syncwave: 2
+
+    # -- Name of the storageclass for our bucket
+    # @default -- openshift-storage.noobaa.io
+    storageclass: *storageclassname
+
+
+##############################################
+# SUBCHART: helper-loki-bucket-secret
+# Creates a Secret that Loki requires
+#
+# A Kubernetes Job is created, that reads the
+# data from the Secret and ConfigMap and
+# creates a new secret for loki.
+##############################################
+helper-loki-bucket-secret:
+  # -- Enable Job to create a Secret for LokiStack.
+  # @default -- false
+  enabled: false
+
+  # -- Syncwave for Argo CD.
+  # @default -- 3
+  syncwave: 3
+
+  # -- Namespace where LokiStack is deployed and where the Secret shall be created.
+  namespace: *tempo-namespace
+
+  # -- Name of Secret that shall be created.
+  secretname: *tempo-secret-name
+
+  # Bucket Configuration
+  bucket:
+    # -- Name of the Bucket shall has been created.
+    name: *bucketname
