@@ -1,4 +1,0 @@
-{
-  "namespace": "openshift-tempo-operator",
-  "environment": "in-cluster"
-}
