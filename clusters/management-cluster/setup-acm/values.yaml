@@ -1,5 +1,5 @@
 ---
-override-rhacm-operator-version: &rhacmversion release-2.13
+override-rhacm-operator-version: &rhacmversion release-2.14
 
 # local settings
 # This will enable the GitOps integration with ACM
