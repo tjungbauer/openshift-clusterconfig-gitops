@@ -1,0 +1,34 @@
+apiVersion: v2
+name: setup-lokistack-otel-k8s-events
+description: Create a LokiStack instance to prepare a storage to OpenTelemetry Collector for Kubernetes Events.
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-loki-bucket-secret
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-loki-bucket-secret.enabled
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-objectstore.enabled
+  - name: helper-lokistack
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-lokistack.enabled
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-openshift-logging
+keywords:
+  - opentelemetry
+  - kubernetes
+  - events
+  - loki
