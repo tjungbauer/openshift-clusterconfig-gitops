@@ -332,10 +332,10 @@ applicationsets:
     repourl: "https://github.com/tjungbauer/helm-charts"
     targetrevision: "main"
 
-  # Install Mockbin Service
-  mockbin:
+  # Install Mockbin Service #1
+  mockbin-1:
     enabled: true
-    description: "Deploy Mockbin Service, can be used to test ServiceMesh or Observability"
+    description: "Deploy Mockbin #1 Service, can be used to test ServiceMesh or Observability"
     labels:
       category: mesh
     helm:
@@ -345,9 +345,34 @@ applicationsets:
         clusterurl: *mgmtcluster
     syncPolicy:
       autosync_enabled: false
+      syncOptions:
+        - name: CreateNamespace
+          value: true
     path: k8s/
     repourl: 'https://github.com/tjungbauer/mockbin'
     targetrevision: "main"
+    namespace: mockbin-1
+
+  # Install Mockbin Service #2
+  mockbin-2:
+    enabled: true
+    description: "Deploy Mockbin #2 Service, can be used to test ServiceMesh or Observability"
+    labels:
+      category: mesh
+    helm:
+      per_cluster_helm_values: false
+    generatorlist:
+      - clustername: *mgmtclustername
+        clusterurl: *mgmtcluster
+    syncPolicy:
+      autosync_enabled: false
+      syncOptions:
+        - name: CreateNamespace
+          value: true
+    path: k8s/
+    repourl: 'https://github.com/tjungbauer/mockbin'
+    targetrevision: "main"
+    namespace: team-d
 
 # These define the default values.
 # It is possible to overwrite repourl and targetrevision in the Applications(Sets)
