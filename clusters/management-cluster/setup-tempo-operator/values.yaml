@@ -48,6 +48,36 @@ tempo-tracing:
             - write
             - read
 
+        - tenantName: 'tenantA'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbfc'
+          permissions:
+            - write
+            - read
+
+        - tenantName: 'tenantB'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbfd'
+          permissions:
+            - write
+            - read
+
+        - tenantName: 'tenantC'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbfe'
+          permissions:
+            - write
+            - read
+
+        - tenantName: 'tenantD'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbff'
+          permissions:
+            - write
+            - read
+
+        - tenantName: 'tenantX'
+          tenantId: '1610b0c3-c509-4592-a256-a1871353dbfd'
+          permissions:
+            - write
+            - read
+
     observability:
       enabled: true
 
