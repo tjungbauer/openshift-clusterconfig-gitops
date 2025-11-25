@@ -167,15 +167,15 @@ helper-objectstore:
     storageclass: *storageclassname
 
 ##############################################
-# SUBCHART: helper-loki-bucket-secret
-# Creates a Secret that Loki requires
+# SUBCHART: helper-odf-bucket-secret
+# Creates a Secret that Tempo requires
 #
 # A Kubernetes Job is created, that reads the
 # data from the Secret and ConfigMap and
-# creates a new secret for loki.
+# creates a new secret for Tempo.
 ##############################################
-helper-loki-bucket-secret:
-  # -- Enable Job to create a Secret for LokiStack.
+helper-odf-bucket-secret:
+  # -- Enable Job to create a Secret for TempoStack.
   # @default -- false
   enabled: true
 
@@ -183,7 +183,7 @@ helper-loki-bucket-secret:
   # @default -- 3
   syncwave: 3
 
-  # -- Namespace where LokiStack is deployed and where the Secret shall be created.
+  # -- Namespace where TempoStack is deployed and where the Secret shall be created.
   namespace: *tempo-namespace
 
   # -- Name of Secret that shall be created.
@@ -193,6 +193,28 @@ helper-loki-bucket-secret:
   bucket:
     # -- Name of the Bucket shall has been created.
     name: *bucketname
+
+  # -- Keys that shall be used to create the Secret.
+  keys:
+    # -- Overwrite access_key_id key.
+    # @default -- access_key_id
+    access_key_id: access_key_id
+    # -- Overwrite access_key_secret key.
+    # @default -- access_key_secret
+    access_key_secret: access_key_secret
+    # -- Overwrite bucket key.
+    # @default -- bucket
+    bucket: bucket
+    # -- Overwrite endpoint key.
+    # @default -- endpoint
+    endpoint: endpoint
+    # -- Overwrite region key. Region is only set if set_region is true.
+    # @default -- region
+    region: region
+ 
+  # -- Set region key.
+  # @default -- false
+  set_region: false
 
 ```
 
