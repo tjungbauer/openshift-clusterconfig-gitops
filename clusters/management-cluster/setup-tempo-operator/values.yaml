@@ -232,7 +232,7 @@ helper-odf-bucket-secret:
   syncwave: 3
 
   # -- Namespace where TempoStack is deployed and where the Secret shall be created.
-  namespace: *tempo-namespace
+  namespace: *tempostack-namespace
 
   # -- Name of Secret that shall be created.
   secretname: *tempo-secret-name
