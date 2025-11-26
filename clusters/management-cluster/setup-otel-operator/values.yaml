@@ -77,18 +77,6 @@ rh-build-of-opentelemetry:
               endpoint: 0.0.0.0:4317
             http:
               endpoint: 0.0.0.0:4318
-              cors:
-                allowed_origins:
-                  - "https://*.example.com"
-        
-        # Prometheus receiver for scraping metrics
-        prometheus:
-          config:
-            scrape_configs:
-              - job_name: 'otel-collector'
-                scrape_interval: 30s
-                static_configs:
-                  - targets: ['0.0.0.0:8888']
         
         # Jaeger receiver (if migrating from Jaeger)
         jaeger:
@@ -110,19 +98,6 @@ rh-build-of-opentelemetry:
           check_interval: 1s
           limit_mib: 3500
           spike_limit_mib: 512
-        
-        # Resource processor to add cluster attributes
-        resource:
-          attributes:
-            - key: cluster.name
-              value: production-cluster
-              action: insert
-            - key: k8s.cluster.name
-              value: production-cluster
-              action: insert
-            - key: deployment.environment
-              value: production
-              action: insert
         
         # K8s attributes processor
         k8sattributes:
