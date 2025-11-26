@@ -54,7 +54,7 @@ rh-build-of-opentelemetry:
   #########################################################################################
   collector:
     enabled: true
-    name: otel-collector
+    name: otel
     mode: deployment
     replicas: 3
     
