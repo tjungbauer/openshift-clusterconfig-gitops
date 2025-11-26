@@ -58,7 +58,7 @@ rh-build-of-opentelemetry:
     mode: deployment
     replicas: 1
 
-    serviceAccount: otel-collector-sa
+    serviceAccount: otel-collector
     managementState: managed
 
     resources: {}
@@ -104,7 +104,7 @@ rh-build-of-opentelemetry:
               endpoint: 0.0.0.0:14250
             thrift_http:
               endpoint: 0.0.0.0:14268
-    
+
       processors:
         batch:
           send_batch_size: 10000
@@ -262,4 +262,3 @@ rh-build-of-opentelemetry:
               - otlp/tenantX
             receivers:
               - routing/traces
-  
