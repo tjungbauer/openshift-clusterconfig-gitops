@@ -56,26 +56,15 @@ rh-build-of-opentelemetry:
     enabled: true
     name: otel
     mode: deployment
-    replicas: 3
+    replicas: 1
     
     serviceAccount: otel-collector-sa
     managementState: managed
     
-    resources:
-      limits:
-        cpu: 2
-        memory: 4Gi
-      requests:
-        cpu: 500m
-        memory: 1Gi
-    
     nodeSelector:
       node-role.kubernetes.io/worker: ""
     
-    tolerations:
-      - key: node-role.kubernetes.io/infra
-        operator: Exists
-        effect: NoSchedule
+    tolerations: []
     
     config:
       receivers:
