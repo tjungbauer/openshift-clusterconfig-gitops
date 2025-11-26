@@ -48,7 +48,7 @@ rh-build-of-opentelemetry:
   namespace:
     name: tempostack
     create: false
-  
+
   #########################################################################################
   # OPENTELEMETRY COLLECTOR - Production Configuration
   #########################################################################################
@@ -57,17 +57,17 @@ rh-build-of-opentelemetry:
     name: otel
     mode: deployment
     replicas: 1
-    
+
     serviceAccount: otel-collector-sa
     managementState: managed
-    
+
     resources: {}
-    
+
     nodeSelector:
       node-role.kubernetes.io/worker: ""
-    
+
     tolerations: []
-    
+
     config:
       receivers:
         # OTLP receivers for traces, metrics, and logs
@@ -77,7 +77,7 @@ rh-build-of-opentelemetry:
               endpoint: 0.0.0.0:4317
             http:
               endpoint: 0.0.0.0:4318
-        
+
         # Jaeger receiver (if migrating from Jaeger)
         jaeger:
           protocols:
@@ -85,20 +85,20 @@ rh-build-of-opentelemetry:
               endpoint: 0.0.0.0:14250
             thrift_http:
               endpoint: 0.0.0.0:14268
-      
+    
       processors:
         # Batch processor for better throughput
         batch:
           timeout: 10s
           send_batch_size: 10000
           send_batch_max_size: 2048
-        
+
         # Memory limiter to prevent OOM
         memory_limiter:
           check_interval: 1s
           limit_mib: 3500
           spike_limit_mib: 512
-        
+
         # K8s attributes processor
         k8sattributes:
           auth_type: "serviceAccount"
@@ -110,7 +110,7 @@ rh-build-of-opentelemetry:
               - k8s.pod.name
               - k8s.pod.uid
               - k8s.node.name
-      
+
       exporters:
         # Export traces to Tempo
         otlp/tempo:
@@ -124,7 +124,7 @@ rh-build-of-opentelemetry:
           endpoint: http://prometheus-server.monitoring.svc.cluster.local:9090/api/v1/write
           resource_to_telemetry_conversion:
             enabled: true
-      
+
       service:
         pipelines:
           # Traces pipeline
@@ -132,19 +132,19 @@ rh-build-of-opentelemetry:
             receivers: [otlp, jaeger]
             processors: [memory_limiter, k8sattributes, resource, batch]
             exporters: [otlp/tempo]
-          
+
           # Metrics pipeline
           metrics:
             receivers: [otlp, prometheus]
             processors: [memory_limiter, resource, batch]
             exporters: [prometheusremotewrite]
-          
+
           # Logs pipeline
           logs:
             receivers: [otlp]
             processors: [memory_limiter, k8sattributes, resource, batch]
             exporters: [loki]
-        
+
         telemetry:
           logs:
             level: info

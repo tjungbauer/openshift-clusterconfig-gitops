@@ -259,7 +259,7 @@ helper-odf-bucket-secret:
     # -- Overwrite region key. Region is only set if set_region is true.
     # @default -- region
     region: region
-  
+
   # -- Set region key.
   # @default -- false
   set_region: false
