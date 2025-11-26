@@ -63,9 +63,6 @@ rh-build-of-opentelemetry:
 
     resources: {}
 
-    nodeSelector:
-      node-role.kubernetes.io/worker: ""
-
     tolerations: []
 
     config:
@@ -100,16 +97,7 @@ rh-build-of-opentelemetry:
           spike_limit_mib: 512
 
         # K8s attributes processor
-        k8sattributes:
-          auth_type: "serviceAccount"
-          passthrough: false
-          extract:
-            metadata:
-              - k8s.namespace.name
-              - k8s.deployment.name
-              - k8s.pod.name
-              - k8s.pod.uid
-              - k8s.node.name
+        k8sattributes: {}
 
       exporters:
         # Export traces to Tempo
@@ -144,11 +132,4 @@ rh-build-of-opentelemetry:
             receivers: [otlp]
             processors: [memory_limiter, k8sattributes, resource, batch]
             exporters: [loki]
-
-        telemetry:
-          logs:
-            level: info
-          metrics:
-            level: detailed
-            address: 0.0.0.0:8888
   
