@@ -5,13 +5,13 @@ description: Enables ETCD encryption, customer certificate and audit-profile for
 version: 1.0.3
 dependencies:
   - name: tpl
-    version: ~1.0.0
+    version: ~1.0.26
     repository: https://charts.stderr.at/
   - name: generic-cluster-config
-    version: ~1.0.10
+    version: ~1.0.64
     repository: https://charts.stderr.at
   - name: cert-manager
-    version: ~2.0.0
+    version: ~2.0.2
     repository: https://charts.stderr.at/
     condition: cert-manager.enabled
 maintainers:
