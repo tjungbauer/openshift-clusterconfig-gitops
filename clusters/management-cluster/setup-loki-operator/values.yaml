@@ -1,5 +1,5 @@
 ---
-loki: &channel-loki stable-6.3
+loki: &channel-loki stable-6.4
 
 ######################################
 # SUBCHART: helper-operator

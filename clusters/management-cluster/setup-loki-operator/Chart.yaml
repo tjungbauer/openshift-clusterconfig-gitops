@@ -1,7 +1,7 @@
 apiVersion: v2
 name: setup-loki-operator
 description: Installs Loki Operator. Configuration should be done by the appropriate service that wants to use Loki. For example openshift-logging
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: tpl
     version: ~1.0.0
