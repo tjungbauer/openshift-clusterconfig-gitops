@@ -1,0 +1,4 @@
+{
+  "namespace": "openshift-cluster-observability-operator",
+  "environment": "in-cluster"
+}

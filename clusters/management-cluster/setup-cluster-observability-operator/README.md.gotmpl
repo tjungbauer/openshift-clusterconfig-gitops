@@ -1,0 +1,55 @@
+{{ template "doc.header" . }}
+
+This chart simply install the Cluster Observability Operator and was created to split the dependencies to different deployments. 
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+
+## Example values files
+
+```yaml
+---
+######################################
+# SUBCHART: helper-operator
+# Operators that shall be installed.
+######################################
+helper-operator:
+  operators:
+    cluster-observability-operator:
+      enabled: true
+      namespace:
+        name: openshift-cluster-observability-operator
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: cluster-observability-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: false
+
+########################################
+# SUBCHART: helper-status-checker
+# Verify the status of a given operator.
+########################################
+helper-status-checker:
+  enabled: true
+  approver: false
+
+  checks:
+    - operatorName: cluster-observability-operator
+      subscriptionName: cluster-observability-operator
+      sleeptimer: 20
+      maxretries: 20
+      namespace:
+        name: openshift-cluster-observability-operator
+      syncwave: 1
+      serviceAccount:
+        name: "status-checker-coo"
+```
+
+{{ template "doc.footer" . }}

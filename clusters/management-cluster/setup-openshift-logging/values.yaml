@@ -6,7 +6,7 @@ storageclassname: &storageclassname logging-bucket-storage-class
 lokistack: &lokistackname logging-loki
 loki: &channel-loki stable-6.3
 logging: &channel-logging stable-6.3
-observability-operator: &channel-coo stable
+#observability-operator: &channel-coo stable
 
 observability_ui_plugin:
   enabled: true
@@ -88,20 +88,20 @@ helper-operator:
     #     create: true
     #     notownnamespace: true
 
-    cluster-observability-operator:
-      enabled: true
-      namespace:
-        name: openshift-operators
-        create: true
-      subscription:
-        channel: *channel-coo
-        approval: Automatic
-        operatorName: cluster-observability-operator
-        source: redhat-operators
-        sourceNamespace: openshift-marketplace
-      operatorgroup:
-        create: false
-        notownnamespace: false
+    #cluster-observability-operator:
+    #  enabled: true
+    #  namespace:
+    #    name: openshift-operators
+    #    create: true
+    #  subscription:
+    #    channel: *channel-coo
+    #    approval: Automatic
+    #    operatorName: cluster-observability-operator
+    #    source: redhat-operators
+    #    sourceNamespace: openshift-marketplace
+    #  operatorgroup:
+    #    create: false
+    #    notownnamespace: false
 
 ########################################
 # SUBCHART: helper-status-checker
