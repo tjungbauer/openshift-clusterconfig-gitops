@@ -1,0 +1,28 @@
+---
+helper-operator:
+  operators:
+    grafana-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-operators
+        create: false
+      subscription:
+        channel: v5
+        approval: Automatic
+        operatorName: grafana-operator
+        source: community-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: false
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: grafana-operator
+      namespace:
+        name: openshift-operators
+      serviceAccount:
+        name: "status-checker-grafana"
