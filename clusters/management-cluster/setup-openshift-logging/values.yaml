@@ -287,7 +287,7 @@ helper-lokistack:
     #   - 1x.medium
     # @default -- 1x.extra-small
     # size: 1x.extra-
-    size: 1x.pico
+    size: 1x.demo
 
     # Secret for object storage authentication. Name of a secret in the same namespace as the LokiStack custom resource.
     secret:
