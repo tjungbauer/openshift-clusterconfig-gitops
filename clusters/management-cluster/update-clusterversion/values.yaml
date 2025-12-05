@@ -1,11 +1,11 @@
 ---
 
-channel: stable-4.15
+channel: stable-4.20
 
 # -- The desired version that the cluster shall be updated to. The available versions
 # can be found with oc get clusterversion -o yaml
 # Verify the availableUpdates to find the required version.
-desiredVersion: 4.14.28
+desiredVersion: 4.20.3
 
 # -- OPTIONAL: The desired image SHA that the cluster shall be updated to. The available SHA
 # can be found with oc get clusterversion -o yaml
