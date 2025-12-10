@@ -34,6 +34,7 @@ helper-status-checker:
 
   checks:
     - operatorName: opentelemetry-product
+      subscriptionName: opentelemetry-product
       namespace:
         name: *otel-namespace
       syncwave: 1
