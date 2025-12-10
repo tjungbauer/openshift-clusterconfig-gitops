@@ -203,7 +203,7 @@ helper-objectstore:
     name: *bucketname
 
     # -- Target Namespace for that bucket.
-    namespace: *tempo-namespace
+    namespace: *tempostack-namespace
 
     # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
     # @default -- 2
