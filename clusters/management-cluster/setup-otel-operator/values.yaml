@@ -78,15 +78,6 @@ rh-build-of-opentelemetry:
             - pipelines:
                 - traces/tenantB
               statement: 'route() where attributes["k8s.namespace.name"] == "team-b"'
-            - pipelines:
-                - traces/tenantC
-              statement: 'route() where attributes["k8s.namespace.name"] == "team-c"'
-            - pipelines:
-                - traces/tenantD
-              statement: 'route() where attributes["k8s.namespace.name"] == "team-d"'
-            - pipelines:
-                - traces/tenantX
-              statement: 'route() where attributes["k8s.namespace.name"] == "mockbin-1"'
 
       receivers:
         # OTLP receivers for traces, metrics, and logs
@@ -132,32 +123,11 @@ rh-build-of-opentelemetry:
             insecure_skip_verify: true
             server_name_override: tempo-simplest-gateway.tempostack.svc.cluster.local
         otlp:
-          auth:
-            authenticator: bearertokenauth
-          endpoint: 'tempo-simplest-gateway:8090'
-          headers:
-            X-Scope-OrgID: prod
-          tls:
-            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
-            insecure: true
-            insecure_skip_verify: true
-            server_name_override: tempo-simplest-gateway.tempostack.svc.cluster.local
         prometheus:
           add_metric_suffixes: false
           endpoint: '0.0.0.0:8889'
           resource_to_telemetry_conversion:
             enabled: true
-        otlp/dev:
-          auth:
-            authenticator: bearertokenauth
-          endpoint: 'tempo-simplest-gateway:8090'
-          headers:
-            X-Scope-OrgID: dev
-          tls:
-            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
-            insecure: true
-            insecure_skip_verify: true
-            server_name_override: tempo-simplest-gateway.tempostack.svc.cluster.local
         otlp/tenantA:
           auth:
             authenticator: bearertokenauth
@@ -175,28 +145,6 @@ rh-build-of-opentelemetry:
           endpoint: 'tempo-simplest-gateway:8090'
           headers:
             X-Scope-OrgID: tenantB
-          tls:
-            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
-            insecure: true
-            insecure_skip_verify: true
-            server_name_override: tempo-simplest-gateway.tempostack.svc.cluster.local
-        otlp/tenantC:
-          auth:
-            authenticator: bearertokenauth
-          endpoint: 'tempo-simplest-gateway:8090'
-          headers:
-            X-Scope-OrgID: tenantC
-          tls:
-            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
-            insecure: true
-            insecure_skip_verify: true
-            server_name_override: tempo-simplest-gateway.tempostack.svc.cluster.local
-        otlp/tenantD:
-          auth:
-            authenticator: bearertokenauth
-          endpoint: 'tempo-simplest-gateway:8090'
-          headers:
-            X-Scope-OrgID: tenantD
           tls:
             ca_file: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
             insecure: true
@@ -245,20 +193,5 @@ rh-build-of-opentelemetry:
           traces/tenantB:
             exporters:
               - otlp/tenantB
-            receivers:
-              - routing/traces
-          traces/tenantC:
-            exporters:
-              - otlp/tenantC
-            receivers:
-              - routing/traces
-          traces/tenantD:
-            exporters:
-              - otlp/tenantD
-            receivers:
-              - routing/traces
-          traces/tenantX:
-            exporters:
-              - otlp/tenantX
             receivers:
               - routing/traces
