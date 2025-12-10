@@ -1,0 +1,27 @@
+# see full example at ../my-main-app
+
+# Environment to which these values are valid, this should be the cluster name as defined in the values-global.yaml
+# In best case the same is equal to the folder we are currntly in, but this is optional.
+environment: &environment in-cluster
+
+# Parameters handed over to Sub-Chart helper-proj-onboarding
+helper-proj-onboarding:
+
+  environment: *environment
+
+  # List of namespaces this tenant shall manage.
+  # A tenant or project may consist of multiple namespace
+  namespaces:
+
+    # Name of the first Namespace
+    - name: &name team-a
+
+      # Is this Namespace enabled or not
+      enabled: true
+
+      # Create a local Group with Admin users and the required rolebinding
+      # If other systems, like LDAP Group sync is used, you will probaably not need this and can either disable it or remove the whole block.
+      local_admin_group:
+        enabled: true
+        users:
+          - user1
