@@ -238,7 +238,7 @@ applicationsets:
     preserveResourcesOnDeletion: true
 
     # Switch to set the namespace to '.namespace' ... must be defined in config.json
-    use_configured_namespace: true
+    use_configured_namespace: false
 
   ##########################################
   # END PROJECT ONBOARDING - GIT GENERATOR #
