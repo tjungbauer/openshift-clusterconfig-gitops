@@ -22,14 +22,7 @@ spec:
         app: mockbin
     spec:
       containers:
-      - env:
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: 'http://otelcol-agent-collector:4317'  
-          - name: OTEL_EXPORTER_OTLP_PROTOCOL
-            value: grpc  
-          - name: OTEL_SERVICE_NAME
-            value: mockbin  
-        image: quay.io/tjungbau/mockbin:1.8.1
+      - image: quay.io/tjungbau/mockbin:1.8.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
