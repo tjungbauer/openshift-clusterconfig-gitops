@@ -18,7 +18,7 @@ helper-operator:
         sourceNamespace: openshift-marketplace
       operatorgroup:
         create: true
-        notownnamespace: false
+        notownnamespace: true
 
 ########################################
 # SUBCHART: helper-status-checker
