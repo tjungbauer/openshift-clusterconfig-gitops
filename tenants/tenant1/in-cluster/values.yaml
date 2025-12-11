@@ -218,11 +218,12 @@ helper-proj-onboarding:
       # If you do not want this, you need to create a custom role and assign this to the users.
 
       default_policies:
-        # enable_allow_from_ingress: true
-        # disable_allow_from_monitoring: false
-        # disable_allow_kube_apiserver: false
-        # disable_deny_all_egress: true
-        # disable_allow_from_same_namespace: true
+        # deny_all_ingress: true
+        # allow_from_monitoring: false
+        # allow_kube_apiserver: false
+        # allow_from_same_namespace: true
+        # allow_to_dns: false
+        # deny_all_egress: true
 
       # Additional custom Network Policies
       # I created this to be able to create Policies using a Helm chart. It might look complex but it is actually quite straight forward.
