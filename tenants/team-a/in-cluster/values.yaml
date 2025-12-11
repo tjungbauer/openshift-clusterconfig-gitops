@@ -25,3 +25,8 @@ helper-proj-onboarding:
         enabled: true
         users:
           - user1
+
+      default_policies:
+        disable_allow_from_monitoring: true
+        allow_from_same_namespace: false
+        disable_allow_kube_apiserver: true
