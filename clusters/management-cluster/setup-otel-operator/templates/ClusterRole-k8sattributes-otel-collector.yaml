@@ -1,0 +1,31 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8sattributes-otel-collector
+rules:
+  # Permissions for k8sattributes processor
+  # Allows the collector to read pod, namespace, and replicaset information
+  # to enrich traces with Kubernetes metadata
+  - verbs:
+      - get
+      - watch
+      - list
+    apiGroups:
+      - '*'
+    resources:
+      - pods
+      - namespaces
+      - replicasets
+
+  # Permissions for resourcedetection processor (OpenShift)
+  # Allows detection of OpenShift cluster information
+  # such as cluster name, platform type, and region
+  - verbs:
+      - get
+      - watch
+      - list
+    apiGroups:
+      - config.openshift.io
+    resources:
+      - infrastructures
+      - infrastructures/status

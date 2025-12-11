@@ -1,6 +1,8 @@
 ---
 otel: &channel-otel stable
 otel-namespace: &otel-namespace openshift-opentelemetry-operator
+tempostacknamespace: &tempostacknamespace tempostack
+otel_sa: &otel_sa otel-collector
 
 ######################################
 # SUBCHART: helper-operator
@@ -47,7 +49,7 @@ rh-build-of-opentelemetry:
   # namespace ... disabled here, since we deployed it via Tempo already
   #########################################################################################
   namespace:
-    name: tempostack
+    name: *tempostacknamespace
     create: false
 
   #########################################################################################
@@ -59,7 +61,9 @@ rh-build-of-opentelemetry:
     mode: deployment
     replicas: 1
 
-    serviceAccount: otel-collector
+    serviceAccount:
+      name: *otel_sa
+      create: true
     managementState: managed
 
     resources: {}
