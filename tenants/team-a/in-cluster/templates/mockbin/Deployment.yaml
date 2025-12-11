@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mockbin
+    app.kubernetes.io/component: api
+    app.kubernetes.io/name: mockbin
+    app.openshift.io/runtime: python
+  name: mockbin
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mockbin
+  template:
+    metadata:
+      annotations:
+        alpha.image.policy.openshift.io/resolve-names: '*'
+      labels:
+        app: mockbin
+    spec:
+      containers:
+      - env:
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            value: 'http://otelcol-agent-collector:4317'  
+          - name: OTEL_EXPORTER_OTLP_PROTOCOL
+            value: grpc  
+          - name: OTEL_SERVICE_NAME
+            value: mockbin  
+        image: quay.io/tjungbau/mockbin:1.8.1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        name: mockbin
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      serviceAccountName: mockbin

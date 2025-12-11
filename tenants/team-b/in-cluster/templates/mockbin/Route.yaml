@@ -1,0 +1,25 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    haproxy.router.openshift.io/rate-limit-connections: "true"
+    haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp: "100"
+    haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "100"
+    haproxy.router.openshift.io/timeout: 60s
+  labels:
+    app: mockbin
+    app.kubernetes.io/component: api
+    app.kubernetes.io/name: mockbin
+  name: mockbin
+spec:
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: mockbin
+    weight: 100
+  wildcardPolicy: None

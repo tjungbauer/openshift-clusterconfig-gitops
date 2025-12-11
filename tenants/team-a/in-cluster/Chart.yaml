@@ -1,0 +1,20 @@
+apiVersion: v2
+name: team-a-in-cluster
+description: Installs and configures the team-a in-cluster.
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-proj-onboarding
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/tenants/team-a/in-cluster

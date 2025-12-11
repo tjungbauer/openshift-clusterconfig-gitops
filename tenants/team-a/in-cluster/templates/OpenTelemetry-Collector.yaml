@@ -1,0 +1,50 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otelcol-agent  
+  namespace: team-a  
+spec:
+  mode: deployment  
+  replicas: 1  
+  serviceAccount: otelcol-agent  
+
+  config:
+    # Receivers - accept traces from applications
+    receivers:  
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    # Processors
+    processors:  
+      # Add namespace identifier
+      attributes:
+        actions:
+          - action: insert
+            key: k8s.namespace.name
+            value: team-a
+
+      # Batch for efficiency
+      batch: {}
+
+    # Exporters - forward to central collector
+    exporters:
+      otlp/central:  
+        endpoint: otel-collector.tempostack.svc.cluster.local:4317
+        tls:
+          insecure: true
+
+    # Service pipeline
+    service:
+      pipelines:  
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - batch
+            - attributes
+          exporters:
+            - otlp/central
