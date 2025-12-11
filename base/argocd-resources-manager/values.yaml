@@ -237,6 +237,9 @@ applicationsets:
     # preserve all resources when the application gets deleted. This is useful to keep that workload even if Argo CD is removed or severely changed.
     preserveResourcesOnDeletion: true
 
+    # Switch to set the namespace to '.namespace' ... must be defined in config.json
+    use_configured_namespace: true
+
   ##########################################
   # END PROJECT ONBOARDING - GIT GENERATOR #
   ##########################################
