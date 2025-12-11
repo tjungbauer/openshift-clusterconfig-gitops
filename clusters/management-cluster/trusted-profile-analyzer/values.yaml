@@ -78,9 +78,9 @@ redhat-trusted-profile-analyzer:
 
   storage:
     type: s3
-    region: REGION
+    region: https://s3.openshift-storage.svc
     bucket: trusted-profile-analyzer-b58f7115-7076-4595-9194-e8b0c213be38
-    endpoint: s3.openshift-storage.svc
+    pathStyle: true
     accessKey:
       valueFrom:
         secretKeyRef:

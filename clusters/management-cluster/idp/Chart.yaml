@@ -16,7 +16,7 @@ dependencies:
     condition: helper-status-checker.enabled
   - name: generic-cluster-config
     version: ~1.0.25
-    repository: https://charts.stderr.at
+    repository: https://charts.stderr.at/
 maintainers:
   - name: tjungbauer
     email: tjungbau@redhat.com

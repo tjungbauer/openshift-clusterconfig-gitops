@@ -9,7 +9,7 @@ dependencies:
     repository: https://charts.stderr.at/
   - name: generic-cluster-config
     version: ~1.0.64
-    repository: https://charts.stderr.at
+    repository: https://charts.stderr.at/
   - name: cert-manager
     version: ~2.0.2
     repository: https://charts.stderr.at/
