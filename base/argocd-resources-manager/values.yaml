@@ -212,8 +212,6 @@ applicationsets:
     labels:
       catagory: tenant-onboarding
 
-    # Path to the Git repository. The default URL and revision are defined as anchors at the beginning of the file, but could be overwritten here.
-    path: '{{ .path.path }}/'
     repourl: *repourl
     targetrevision: *branch
 
