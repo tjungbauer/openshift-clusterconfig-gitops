@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/component: api
     app.kubernetes.io/name: mockbin
   name: mockbin
+  namespace: team-b
 spec:
   ports:
   - name: http

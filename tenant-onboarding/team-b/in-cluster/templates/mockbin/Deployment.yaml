@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/name: mockbin
     app.openshift.io/runtime: python
   name: mockbin
+  namespace: team-b
 spec:
   replicas: 2
   selector:
