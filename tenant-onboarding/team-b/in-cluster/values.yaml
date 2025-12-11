@@ -19,7 +19,7 @@ helper-proj-onboarding:
       # Is this Namespace enabled or not
       enabled: true
 
-      labels:
+      annotations:
         sidecar.opentelemetry.io/inject: "true"
 
       # Create a local Group with Admin users and the required rolebinding
