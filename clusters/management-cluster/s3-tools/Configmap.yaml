@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-cli-scripts
+  namespace: s3-tools
+data:
+  list-buckets.sh: |
+    #!/bin/bash
+    # List all S3 buckets
+    echo "=== Listing S3 Buckets ==="
+    mc alias set s3 ${S3_ENDPOINT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} --insecure
+    mc ls s3/ --insecure
+    
+  list-objects.sh: |
+    #!/bin/bash
+    # List objects in a bucket
+    BUCKET="${1:-}"
+    if [ -z "$BUCKET" ]; then
+      echo "Usage: list-objects.sh <bucket-name> [prefix]"
+      exit 1
+    fi
+    PREFIX="${2:-}"
+    echo "=== Listing objects in bucket: $BUCKET/$PREFIX ==="
+    mc alias set s3 ${S3_ENDPOINT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} --insecure
+    mc ls s3/${BUCKET}/${PREFIX} --insecure
+    
+  bucket-info.sh: |
+    #!/bin/bash
+    # Get bucket information and stats
+    BUCKET="${1:-}"
+    if [ -z "$BUCKET" ]; then
+      echo "Usage: bucket-info.sh <bucket-name>"
+      exit 1
+    fi
+    echo "=== Bucket Info: $BUCKET ==="
+    mc alias set s3 ${S3_ENDPOINT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} --insecure
+    echo ""
+    echo "--- Bucket Policy ---"
+    mc anonymous get s3/${BUCKET} --insecure 2>/dev/null || echo "No public policy set"
+    echo ""
+    echo "--- Disk Usage ---"
+    mc du s3/${BUCKET} --insecure
+    echo ""
+    echo "--- Object Count ---"
+    mc ls --recursive s3/${BUCKET} --insecure | wc -l

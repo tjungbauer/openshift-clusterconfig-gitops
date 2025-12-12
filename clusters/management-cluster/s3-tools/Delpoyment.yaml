@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3-cli-tool
+  namespace: s3-tools
+  labels:
+    app: s3-cli-tool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3-cli-tool
+  template:
+    metadata:
+      labels:
+        app: s3-cli-tool
+    spec:
+      containers:
+        - name: s3-cli
+          image: minio/mc:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "S3 CLI Tool is ready."
+              echo "Available scripts in /scripts:"
+              ls -la /scripts/
+              echo ""
+              echo "Usage examples:"
+              echo "  /scripts/list-buckets.sh"
+              echo "  /scripts/search-buckets.sh <pattern>"
+              echo "  /scripts/list-objects.sh <bucket> [prefix]"
+              echo "  /scripts/bucket-info.sh <bucket>"
+              echo ""
+              echo "Or use 'mc' directly:"
+              echo "  mc alias set s3 \$S3_ENDPOINT \$AWS_ACCESS_KEY_ID \$AWS_SECRET_ACCESS_KEY"
+              echo "  mc ls s3/"
+              echo ""
+              # Keep container running
+              sleep infinity
+          env:
+            - name: MC_CONFIG_DIR
+              value: /tmp/.mc
+          envFrom:
+            - secretRef:
+                name: s3-credentials
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            - name: mc-config
+              mountPath: /tmp/.mc
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: scripts
+          configMap:
+            name: s3-cli-scripts
+            defaultMode: 0755
+        - name: mc-config
+          emptyDir: {}
