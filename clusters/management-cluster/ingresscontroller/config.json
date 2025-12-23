@@ -1,4 +1,10 @@
 {
-  "namespace": "default",
-  "environment": "in-cluster"
+  "name": "Ingress Controller",
+  "description": "Configures the OpenShift IngressController object with replicas, nodeSelector, and tolerations for infrastructure node placement.",
+  "version": "1.0.0",
+  "namespace": "openshift-ingress-operator",
+  "environment": "in-cluster",
+  "category": "platform",
+  "keywords": ["ingress", "routing", "infrastructure"],
+  "icon": "door-open"
 }

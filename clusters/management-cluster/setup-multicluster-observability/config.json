@@ -1,4 +1,5 @@
 {
   "namespace": "open-cluster-management-observability",
-  "environment": "in-cluster"
+  "environment": "in-cluster",
+  "appDependencies": ["setup-acm"]
 }

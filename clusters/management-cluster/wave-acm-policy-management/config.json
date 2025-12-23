@@ -1,4 +1,10 @@
 {
-  "namespace": "default",
-  "environment": "in-cluster"
+  "name": "ACM Policy Management Waves",
+  "description": "Manages ACM policy deployment waves using ArgoCD sync waves for ordered policy application.",
+  "version": "1.0.0",
+  "namespace": "open-cluster-management",
+  "environment": "in-cluster",
+  "category": "multicluster",
+  "keywords": ["acm", "policy", "governance", "waves"],
+  "icon": "wave-square"
 }

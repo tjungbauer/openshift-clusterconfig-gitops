@@ -1,0 +1,154 @@
+name: Update Blog GitOps Catalog
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'clusters/**'
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  BLOG_REPO: tjungbauer/blog-source  # Change this to your actual blog repo
+  BLOG_BRANCH: main
+  DATA_FILE_PATH: data/gitops_applications.json
+
+jobs:
+  generate-catalog:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      
+      - name: Generate GitOps Catalog JSON
+        id: generate
+        run: |
+          chmod +x ./scripts/generate-catalog-json.sh
+          ./scripts/generate-catalog-json.sh > gitops_applications.json
+          
+          # Validate JSON
+          if jq empty gitops_applications.json 2>/dev/null; then
+            echo "✅ Generated valid JSON"
+            echo "app_count=$(jq '.applications | length' gitops_applications.json)" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Generated invalid JSON"
+            exit 1
+          fi
+      
+      - name: Display Summary
+        run: |
+          echo "### GitOps Catalog Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Applications:** ${{ steps.generate.outputs.app_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Last Updated:** $(date +%Y-%m-%d)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Categories" >> $GITHUB_STEP_SUMMARY
+          jq -r '.categories | to_entries[] | "- \(.value.name)"' gitops_applications.json >> $GITHUB_STEP_SUMMARY
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitops-catalog
+          path: gitops_applications.json
+          retention-days: 30
+
+  update-blog:
+    needs: generate-catalog
+    runs-on: ubuntu-latest
+    # Only run if BLOG_PAT secret is configured
+    if: ${{ vars.ENABLE_BLOG_UPDATE == 'true' }}
+    
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gitops-catalog
+      
+      - name: Checkout Blog Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BLOG_REPO }}
+          token: ${{ secrets.BLOG_PAT }}
+          path: blog
+          ref: ${{ env.BLOG_BRANCH }}
+      
+      - name: Update Catalog Data
+        run: |
+          mkdir -p blog/$(dirname ${{ env.DATA_FILE_PATH }})
+          cp gitops_applications.json blog/${{ env.DATA_FILE_PATH }}
+      
+      - name: Check for Changes
+        id: changes
+        working-directory: blog
+        run: |
+          git diff --quiet ${{ env.DATA_FILE_PATH }} || echo "has_changes=true" >> $GITHUB_OUTPUT
+      
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: blog
+          token: ${{ secrets.BLOG_PAT }}
+          commit-message: "chore: Update GitOps catalog from openshift-clusterconfig-gitops"
+          title: "📦 Update GitOps Application Catalog"
+          body: |
+            This PR updates the GitOps Application Catalog data.
+            
+            **Triggered by:** Push to `${{ github.repository }}@${{ github.sha }}`
+            
+            **Changes:**
+            - Updated application metadata from Chart.yaml and config.json files
+            - Regenerated catalog with latest application data
+            
+            ---
+            *This PR was automatically created by the [Update Blog GitOps Catalog](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.*
+          branch: update-gitops-catalog
+          delete-branch: true
+          labels: |
+            automated
+            documentation
+
+  # Alternative: Direct commit (faster, but no review)
+  direct-update:
+    needs: generate-catalog
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_DIRECT_UPDATE == 'true' }}
+    
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gitops-catalog
+      
+      - name: Checkout Blog Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BLOG_REPO }}
+          token: ${{ secrets.BLOG_PAT }}
+          path: blog
+          ref: ${{ env.BLOG_BRANCH }}
+      
+      - name: Update and Push
+        working-directory: blog
+        run: |
+          mkdir -p $(dirname ${{ env.DATA_FILE_PATH }})
+          cp ../gitops_applications.json ${{ env.DATA_FILE_PATH }}
+          
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+          if git diff --quiet ${{ env.DATA_FILE_PATH }}; then
+            echo "No changes to commit"
+          else
+            git add ${{ env.DATA_FILE_PATH }}
+            git commit -m "chore: Auto-update GitOps catalog [skip ci]"
+            git push
+            echo "✅ Successfully updated blog catalog"
+          fi
+

@@ -1,4 +1,5 @@
 {
   "namespace": "openshift-logging",
-  "environment": "in-cluster"
+  "environment": "in-cluster",
+  "appDependencies": ["setup-loki-operator", "setup-openshift-data-foundation"]
 }

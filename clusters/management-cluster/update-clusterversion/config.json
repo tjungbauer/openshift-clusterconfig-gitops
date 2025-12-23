@@ -1,4 +1,11 @@
 {
-  "namespace": "default",
-  "environment": "in-cluster"
+  "name": "Cluster Version Update",
+  "description": "Updates OpenShift ClusterVersion for controlled cluster upgrades via GitOps.",
+  "version": "1.0.1",
+  "namespace": "openshift-config",
+  "environment": "in-cluster",
+  "category": "platform",
+  "keywords": ["upgrade", "version", "clusterversion"],
+  "icon": "sync-alt",
+  "blogPost": "/gitopscollection/2024-06-07-update-cluster-version-with-gitops/"
 }
