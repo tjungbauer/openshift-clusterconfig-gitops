@@ -64,7 +64,7 @@ jobs:
     needs: generate-catalog
     runs-on: ubuntu-latest
     # Only run if BLOG_PAT secret is configured
-    if: ${{ vars.ENABLE_BLOG_UPDATE == 'true' }}
+    if: ${{ env.ENABLE_BLOG_UPDATE == 'true' }}
     
     steps:
       - name: Download Artifact
@@ -120,7 +120,7 @@ jobs:
   direct-update:
     needs: generate-catalog
     runs-on: ubuntu-latest
-    if: ${{ vars.ENABLE_DIRECT_UPDATE == 'true' }}
+    if: ${{ env.ENABLE_DIRECT_UPDATE == 'true' }}
     
     steps:
       - name: Download Artifact
