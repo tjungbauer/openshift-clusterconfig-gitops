@@ -11,8 +11,6 @@ on:
 env:
   BLOG_REPO: stderrat/blog-src
   BLOG_BRANCH: master
-  ENABLE_BLOG_UPDATE: true
-  ENABLE_DIRECT_UPDATE: false # no pull request, just direct commit
   DATA_FILE_PATH: data/gitops_applications.json
 
 jobs:
@@ -63,8 +61,8 @@ jobs:
   update-blog:
     needs: generate-catalog
     runs-on: ubuntu-latest
-    # Only run if BLOG_PAT secret is configured
-    if: ${{ env.ENABLE_BLOG_UPDATE == 'true' }}
+    # Creates a PR in the blog repo (set to false to disable)
+    if: true
     
     steps:
       - name: Download Artifact
@@ -120,7 +118,8 @@ jobs:
   direct-update:
     needs: generate-catalog
     runs-on: ubuntu-latest
-    if: ${{ env.ENABLE_DIRECT_UPDATE == 'true' }}
+    # Direct commit without PR (set to true to enable, but disable update-blog first)
+    if: false
     
     steps:
       - name: Download Artifact
