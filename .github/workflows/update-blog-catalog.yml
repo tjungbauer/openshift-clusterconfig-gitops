@@ -9,8 +9,10 @@ on:
   workflow_dispatch:  # Allow manual trigger
 
 env:
-  BLOG_REPO: tjungbauer/blog-source  # Change this to your actual blog repo
+  BLOG_REPO: stderrat/blog-src
   BLOG_BRANCH: main
+  ENABLE_BLOG_UPDATE: true
+  ENABLE_DIRECT_UPDATE: false # no pull request, just direct commit
   DATA_FILE_PATH: data/gitops_applications.json
 
 jobs:
