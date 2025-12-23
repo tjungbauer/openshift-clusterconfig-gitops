@@ -16,6 +16,9 @@ env:
 jobs:
   generate-catalog:
     runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.compare.outputs.has_changes }}
+      app_count: ${{ steps.generate.outputs.app_count }}
     
     steps:
       - name: Checkout GitOps Repository
@@ -41,17 +44,58 @@ jobs:
             exit 1
           fi
       
+      - name: Fetch existing catalog from blog repo
+        id: fetch_existing
+        run: |
+          # Try to fetch the existing JSON from the blog repo
+          EXISTING_URL="https://raw.githubusercontent.com/${{ env.BLOG_REPO }}/${{ env.BLOG_BRANCH }}/${{ env.DATA_FILE_PATH }}"
+          echo "Fetching existing catalog from: $EXISTING_URL"
+          
+          if curl -sf "$EXISTING_URL" -o existing_catalog.json 2>/dev/null; then
+            echo "✅ Fetched existing catalog"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ No existing catalog found (first run or file doesn't exist)"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Compare catalogs
+        id: compare
+        run: |
+          if [[ "${{ steps.fetch_existing.outputs.exists }}" == "false" ]]; then
+            echo "📦 No existing catalog - changes detected (first run)"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            # Normalize JSON (sort keys, remove whitespace differences) before comparing
+            jq -S '.' gitops_applications.json > new_normalized.json
+            jq -S '.' existing_catalog.json > existing_normalized.json
+            
+            if diff -q new_normalized.json existing_normalized.json > /dev/null 2>&1; then
+              echo "✅ No changes detected - catalog is up to date"
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            else
+              echo "📝 Changes detected in catalog"
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+              
+              # Show what changed (for debugging)
+              echo "### Changes:" >> $GITHUB_STEP_SUMMARY
+              diff new_normalized.json existing_normalized.json | head -50 >> $GITHUB_STEP_SUMMARY || true
+            fi
+          fi
+      
       - name: Display Summary
         run: |
           echo "### GitOps Catalog Generated" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Applications:** ${{ steps.generate.outputs.app_count }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Last Updated:** $(date +%Y-%m-%d)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changes Detected:** ${{ steps.compare.outputs.has_changes }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### Categories" >> $GITHUB_STEP_SUMMARY
           jq -r '.categories | to_entries[] | "- \(.value.name)"' gitops_applications.json >> $GITHUB_STEP_SUMMARY
       
       - name: Upload Artifact
+        if: steps.compare.outputs.has_changes == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: gitops-catalog
@@ -61,8 +105,8 @@ jobs:
   update-blog:
     needs: generate-catalog
     runs-on: ubuntu-latest
-    # Creates a PR in the blog repo (set to false to disable)
-    if: true
+    # Only run if changes were detected
+    if: needs.generate-catalog.outputs.has_changes == 'true'
     
     steps:
       - name: Download Artifact
@@ -83,14 +127,7 @@ jobs:
           mkdir -p blog/$(dirname ${{ env.DATA_FILE_PATH }})
           cp gitops_applications.json blog/${{ env.DATA_FILE_PATH }}
       
-      - name: Check for Changes
-        id: changes
-        working-directory: blog
-        run: |
-          git diff --quiet ${{ env.DATA_FILE_PATH }} || echo "has_changes=true" >> $GITHUB_OUTPUT
-      
       - name: Create Pull Request
-        if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           path: blog
@@ -115,10 +152,12 @@ jobs:
             documentation
 
   # Alternative: Direct commit (faster, but no review)
+  # To use this instead of update-blog, change the if conditions
   direct-update:
     needs: generate-catalog
     runs-on: ubuntu-latest
-    # Direct commit without PR (set to true to enable, but disable update-blog first)
+    # Set to: needs.generate-catalog.outputs.has_changes == 'true'
+    # And set update-blog to false to switch modes
     if: false
     
     steps:
@@ -144,12 +183,8 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           
-          if git diff --quiet ${{ env.DATA_FILE_PATH }}; then
-            echo "No changes to commit"
-          else
-            git add ${{ env.DATA_FILE_PATH }}
-            git commit -m "chore: Auto-update GitOps catalog [skip ci]"
-            git push
-            echo "✅ Successfully updated blog catalog"
-          fi
+          git add ${{ env.DATA_FILE_PATH }}
+          git commit -m "chore: Auto-update GitOps catalog [skip ci]"
+          git push
+          echo "✅ Successfully updated blog catalog"
 
