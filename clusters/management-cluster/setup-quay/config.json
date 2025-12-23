@@ -1,4 +1,5 @@
 {
   "namespace": "quay-enterprise",
-  "environment": "in-cluster"
+  "environment": "in-cluster",
+  "appDependencies": ["setup-openshift-data-foundation"]
 }
