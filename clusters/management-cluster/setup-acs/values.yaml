@@ -16,7 +16,7 @@ rhacs-setup:
 
     declarative_configurations:
 
-      auth-provider.yaml: |-
+      auth-provider.yaml:
         name: OpenShift
         minimumRole: None
         groups:
