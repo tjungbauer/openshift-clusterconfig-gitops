@@ -20,10 +20,10 @@ rhacs-setup:
         name: OpenShift
         minimum_access_role: None
         groups:
-          - key: user
+          - key: name
             value: kube:admin
             role: Admin
-          - key: group
+          - key: groups
             value: mygroup
             role: Admin
         openshift:
