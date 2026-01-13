@@ -23,6 +23,9 @@ rhacs-setup:
           - key: user
             value: kube:admin
             role: Admin
+          - key: group
+            value: mygroup
+            role: Admin
         openshift:
           enable: true
 
