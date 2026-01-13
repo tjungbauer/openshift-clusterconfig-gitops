@@ -16,53 +16,18 @@ rhacs-setup:
 
     declarative_configurations:
 
-      auth_provider.yaml:
+      auth-provider.yaml: |-
         name: OpenShift
-        minimum_access_role: None
+        minimumRole: None
         groups:
           - key: name
             value: kube:admin
             role: Admin
           - key: groups
-            value: mygroup
-            role: Admin
+            value: reviewers
+            role: Analyst
         openshift:
           enable: true
-
-  #
-  #  permissionSet:
-  #    name: A sample permission set
-  #    description: A sample permission set created declaratively
-  #    resources:
-  #      - resource: Integration
-  #        access: READ_ACCESS
-  #      - resource: Administration
-  #        access: READ_WRITE_ACCESS
-  ## add example for all
-  #
-  #  accessScope:
-  #    name: A sample access scope
-  #    description: A sample access scope created declaratively
-  #    rules:
-  #      included:
-  #        - cluster: secured-cluster-A
-  #          namespaces:
-  #            - namespaceA
-  #        - cluster: secured-cluster-B
-  #      clusterLabelSelectors:
-  #        - requirements:
-  #            key: kubernetes.io/metadata.name
-  #            operator: IN
-  #            values:
-  #              - production
-  #              - staging
-  #              - environment
-  #
-  #  role:
-  #    name: A sample role
-  #    description: A sample role created declaratively
-  #    permissionSet: A sample permission set
-  #    accessScope: A sample access scope
 
   rhacs:
 
@@ -253,11 +218,11 @@ rhacs-setup:
 
     # -- Basic settings for ACS authentication
     # This configuration is done by a Job, that will configure the OpenShift oauth for ACS.
-    basic_acs_settings:
-      auth_provider: 'OpenShift'
-      auth_provider_type: 'openshift'
-      min_access_role: 'None'
-      syncwave: 5
+    # basic_acs_settings:
+    #   auth_provider: 'OpenShift'
+    #   auth_provider_type: 'openshift'
+    #   min_access_role: 'None'
+    #   syncwave: 5
 
     ####################################################
     # Additional settings for Central and possible Jobs
