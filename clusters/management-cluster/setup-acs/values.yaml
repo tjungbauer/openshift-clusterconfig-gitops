@@ -91,6 +91,10 @@ rhacs-setup:
       # @default -- 3
       syncwave: '3'
 
+      declarativeConfiguration:
+        configMaps: 
+          - declarative-configurations
+
       # -- Configures whether Red Hat Advanced Cluster Security should run in online or
       # offline (disconnected) mode. In offline mode, automatic updates of
       # vulnerability definitions and kernel modules are disabled.
