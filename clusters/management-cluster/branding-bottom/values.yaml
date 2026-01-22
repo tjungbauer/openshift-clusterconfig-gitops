@@ -1,0 +1,13 @@
+---
+generic-cluster-config:
+  console:
+    console_banners:
+      bottombanner:
+        enabled: true
+        text: Copyright © 2024 Sample Company, Inc. |
+        location: BannerBottom
+        color: "#FFFFFF"
+        backgroundcolor: '#000'
+        link:
+          href: 'https://www.example.com/data-protection-policy'
+          text: Data Protection and Privacy Policy
