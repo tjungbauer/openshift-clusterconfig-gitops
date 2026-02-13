@@ -19,7 +19,9 @@ openshift-gitops:
         kustomizeBuildOptions: "--enable-helm"
 
       controller: {}
-      ha: {}
+      ha:
+        enabled: true
+        cpu_limits: 2
       redis: {}
       repo: {}
       appset: {}
