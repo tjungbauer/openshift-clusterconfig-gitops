@@ -1,4 +1,11 @@
 
+
+namespace:
+  create: true
+  name: "openbao"
+  description: "OpenBao Namespace"
+  displayName: "OpenBao Namespace"
+
 cert-manager:
   enabled: true
 

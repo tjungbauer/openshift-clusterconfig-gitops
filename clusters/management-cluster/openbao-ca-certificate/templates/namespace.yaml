@@ -1,0 +1,6 @@
+{{- if .Values.namespace }}
+{{- if eq (.Values.namespace.create | toString) "true" }}
+---
+{{ include "tpl.namespace" .Values.namespace }}
+{{- end }}
+{{- end }}
