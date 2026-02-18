@@ -1,15 +1,14 @@
-
-
+---
 namespace:
   create: true
   name: "openbao"
   description: "OpenBao Namespace"
   displayName: "OpenBao Namespace"
   additionalLabels:
-    pod-security.kubernetes.io/audit: restricted	
-    pod-security.kubernetes.io/audit-version: latest	
-    pod-security.kubernetes.io/warn: restricted	
-    pod-security.kubernetes.io/warn-version: latest	
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
 
 cert-manager:
   enabled: true
@@ -23,7 +22,7 @@ cert-manager:
 
       # -- Type can be either ClusterIssuer or Issuer
       type: Issuer
-    
+
       # -- Enable this issuer.
       # @default -- false
       enabled: true
