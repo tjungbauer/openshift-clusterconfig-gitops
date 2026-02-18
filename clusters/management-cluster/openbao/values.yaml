@@ -9,7 +9,7 @@ cert-manager:
     - name: openbao-ca-issuer
 
       # -- Syncwave to create this issuer
-      syncwave: 5
+      syncwave: '-1'
 
       # -- Type can be either ClusterIssuer or Issuer
       type: Issuer
@@ -35,7 +35,7 @@ cert-manager:
       - name: openbao-server-tls
         enabled: true
         namespace: openbao
-        syncwave: "10"
+        syncwave: "0"
         secretName: openbao-server-tls
 
         duration: 8760h
@@ -78,7 +78,7 @@ cert-manager:
       - name: injector-certificate
         enabled: true
         namespace: openbao
-        syncwave: "10"
+        syncwave: "0"
         secretName: injector-tls
 
         duration: 24h
