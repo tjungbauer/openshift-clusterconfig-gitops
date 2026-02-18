@@ -39,6 +39,9 @@ cert-manager:
 
         duration: 87660h
 
+        dnsNames:
+          - openbao-ca
+
         privateKey:
           algorithm: ECDSA
           size: 256
