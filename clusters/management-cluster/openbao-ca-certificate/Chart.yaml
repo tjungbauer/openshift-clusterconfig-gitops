@@ -1,0 +1,23 @@
+apiVersion: v2
+name: ca-certificate
+description: Request CA Certificate from cert-manager (used for Openbao)
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: cert-manager
+    version: ~2.0.3
+    repository: https://charts.stderr.at/
+    condition: cert-manager.enabled
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - security
+  - certificate
