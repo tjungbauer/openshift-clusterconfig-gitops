@@ -173,7 +173,7 @@ openbao:
 
     route:
       enabled: true
-      host: openbao.apps.cluster.example.com
+      host: openbao.apps.ocp.aws.ispworld.at
       tls:
         # Route terminates client TLS; backend can use reencrypt or passthrough
         termination: reencrypt
