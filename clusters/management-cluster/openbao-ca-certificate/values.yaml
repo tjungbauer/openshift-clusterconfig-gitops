@@ -5,6 +5,11 @@ namespace:
   name: "openbao"
   description: "OpenBao Namespace"
   displayName: "OpenBao Namespace"
+  additionalLabels:
+    pod-security.kubernetes.io/audit: restricted	
+    pod-security.kubernetes.io/audit-version: latest	
+    pod-security.kubernetes.io/warn: restricted	
+    pod-security.kubernetes.io/warn-version: latest	
 
 cert-manager:
   enabled: true
@@ -12,6 +17,9 @@ cert-manager:
   issuer:
       # Name of issuer
     - name: openbao-selfsigned
+
+      # -- Syncwave to create this issuer
+      syncwave: 5
 
       # -- Type can be either ClusterIssuer or Issuer
       type: Issuer
@@ -34,7 +42,7 @@ cert-manager:
       - name: openbao-ca
         enabled: true
         namespace: openbao
-        syncwave: "0"
+        syncwave: "10"
         secretName: openbao-ca-secret
 
         duration: 87660h
