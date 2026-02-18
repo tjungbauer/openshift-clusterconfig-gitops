@@ -1,0 +1,4 @@
+{
+  "namespace": "openbao",
+  "environment": "in-cluster"
+}

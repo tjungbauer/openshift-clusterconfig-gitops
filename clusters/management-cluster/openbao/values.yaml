@@ -1,0 +1,232 @@
+########################################################
+# Cert-Manager
+########################################################
+cert-manager:
+  enabled: true
+
+  issuer:
+      # Name of issuer
+    - name: openbao-ca-issuer
+
+      # -- Syncwave to create this issuer
+      syncwave: 5
+
+      # -- Type can be either ClusterIssuer or Issuer
+      type: Issuer
+
+      # -- Enable this issuer.
+      # @default -- false
+      enabled: true
+
+      # -- Namespace for Issuer (ignored for ClusterIssuer). Defaults to the default namespace when not set.
+      namespace: openbao
+
+      ca:
+        secretName: openbao-ca-secret
+
+  certificates:
+    enabled: true
+
+    # List of certificates
+    certificate:
+      ########################################################
+      # OpenBao Server TLS Certificate
+      ########################################################
+      - name: openbao-server-tls
+        enabled: true
+        namespace: openbao
+        syncwave: "10"
+        secretName: openbao-server-tls
+
+        duration: 8760h
+        renewBefore: 720h
+
+        dnsNames:
+          - openbao.openbao.svc
+          - openbao.apps.ocp.aws.ispworld.at # Route host (adjust to your domain)
+          - openbao
+          - openbao.openbao
+          - openbao.openbao.svc
+          - openbao.openbao.svc.cluster.local
+          - openbao-internal
+          - openbao-internal.openbao
+          - openbao-internal.openbao.svc
+          - openbao-internal.openbao.svc.cluster.local
+          - openbao-0.openbao-internal
+          - openbao-0.openbao-internal.openbao
+          - openbao-0.openbao-internal.openbao.svc
+          - openbao-0.openbao-internal.openbao.svc.cluster.local
+          - openbao-1.openbao-internal
+          - openbao-1.openbao-internal.openbao
+          - openbao-1.openbao-internal.openbao.svc
+          - openbao-2.openbao-internal
+          - openbao-2.openbao-internal.openbao
+          - openbao-2.openbao-internal.openbao.svc
+
+        ipAddresses:
+          - 127.0.0.1
+          - "::1"
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: openbao-ca-issuer
+          kind: Issuer
+
+      ########################################################
+      # Injector TLS Certificate
+      ########################################################
+      - name: injector-certificate
+        enabled: true
+        namespace: openbao
+        syncwave: "10"
+        secretName: injector-tls
+
+        duration: 24h
+        renewBefore: 144m
+
+        dnsNames:
+          - openbao-agent-injector-svc
+          - openbao-agent-injector-svc.openbao
+          - openbao-agent-injector-svc.openbao.svc
+          - openbao-agent-injector-svc.openbao.svc.cluster.local
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: openbao-ca-issuer
+          kind: Issuer
+
+########################################################
+# OpenBao Deployment
+########################################################
+openbao:
+  # Override the full name of the deployment via Argo CD
+  fullnameOverride: openbao
+  nameOverride: openbao
+
+  global:
+    # Enable OpenShift-specific settings
+    openshift: true
+
+    # -- The namespace to deploy to. Defaults to the `helm` installation namespace.
+    namespace: openbao
+
+    # Required when TLS is enabled: tells the chart to use HTTPS for readiness/liveness
+    # probes and for in-pod API_ADDR (127.0.0.1:8200). Otherwise you get "client sent
+    # an HTTP request to an HTTPS server" from the probes.
+    tlsDisable: false
+
+  server:
+    extraEnvironmentVars:
+      BAO_CACERT: /openbao/tls/openbao-server-tls/ca.crt
+
+    # High Availability configuration
+    ha:
+      enabled: true
+      replicas: 3
+
+      # Raft storage configuration
+      raft:
+        enabled: true
+        setNodeId: true
+
+        config: |
+          ui = true
+
+          listener "tcp" {
+            tls_disable = 0
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+            tls_cert_file = "/openbao/tls/openbao-server-tls/tls.crt"
+            tls_key_file  = "/openbao/tls/openbao-server-tls/tls.key"
+            tls_min_version = "tls12"
+            telemetry {
+              unauthenticated_metrics_access = "true"
+            }
+          }
+
+          storage "raft" {
+            path = "/openbao/data"
+
+            retry_join {
+              leader_api_addr = "https://openbao-0.openbao-internal:8200"
+              leader_tls_servername = "openbao-0.openbao-internal"
+              leader_ca_cert_file = "/openbao/tls/openbao-server-tls/ca.crt"
+            }
+            retry_join {
+              leader_api_addr = "https://openbao-1.openbao-internal:8200"
+              leader_tls_servername = "openbao-1.openbao-internal"
+              leader_ca_cert_file = "/openbao/tls/openbao-server-tls/ca.crt"
+            }
+            retry_join {
+              leader_api_addr = "https://openbao-2.openbao-internal:8200"
+              leader_tls_servername = "openbao-2.openbao-internal"
+              leader_ca_cert_file = "/openbao/tls/openbao-server-tls/ca.crt"
+            }
+          }
+
+          service_registration "kubernetes" {}
+
+          telemetry {
+            prometheus_retention_time = "30s"
+            disable_hostname = true
+          }
+
+    route:
+      enabled: true
+      host: openbao.apps.cluster.example.com
+      tls:
+        # Route terminates client TLS; backend can use reencrypt or passthrough
+        termination: reencrypt
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: |
+          -----BEGIN CERTIFICATE-----
+          MIIBWzCCAQCgAwIBAgIQNdbg4KIu9oi6dDClE8drmjAKBggqhkjOPQQDAjAAMB4X
+          DTI2MDIxODA5NDIxNFoXDTM2MDIxODIxNDIxNFowADBZMBMGByqGSM49AgEGCCqG
+          SM49AwEHA0IABIeYw35/kEHvyctLtOA5xMlyQNxUtXtfBbZMUfPh6AN5MFjIGuNS
+          cn07a3EpSpfY6/3DaPpu+4wYNFlc+/qDNYajXDBaMA4GA1UdDwEB/wQEAwICpDAP
+          BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQgyRk5Vv9K0VULcCgga5mRg4O9kTAY
+          BgNVHREBAf8EDjAMggpvcGVuYmFvLWNhMAoGCCqGSM49BAMCA0kAMEYCIQCwQ7lZ
+          Q0jzUjJFzpTGkQjU2+OB159LIQMSbSQ7dz8nVQIhAIDa7f87tjQxDxbJio+/vJx2
+          awFaWnueGOOQpvwCcV/+
+          -----END CERTIFICATE-----
+
+    extraVolumes:
+      - type: secret
+        name: openbao-server-tls
+        path: /openbao/tls
+        readOnly: true
+
+    extraVolumeMounts:
+      - name: openbao-server-tls
+        mountPath: /openbao/tls
+        readOnly: true
+
+    # Resource requests and limits
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 1Gi
+        cpu: 1000m
+
+    # Persistent volume for data
+    dataStorage:
+      enabled: true
+      size: 10Gi
+      # storageClass: "gp3-csi"
+
+  # Injector configuration
+  injector:
+    enabled: true
+    replicas: 2  # HA for the injector too
+    certs:
+      secretName: injector-tls
+      # For a private CA: set caBundle to the CA cert (PEM) so the Kubernetes API server trusts the injector webhook. E.g. oc get secret openbao-ca-secret -n openbao -o jsonpath='{.data.ca\.crt}' | base64 -d
+      caBundle:  "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJXekNDQVFDZ0F3SUJBZ0lRTmRiZzRLSXU5b2k2ZERDbEU4ZHJtakFLQmdncWhrak9QUVFEQWpBQU1CNFgKRFRJMk1ESXhPREE1TkRJeE5Gb1hEVE0yTURJeE9ESXhOREl4TkZvd0FEQlpNQk1HQnlxR1NNNDlBZ0VHQ0NxRwpTTTQ5QXdFSEEwSUFCSWVZdzM1L2tFSHZ5Y3RMdE9BNXhNbHlRTnhVdFh0ZkJiWk1VZlBoNkFONU1GaklHdU5TCmNuMDdhM0VwU3BmWTYvM0RhUHB1KzR3WU5GbGMrL3FETllhalhEQmFNQTRHQTFVZER3RUIvd1FFQXdJQ3BEQVAKQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlFneVJrNVZ2OUswVlVMY0NnZ2E1bVJnNE85a1RBWQpCZ05WSFJFQkFmOEVEakFNZ2dwdmNHVnVZbUZ2TFdOaE1Bb0dDQ3FHU000OUJBTUNBMGtBTUVZQ0lRQ3dRN2xaClEwanpVakpGenBUR2tRalUyK09CMTU5TElRTVNiU1E3ZHo4blZRSWhBSURhN2Y4N3RqUXhEeGJKaW8rL3ZKeDIKYXdGYVdudWVHT09RcHZ3Q2NWLysKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+      certName: tls.crt
+      keyName: tls.key
+
+  # UI configuration
+  ui:
+    enabled: true

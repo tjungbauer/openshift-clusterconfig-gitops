@@ -1,0 +1,28 @@
+apiVersion: v2
+name: openbao
+description: Installing Openbao Secrets Management System
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: cert-manager
+    version: ~2.0.3
+    repository: https://charts.stderr.at/
+    condition: cert-manager.enabled
+  - name: openbao
+    version: ~0.25.3
+    repository: https://openbao.github.io/openbao-helm
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - security
+  - secrets
+  - management
+  - openbao
