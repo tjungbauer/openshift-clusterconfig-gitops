@@ -101,7 +101,7 @@ cert-manager-approver-policy:
     repository: quay.io/jetstack/cert-manager-approver-policy
     # Kubernetes imagePullPolicy on Deployment.
     pullPolicy: IfNotPresent
-    tag: v0.23.0@sha256:ee9eb713ff1462187b07280772c6139afc4a2f0eab3d5aec7e461217279d7a61
+    tag: v0.23.1@sha256:ee30115a6accf2594f9ccf745135a3ad72a25cf85bbf3b697119383919b58cc1
 
   app:
     # The format of approver-policy logging. Accepted values are text or json.
