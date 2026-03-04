@@ -24,6 +24,9 @@ rhacs-setup:
             value: kube:admin
             role: Admin
           - key: groups
+            value: cluster-admin
+            role: Admin
+          - key: groups
             value: reviewers
             role: Analyst
         openshift:
