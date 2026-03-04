@@ -144,7 +144,7 @@ openbao:
           ui = true
 
           seal "awskms" {
-            region     = "us-east-1"
+            region     = "us-west-1"
             kms_key_id = "alias/openbao-unseal"
           }
 
