@@ -145,7 +145,7 @@ openbao:
 
           seal "awskms" {
             region     = "us-west-1"
-            kms_key_id = "alias/openbao-unseal"
+            kms_key_id = "alias/alias/openbao-unseal"
           }
 
           listener "tcp" {
