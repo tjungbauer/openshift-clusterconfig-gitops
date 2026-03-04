@@ -132,6 +132,11 @@ openbao:
         config: |
           ui = true
 
+          seal "awskms" {
+            region     = "us-east-1"
+            kms_key_id = "alias/openbao-unseal"
+          }
+
           listener "tcp" {
             tls_disable = 0
             address = "[::]:8200"
