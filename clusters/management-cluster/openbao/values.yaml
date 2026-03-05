@@ -119,16 +119,20 @@ openbao:
     extraEnvironmentVars:
       BAO_CACERT: /openbao/tls/openbao-server-tls/ca.crt
 
-    extraSecretEnvironmentVars:
-      - envName: AWS_ACCESS_KEY_ID
-        secretName: openbao-aws-credentials
-        secretKey: AWS_ACCESS_KEY_ID
-      - envName: AWS_SECRET_ACCESS_KEY
-        secretName: openbao-aws-credentials
-        secretKey: AWS_SECRET_ACCESS_KEY
-      - envName: AWS_REGION
-        secretName: openbao-aws-credentials
-        secretKey: AWS_REGION
+    # AWS credentials for the seal
+    # Static Secret must be created in the same namespace.
+    # Also enable the AWS KMS seal configuration below.
+    
+    # extraSecretEnvironmentVars:
+    #  - envName: AWS_ACCESS_KEY_ID
+    #    secretName: openbao-aws-credentials
+    #    secretKey: AWS_ACCESS_KEY_ID
+    #  - envName: AWS_SECRET_ACCESS_KEY
+    #    secretName: openbao-aws-credentials
+    #    secretKey: AWS_SECRET_ACCESS_KEY
+    #  - envName: AWS_REGION
+    #    secretName: openbao-aws-credentials
+    #    secretKey: AWS_REGION
 
     # High Availability configuration
     ha:
@@ -143,10 +147,11 @@ openbao:
         config: |
           ui = true
 
-          seal "awskms" {
-            region     = "us-west-1"
-            kms_key_id = "alias/alias/openbao-unseal"
-          }
+          # AWS KMS seal configuration
+          #seal "awskms" {
+          #  region     = "us-west-1"
+          #  kms_key_id = "alias/alias/openbao-unseal"
+          #}
 
           listener "tcp" {
             tls_disable = 0
@@ -196,15 +201,16 @@ openbao:
         insecureEdgeTerminationPolicy: Redirect
         destinationCACertificate: |
           -----BEGIN CERTIFICATE-----
-          MIIBWzCCAQCgAwIBAgIQNdbg4KIu9oi6dDClE8drmjAKBggqhkjOPQQDAjAAMB4X
-          DTI2MDIxODA5NDIxNFoXDTM2MDIxODIxNDIxNFowADBZMBMGByqGSM49AgEGCCqG
-          SM49AwEHA0IABIeYw35/kEHvyctLtOA5xMlyQNxUtXtfBbZMUfPh6AN5MFjIGuNS
-          cn07a3EpSpfY6/3DaPpu+4wYNFlc+/qDNYajXDBaMA4GA1UdDwEB/wQEAwICpDAP
-          BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQgyRk5Vv9K0VULcCgga5mRg4O9kTAY
-          BgNVHREBAf8EDjAMggpvcGVuYmFvLWNhMAoGCCqGSM49BAMCA0kAMEYCIQCwQ7lZ
-          Q0jzUjJFzpTGkQjU2+OB159LIQMSbSQ7dz8nVQIhAIDa7f87tjQxDxbJio+/vJx2
-          awFaWnueGOOQpvwCcV/+
+          MIIBWzCCAQCgAwIBAgIQQ8xPh/YYquzsv4Wq7gBJ6zAKBggqhkjOPQQDAjAAMB4X
+          DTI2MDMwNTE4MDQwMVoXDTM2MDMwNTA2MDQwMVowADBZMBMGByqGSM49AgEGCCqG
+          SM49AwEHA0IABCgUNWMvxNnwI3+wjd3jMqTOP0z3nQtzA/sjMTZ3hHbyoKRx/TVZ
+          MCNFkPLVydOxfgcj4hp6+VDzA8wMJnt+WjijXDBaMA4GA1UdDwEB/wQEAwICpDAP
+          BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSc8UDL2Iq+TbIXeB/QLGk6svHxTDAY
+          BgNVHREBAf8EDjAMggpvcGVuYmFvLWNhMAoGCCqGSM49BAMCA0kAMEYCIQC5I4qJ
+          bi55AkHduURR2JA3/F9XJZKH2QuwxxPgBgULpQIhAM0IHquUBLtNAJoTX2Re/Ij0
+          zK9BhQes6dIILivE4qBW
           -----END CERTIFICATE-----
+
 
     extraVolumes:
       - type: secret
