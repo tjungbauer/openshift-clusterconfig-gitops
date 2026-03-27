@@ -8,5 +8,6 @@ It calls the Chart [rhacm-setup](https://artifacthub.io/packages/helm/openshift-
 
 - Deploy the Operator and verify if the Operator installation was successful
 - Deploy ACM
+- - Prepare import of Cluster
 
 The values.yaml provides an example of possible settings.

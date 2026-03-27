@@ -12,22 +12,88 @@ gitops:
       clusterSet: default
       gitopsCluster: local-cluster
 
-# Two objects will be created: KlusterletAddonConfig and ManagedCluster
-# This will prepare the import to ACM. You still need to execute the command to fully integrate it.
-rhacm:
-  importClusters:
-    enabled: false
+rhacm-setup:
+  rhacm:
+    # Namespace, should be installed in open-cluster-management
+    # @default -- open-cluster-management
+    namespace:
+      name: open-cluster-management
 
-    # syncwaves
-    # Default: 3
-    managed_cluster_syncwave: '3'
-    # Default: 5
-    klusterlet_addon_syncwave: '5'
+    # Configure MultiClusterHub
+    multiclusterhub:
 
-    # List of clusters
-    clusters:
-    - name: my-cluster
-      clusterSet: default
+      # -- Enable MultiClusterHub object
+      # @default -- false
+      enabled: true
+
+      # -- Syncwave for the MultiClusterHub
+      # @default -- 3
+      syncwave: '3'
+
+      # -- Specifies deployment replication for improved availability. Options are: Basic and High
+      # @efault: -- Basic
+      availabilityConfig: High
+
+      # -- Specify a nodeSelector for example to move the Pods to infrastructure nodes.
+      # @default -- empty
+      nodeSelector: {}
+      #  key: node-role.kubernetes.io/infra
+      #  value: ""
+
+      # -- If you want this component to only run on specific nodes, you can
+      # configure tolerations of tainted nodes.
+      # @default -- empty
+      tolerations: []
+      #  - effect: NoSchedule
+      #    key: infra
+      #    operator: Equal
+      #    value: reserved
+
+    # -- ManagedCluster + KlusterletAddonConfig when enabled (see templates/rhacm/managedCluster.yaml)
+    # This will create a new cluster in the management cluster. 
+    # However, this will only prepare the cluster, you still need to download and execute the command to fully integrate the new cluster.
+    importClusters:
+      # -- Enable the import of clusters.
+      # @default -- false
+      enabled: false
+
+      # -- Syncwaves for the ManagedCluster. MUST be LOWER than klusterlet_addon_syncwave
+      # @default -- 5
+      managed_cluster_syncwave: '5'
+
+      # -- Syncwave for the KlusterletAddonConfig. MUST be HIGHER than managed_cluster_syncwave
+      # @default -- 10
+      klusterlet_addon_syncwave: '10'
+
+      # List of clusters to import.
+      # @default -- []
+      clusters:
+        - name: my-cluster
+          clusterSet: default
+        #  # Per default all addons are enabled. However, you can override this here PER CLUSTER.
+        #  addons:
+        #    applicationManager:
+        #      enabled: true
+        #    policyController:
+        #      enabled: true
+        #    searchCollector:
+        #      enabled: true
+        #    certPolicyController:
+        #      enabled: true
+
+      # -- Klusterlet addon controllers; all default to enabled. Override globally or per cluster via clusters[].addons
+      # Per default all addons are enabled. However, you can override this here GLOBALLY
+      addons:
+        applicationManager:
+          enabled: true
+        policyController:
+          enabled: true
+        searchCollector:
+          enabled: true
+        certPolicyController:
+          enabled: true
+        iamPolicyController:
+          enabled: true
 
 # Install Operator RHACM
 # Deploys Operator --> Subscription and Operatorgroup
@@ -61,25 +127,3 @@ helper-status-checker:
         name: open-cluster-management
       serviceAccount:
         name: "status-checker-acm"
-
-rhacm-setup:
-  rhacm:
-    # Namespace
-    # Should be installed in open-cluster-management (default)
-    namespace:
-      name: open-cluster-management
-    multiclusterhub:
-      enabled: true
-      syncwave: '3'
-
-      # Specifies deployment replication for improved availability. Options are: Basic and High
-      # Default: Basic
-      availabilityConfig: High
-
-      # If you want this component to only run on specific nodes, you can
-      # configure tolerations of tainted nodes.
-      # tolerations:
-      #  - effect: NoSchedule
-      #    key: infra
-      #    operator: Equal
-      #    value: reserved

@@ -21,7 +21,7 @@ metadata:
   name: {{ .name }}
   namespace: {{ .name }}
   labels:
-    {{- include "rhacm.labels" $ | nindent 4 }}
+    {{- include "tpl.labels" $ | nindent 4 }}
   annotations:
     argocd.argoproj.io/sync-wave: 5
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true

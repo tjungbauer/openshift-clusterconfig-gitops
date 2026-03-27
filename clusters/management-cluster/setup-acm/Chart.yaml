@@ -1,13 +1,13 @@
 apiVersion: v2
 name: setup-acm
 description: Deploys Advanced Cluster Managment (ACM) on target cluster.
-version: 1.0.4
+version: 1.0.5
 dependencies:
   - name: tpl
     version: ~1.0.0
     repository: https://charts.stderr.at/
   - name: rhacm-setup
-    version: ~1.0.0
+    version: ~1.0.19
     repository: https://charts.stderr.at/
   - name: helper-operator
     version: "1.0.40"
@@ -18,7 +18,8 @@ dependencies:
     condition: helper-status-checker.enabled
 maintainers:
   - name: tjungbauer
-    email: tjungbau@redhat.com
+    email: dev@stdin.at
+    url: https://blog.stderr.at/
 keywords:
   - acs
   - security

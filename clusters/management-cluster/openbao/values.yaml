@@ -122,7 +122,7 @@ openbao:
     # AWS credentials for the seal
     # Static Secret must be created in the same namespace.
     # Also enable the AWS KMS seal configuration below.
-    
+
     # extraSecretEnvironmentVars:
     #  - envName: AWS_ACCESS_KEY_ID
     #    secretName: openbao-aws-credentials
