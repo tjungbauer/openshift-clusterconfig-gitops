@@ -50,7 +50,7 @@ rhacm-setup:
       #    value: reserved
 
     # -- ManagedCluster + KlusterletAddonConfig when enabled (see templates/rhacm/managedCluster.yaml)
-    # This will create a new cluster in the management cluster. 
+    # This will create a new cluster in the management cluster.
     # However, this will only prepare the cluster, you still need to download and execute the command to fully integrate the new cluster.
     importClusters:
       # -- Enable the import of clusters.
