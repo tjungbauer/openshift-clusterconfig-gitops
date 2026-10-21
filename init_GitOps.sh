@@ -329,7 +329,7 @@ deploy() {
             --set 'helper-status-checker.enabled=true' \
             --set 'gitopsinstances.openshift_gitops.clusterAdmin=disabled' \
             --verify \
-            --force \
+            --force-replace \
             -f values-openshift-gitops.yaml \
             ${HELM_REPO_NAME}/openshift-gitops"
 
@@ -339,7 +339,7 @@ deploy() {
             --set 'helper-status-checker.enabled=true' \
             --set 'gitopsinstances.openshift_gitops.clusterAdmin=disabled' \
             --verify \
-            --force \
+            --force-replace \
             -f values-openshift-gitops.yaml \
             "${HELM_REPO_NAME}/openshift-gitops" | oc create -f -
 
