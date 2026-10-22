@@ -1,0 +1,31 @@
+apiVersion: v2
+name: setup-compliance-operator
+description: Deploy and configure the Compliance Operator
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/bm/setup-compliance-operator
+version: 1.0.2
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: compliance-operator-full-stack
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.35
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/helm-charts
+  - https://charts.stderr.at/
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - compliance
+  - security
+  - acs
