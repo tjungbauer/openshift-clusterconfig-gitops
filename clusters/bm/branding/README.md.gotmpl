@@ -1,0 +1,36 @@
+{{ template "doc.header" . }}
+
+This Helm Chart will create Top and/or Bottom banners for the OpenShift WebUI.
+The values are passed to the sub-chart **generic-cluster-config**. 
+
+Verify the README of the Helm Chart [generic-cluster-config](https://github.com/tjungbauer/helm-charts/tree/main/charts/generic-cluster-config) for further information.
+
+{{ template "doc.deps" . }}
+
+{{ template "doc.maintainer_and_sources" . }}
+
+## Example
+
+```yaml
+---
+generic-cluster-config:
+  console:
+    console_banners:
+      topbanner:
+        enabled: true
+        text: 'Management Cluster'
+        location: BannerTop
+        color: "#FFFFFF"
+        backgroundcolor: '#0088ee'
+      bottombanner:
+        enabled: false
+        text: Copyright © 2024 Sample Company, Inc. |
+        location: BannerBottom
+        color: "#FFFFFF"
+        backgroundcolor: '#000'
+        link:
+          href: 'https://www.example.com/data-protection-policy'
+          text: Data Protection and Privacy Policy
+```
+
+{{ template "doc.footer" . }}
