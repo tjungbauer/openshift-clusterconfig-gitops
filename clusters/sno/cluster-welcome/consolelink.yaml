@@ -1,0 +1,10 @@
+# Small, visible proof that the bootstrap worked:
+# a link in the help menu (?) of the OpenShift console.
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: bootstrapped-by-gitops
+spec:
+  href: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/sno
+  location: HelpMenu
+  text: "sno: bootstrapped by ACM and OpenShift GitOps"

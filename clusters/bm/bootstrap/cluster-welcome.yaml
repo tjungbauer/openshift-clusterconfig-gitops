@@ -1,0 +1,20 @@
+# App-of-apps for the cluster bm.
+# The root Application, created by the ACM policy gitops-bootstrap, syncs this folder.
+# Every Application in this folder is one building block of the cluster configuration.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-welcome
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/tjungbauer/openshift-clusterconfig-gitops.git
+    targetRevision: main
+    path: clusters/bm/cluster-welcome
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
