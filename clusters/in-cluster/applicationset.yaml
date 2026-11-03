@@ -1,0 +1,125 @@
+---
+# One ApplicationSet for all clusters. The repository holds three kinds of files:
+#
+#   clusters/<cluster-name>/charts.yaml                  WHAT is deployed to the cluster
+#   clusters/defaults/<chart>.yaml                       chart values shared by all clusters
+#   clusters/<cluster-name>/values/<chart>.yaml          chart values of this cluster
+#   clusters/<cluster-name>/values/global.yaml           values for every chart of this cluster
+#
+# Every chart listed in charts.yaml becomes one Argo CD Application which is deployed
+# to <cluster-name>. Example result for clusters/in-cluster/charts.yaml:
+#
+#   Application:  in-cluster-generic-cluster-config
+#   Chart:        generic-cluster-config from https://charts.stderr.at/
+#   Destination:  cluster "in-cluster"
+#   Values:       the value files above, the last one wins
+#
+# To add a cluster: register it in Argo CD, allow it in the AppProject and create
+# clusters/<cluster-name>/charts.yaml. This ApplicationSet does not need to change.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: helmed-cluster-config
+  namespace: openshift-gitops
+spec:
+  goTemplate: true
+  # Fail instead of silently rendering an empty string for an unknown parameter.
+  goTemplateOptions: ["missingkey=error"]
+
+  # Applications dropped from the generator output (enabled: false, key removed) are
+  # deleted, but their objects stay on the cluster. This is cluster configuration, a
+  # typo must not remove it. Set to false to clean up, or remove the objects manually.
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+
+  generators:
+    # The matrix combines two generators: the second one runs once for every result
+    # of the first one and can use its parameters.
+    #   1 charts.yaml with 3 enabled charts -> 3 Applications
+    #   2 charts.yaml with 3 charts each    -> 6 Applications
+    - matrix:
+        generators:
+          # STEP 1 - Find the clusters.
+          # Produces one parameter set per file. The content of the file is available
+          # with its top-level keys as parameters, Argo CD adds the key "path":
+          #
+          #   generic-cluster-config: {namespace: default, chartVersion: 1.0.68}
+          #   path: {basename: in-cluster, ...}      <- basename: the directory
+          #
+          # clusters/defaults is skipped: it has no charts.yaml.
+          - git:
+              repoURL: 'https://github.com/tjungbauer/openshift-clusterconfig-gitops.git'
+              revision: main
+              files:
+                - path: clusters/*/charts.yaml
+
+          # STEP 2 - Find the charts of this cluster.
+          # elementsYaml is a Go template, "." is the parameter set of STEP 1. The
+          # rendered text must be a YAML list, every list item is one result:
+          #
+          #   - app: generic-cluster-config
+          #     namespace: default
+          #     chartVersion: "1.0.68"
+          - list:
+              elementsYaml: |
+                {{- /* Walk over all top-level keys. $name: the key, $cfg: its content. */}}
+                {{- range $name, $cfg := . }}
+
+                {{- /* Only continue if ALL of the following is true:
+                       - the content is a map. A chart without settings must be written
+                         as "name: {}", a plain "name:" is null and gets skipped.
+                       - the key is no chart: "path" comes from STEP 1
+                       - the chart is not disabled, enabled defaults to true */}}
+                {{- if and (kindIs "map" $cfg) (ne $name "path") (dig "enabled" true $cfg) }}
+
+                {{- /* dig reads the key and returns the 2nd argument if it does not exist.
+                       quote is required: a plain * would be a YAML alias. */}}
+                - app: {{ $name }}
+                  namespace: {{ dig "namespace" $name $cfg }}
+                  chartVersion: {{ dig "chartVersion" "*" $cfg | quote }}
+                {{- end }}
+                {{- end }}
+
+  # STEP 3 - Render one Application per result. Both generators are merged, therefore
+  # .path comes from STEP 1, .app, .namespace and .chartVersion from STEP 2.
+  template:
+    metadata:
+      name: '{{ .path.basename }}-{{ .app }}'  # in-cluster-generic-cluster-config
+      labels:
+        cluster: '{{ .path.basename }}'
+        app: '{{ .app }}'
+    spec:
+      # The AppProject must allow the destination and BOTH repositories below.
+      project: in-cluster
+      destination:
+        # The directory name is the cluster name in Argo CD.
+        name: '{{ .path.basename }}'
+        namespace: '{{ .namespace }}'
+      sources:
+        # Source 1: the chart, pulled directly from the Helm repository.
+        # Key in charts.yaml = chart name.
+        - repoURL: https://charts.stderr.at/
+          chart: '{{ .app }}'
+          targetRevision: '{{ .chartVersion }}'
+          helm:
+            releaseName: '{{ .app }}'
+            # Each layer is optional, so a chart can run on defaults alone.
+            # Downside: a misnamed file is NOT an error, its values are just not applied.
+            ignoreMissingValueFiles: true
+            # Merged in this order, the last file wins:
+            valueFiles:
+              - '$values/clusters/defaults/{{ .app }}.yaml'
+              - '$values/clusters/{{ .path.basename }}/values/global.yaml'
+              - '$values/clusters/{{ .path.basename }}/values/{{ .app }}.yaml'
+        # Source 2: this Git repository. It only provides the value files, ref: values
+        # defines the prefix $values. It must not set "path", or Argo CD would try to
+        # generate manifests from it.
+        - repoURL: https://github.com/tjungbauer/openshift-clusterconfig-gitops.git
+          targetRevision: main
+          ref: values
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

@@ -1,0 +1,14 @@
+---
+# Default values of the chart generic-cluster-config for ALL clusters.
+# A cluster overrides them in clusters/<cluster-name>/values/generic-cluster-config.yaml
+console:
+  console_banners:
+    bottombanner:
+      enabled: false
+      text: Copyright © 2024 Sample Company, Inc. |
+      location: BannerBottom
+      color: "#FFFFFF"
+      backgroundcolor: '#000'
+      link:
+        href: 'https://www.example.com/data-protection-policy'
+        text: Data Protection and Privacy Policy

@@ -1,0 +1,25 @@
+---
+# Charts deployed to the cluster "in-cluster". This file only defines WHAT is deployed.
+# The chart values are in ./values/<chart>.yaml and ../defaults/<chart>.yaml.
+#
+# Rules (evaluated by the ApplicationSet in ./applicationset.yaml):
+#   - The directory name must equal the cluster name known to Argo CD.
+#   - Every key is one Helm chart of https://charts.stderr.at/ and results in one
+#     Application. The key must equal the chart name.
+#   - Possible settings of a chart:
+#       enabled:       set to false to skip the chart (default: true).
+#                      Must be a boolean: the string "false" counts as true.
+#       namespace:     destination namespace (default: the chart name)
+#       chartVersion:  chart version (default: "*" = latest, so pin it)
+#   - A chart without settings must be written as "name: {}".
+#   - Do not use these keys, they collide with the parameters of the ApplicationSet:
+#       path, app, namespace, chartVersion
+
+generic-cluster-config:
+  namespace: default  # The chart renders only cluster-scoped objects with the current values
+  chartVersion: 1.0.68
+
+# cert-manager:
+#   enabled: true
+#   namespace: cert-manager
+#   chartVersion: <version>
