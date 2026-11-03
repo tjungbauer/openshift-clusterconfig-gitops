@@ -1,0 +1,18 @@
+---
+# Source: clusters/management-cluster/setup-grafana/values.yaml, key "helper-operator"
+operators:
+  grafana-operator:
+    enabled: true
+    syncwave: '0'
+    namespace:
+      name: openshift-operators
+      create: false
+    subscription:
+      channel: v5
+      approval: Automatic
+      operatorName: grafana-operator
+      source: community-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: false
+      notownnamespace: false

@@ -1,0 +1,10 @@
+---
+# Source: clusters/management-cluster/setup-compliance-operator/values.yaml, key "helper-status-checker"
+enabled: true
+
+checks:
+  - operatorName: compliance-operator
+    namespace:
+      name: openshift-compliance
+    serviceAccount:
+      name: "status-checker-compliance"

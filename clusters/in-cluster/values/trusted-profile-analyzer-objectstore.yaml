@@ -1,0 +1,37 @@
+---
+# Source: clusters/management-cluster/trusted-profile-analyzer/values.yaml, key "helper-objectstore"
+enabled: true
+# syncwave: 1
+
+# Name of the BackingStore
+backingstore_name: tpa-backingstore
+# Size of the BackingStore
+backingstore_size: 700Gi
+# numOfVolumes: 1
+# type: py-pool
+
+# The StorageClass the BackingStore is based on
+baseStorageClass: gp3-csi
+
+# Name of the StorageClass that shall be enabled.
+storageclass_name: tpa-bucket-storage-class
+
+# Bucket that shall be created
+bucket:
+  # -- Shall a new bucket be enabled?
+  # @default -- false
+  enabled: true
+
+  # -- Name of the bucket that shall be created
+  name: trusted-profile-analyzer
+
+  # -- Target Namespace for that bucket.
+  namespace: trusted-profile-analyzer
+
+  # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+  # @default -- 2
+  syncwave: 2
+
+  # -- Name of the storageclass for our bucket
+  # @default -- openshift-storage.noobaa.io
+  storageclass: tpa-bucket-storage-class

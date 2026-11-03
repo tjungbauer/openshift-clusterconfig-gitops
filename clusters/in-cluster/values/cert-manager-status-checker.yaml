@@ -1,0 +1,10 @@
+---
+# Source: clusters/management-cluster/cert-manager/values.yaml, key "helper-status-checker"
+enabled: true
+
+checks:
+  - operatorName: cert-manager-operator
+    namespace:
+      name: cert-manager-operator
+    serviceAccount:
+      name: "status-checker-cert-manager"

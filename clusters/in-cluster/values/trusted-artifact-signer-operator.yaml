@@ -1,0 +1,18 @@
+---
+# Source: clusters/management-cluster/trusted-artifact-signer/values.yaml, key "helper-operator"
+operators:
+  rhtas-operator:
+    enabled: true
+    syncwave: '0'
+    namespace:
+      name: openshift-operators
+      create: false
+    subscription:
+      channel: stable
+      approval: Automatic
+      operatorName: rhtas-operator
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: false
+      notownnamespace: true

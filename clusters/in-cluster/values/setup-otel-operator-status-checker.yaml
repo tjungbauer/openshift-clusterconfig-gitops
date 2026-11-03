@@ -1,0 +1,15 @@
+---
+# Source: clusters/management-cluster/setup-otel-operator/values.yaml, key "helper-status-checker"
+enabled: true
+
+approver: false
+
+checks:
+  - operatorName: opentelemetry-operator
+    subscriptionName: opentelemetry-operator
+    namespace:
+      name: openshift-opentelemetry-operator
+    syncwave: 1
+
+    serviceAccount:
+      name: "status-checker-otel"

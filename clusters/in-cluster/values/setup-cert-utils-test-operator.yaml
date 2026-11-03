@@ -1,0 +1,17 @@
+---
+# Source: clusters/management-cluster/setup-cert-utils-test/values.yaml, key "helper-operator"
+operators:
+  cert-utils-operator:
+    enabled: true
+    namespace:
+      name: cert-utils-operator
+      create: true
+    subscription:
+      channel: alpha
+      approval: Manual
+      operatorName: cert-utils-operator
+      source: community-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: true
+      notownnamespace: true

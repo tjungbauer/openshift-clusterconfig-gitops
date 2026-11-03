@@ -1,0 +1,18 @@
+---
+# Source: clusters/management-cluster/setup-crunchy-postgres/values.yaml, key "helper-operator"
+
+operators:
+  crunchy-postgres-operator:
+    enabled: true
+    namespace:
+      name: "crunchy-postgres-operator"
+      create: true
+    subscription:
+      channel: v5
+      approval: Manual
+      operatorName: crunchy-postgres-operator
+      source: certified-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: true
+      notownnamespace: false

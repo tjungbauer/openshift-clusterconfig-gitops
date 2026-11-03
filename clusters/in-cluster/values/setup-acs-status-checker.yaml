@@ -1,0 +1,13 @@
+---
+# Source: clusters/management-cluster/setup-acs/values.yaml, key "helper-status-checker"
+enabled: true
+
+checks:
+
+  - operatorName: rhacs-operator
+    namespace:
+      name: rhacs-operator
+    syncwave: 3
+
+    serviceAccount:
+      name: "status-checker-acs"

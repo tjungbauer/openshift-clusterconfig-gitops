@@ -1,0 +1,13 @@
+---
+# Source: clusters/management-cluster/setup-container-security-operator/values.yaml, key "helper-status-checker"
+enabled: true
+
+checks:
+
+  - operatorName: container-security-operator
+    namespace:
+      name: openshift-operators
+    syncwave: 3
+
+    serviceAccount:
+      name: "status-security-operator"

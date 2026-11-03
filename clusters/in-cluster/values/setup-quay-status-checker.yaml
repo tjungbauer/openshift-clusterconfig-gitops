@@ -1,0 +1,10 @@
+---
+# Source: clusters/management-cluster/setup-quay/values.yaml, key "helper-status-checker"
+enabled: true
+
+checks:
+  - operatorName: quay-operator
+    namespace:
+      name: openshift-operators
+    serviceAccount:
+      name: "sa-quay"

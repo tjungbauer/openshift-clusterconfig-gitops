@@ -1,0 +1,11 @@
+---
+# Source: clusters/management-cluster/setup-file-integrity-operator/values.yaml, key "helper-status-checker"
+enabled: true
+approver: true
+
+checks:
+  - operatorName: file-integrity-operator
+    namespace:
+      name: openshift-file-integrity
+    serviceAccount:
+      name: "sa-file-integrity-checker"

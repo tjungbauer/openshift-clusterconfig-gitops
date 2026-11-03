@@ -1,0 +1,18 @@
+---
+# Source: clusters/management-cluster/setup-rh-build-of-keycloak/values.yaml, key "helper-operator"
+operators:
+  rhbk-operator:
+    enabled: true
+    syncwave: '0'
+    namespace:
+      name: "keycloak"
+      create: false
+    subscription:
+      channel: stable-v22
+      approval: Automatic
+      operatorName: rhbk-operator
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: true
+      notownnamespace: false

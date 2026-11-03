@@ -1,0 +1,17 @@
+---
+# Source: clusters/management-cluster/setup-cluster-observability-operator/values.yaml, key "helper-operator"
+operators:
+  cluster-observability-operator:
+    enabled: true
+    namespace:
+      name: openshift-cluster-observability-operator
+      create: true
+    subscription:
+      channel: stable
+      approval: Automatic
+      operatorName: cluster-observability-operator
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: true
+      notownnamespace: true

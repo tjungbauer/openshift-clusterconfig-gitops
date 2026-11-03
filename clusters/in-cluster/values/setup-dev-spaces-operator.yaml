@@ -1,0 +1,18 @@
+---
+# Source: clusters/management-cluster/setup-dev-spaces/values.yaml, key "helper-operator"
+operators:
+  devspaces:
+    enabled: true
+    syncwave: '0'
+    namespace:
+      name: "openshift-devspaces"
+      create: true
+    subscription:
+      channel: stable
+      approval: Automatic
+      operatorName: devspaces
+      source: redhat-operators
+      sourceNamespace: openshift-marketplace
+    operatorgroup:
+      create: true
+      notownnamespace: true

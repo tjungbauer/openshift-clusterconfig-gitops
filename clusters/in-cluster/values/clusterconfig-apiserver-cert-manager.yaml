@@ -1,0 +1,22 @@
+---
+# Source: clusters/management-cluster/clusterconfig-apiserver/values.yaml, key "cert-manager"
+enabled: true
+
+certificates:
+  enabled: true
+
+  # List of certificates
+  certificate:
+    - name: api-certificate
+      enabled: true
+      namespace: openshift-config
+      syncwave: "0"
+      secretName: api-certificate
+
+      dnsNames:
+        - api.ocp.aws.ispworld.at
+
+      # Reference to the issuer that shall be used.
+      issuerRef:
+        name: letsencrypt-prod
+        kind: ClusterIssuer

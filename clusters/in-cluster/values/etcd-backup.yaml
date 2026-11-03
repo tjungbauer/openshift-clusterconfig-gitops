@@ -1,0 +1,27 @@
+---
+# Source: clusters/management-cluster/etcd-backup/values.yaml, key "etcd-backup"
+enabled: true
+clusterrolebinding_name: etcd-backup
+
+# Variables for the Namespace where ETCD backup shall be executed.
+namespace:
+  create: true
+  name: etcd-backup
+  displayname: "Backup ETCD Automation"
+  description: "Openshift Backup Automation Tool"
+
+serviceAccount: etcd-backup
+
+# Settings for the CronJob
+cronjob:
+  name: etcd-backup
+  schedule: "0 */4 * * *"
+  retention: 30
+  mountpath: /etcd-backup
+
+# Settings for the PVC
+pvc:
+  name: etcd-backup
+  size: "100Gi"
+  storageClass: "gp3-csi"
+  volumeName: etcd-backup
