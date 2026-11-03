@@ -10,7 +10,7 @@
 # <cluster-name>. The same chart can be used by several entries. Example:
 #
 #   Entry:        setup-acs-operator (chart: helper-operator, namespace: stackrox)
-#   Application:  in-cluster-setup-acs-operator
+#   Application:  cfg-in-cluster-setup-acs-operator
 #   Chart:        helper-operator from https://charts.stderr.at/
 #   Destination:  cluster "in-cluster"
 #   Values:       the value files above, the last one wins
@@ -89,7 +89,9 @@ spec:
   # .path comes from STEP 1, everything else from STEP 2.
   template:
     metadata:
-      name: '{{ .path.basename }}-{{ .app }}'  # in-cluster-setup-acs-operator
+      # The prefix "cfg-" avoids a name collision with Applications of other ApplicationSets
+      # (mgmt-cluster-matrix-gitfiles creates <cluster>-<folder>).
+      name: 'cfg-{{ .path.basename }}-{{ .app }}'  # cfg-in-cluster-setup-acs-operator
       labels:
         cluster: '{{ .path.basename }}'
         app: '{{ .app }}'
