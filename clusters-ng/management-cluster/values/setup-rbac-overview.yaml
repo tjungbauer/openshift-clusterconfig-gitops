@@ -1,0 +1,29 @@
+---
+# Values for the upstream chart from openshift-console-rbac-overview (chart/rbac-overview).
+rbac-overview:
+  namespace:
+    create: true
+    name: rbac-overview
+
+  image:
+    repository: quay.io/tjungbau/openshift-console-rbac-overview
+    tag: "1.0.5"
+    pullPolicy: Always
+
+  enableConsolePlugin:
+    enabled: true
+    jobNamespace: rbac-overview
+
+  pluginConfig:
+    sensitiveRoles:
+      - cluster-admin
+      - admin
+    sensitiveRoleLabelKey: rbac-overview.io/elevated
+    sensitiveRoleLabelValue: "true"
+    hiddenSccNames:
+      - anyuid
+      - privileged
+      - hostaccess
+      - hostmount-anyuid
+      - hostnetwork
+      - node-exporter

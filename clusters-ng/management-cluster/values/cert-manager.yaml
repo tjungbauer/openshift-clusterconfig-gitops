@@ -1,0 +1,211 @@
+---
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    cert-manager-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: cert-manager-operator
+        create: true
+      subscription:
+        channel: stable-v1
+        approval: Automatic
+        operatorName: openshift-cert-manager-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: cert-manager-operator
+      namespace:
+        name: cert-manager-operator
+      serviceAccount:
+        name: "status-checker-cert-manager"
+
+
+#########################################################
+# CERT-Manager configuration
+#########################################################
+# Configure/patch the default cert-amanger instance and add unsupported configuration.
+# The Auto-Approver controller must be disabled, to approver policy can be used.
+cert-manager:
+  certManager:
+    enable_patch: true
+
+    syncwave: '10'
+
+    # unsupportedConfigOverrides:
+    #   controller:
+    #     args:
+    #       - '--controllers=*,-certificaterequests-approver'
+
+    overrideArgs:
+      enabled: true
+      args:
+        - '--dns01-recursive-nameservers-only'
+        - --dns01-recursive-nameservers=ns-362.awsdns-45.com:53,ns-930.awsdns-52.net:53
+
+  issuer:
+    - name: letsencrypt-prod
+      type: ClusterIssuer
+      enabled: true
+      syncwave: 20
+
+      acme:
+        email: tjungbau@redhat.com
+
+        solvers:
+          - dns01:
+              route53:
+                accessKeyIDSecretRef:
+                  key: access-key-id
+                  name: prod-route53-credentials-secret
+                region: us-west-1
+                secretAccessKeySecretRef:
+                  key: secret-access-key
+                  name: prod-route53-credentials-secret
+            selector:
+              dnsZones:
+                - aws.ispworld.at
+
+#########################################################
+# CERT-Manager Approver Policy Deployment (extra chart)
+#########################################################
+cert-manager-approver-policy:
+
+  crds:
+    # This option decides if the CRDs should be installed
+    # as part of the Helm installation.
+    enabled: true
+    # This option makes it so that the "helm.sh/resource-policy": keep
+    # annotation is added to the CRD. This will prevent Helm from uninstalling
+    # the CRD when the Helm release is uninstalled.
+    # WARNING: when the CRDs are removed, all cert-manager-approver-policy custom resources
+    # (CertificateRequestPolicy) will be removed too by the garbage collector.
+    keep: true
+
+  # Number of replicas of approver-policy to run.
+  replicaCount: 1
+
+  image:
+    # Target image repository.
+    repository: quay.io/jetstack/cert-manager-approver-policy
+    # Kubernetes imagePullPolicy on Deployment.
+    pullPolicy: IfNotPresent
+    tag: v0.24.0@sha256:31848b57a13aa6692fc55e75da6944e80124817e058bd5a14ba37f7f25370066
+
+  app:
+    # The format of approver-policy logging. Accepted values are text or json.
+    logFormat: text
+    # Verbosity of approver-policy logging. This is a value from 1 to 5.
+    logLevel: 1
+
+    # List of signer names that approver-policy will be given permission to
+    # approve and deny. CertificateRequests referencing these signer names can be
+    # processed by approver-policy. Defaults to an empty array, allowing approval
+    # for all signers.
+    approveSignerNames:
+      - 'issuers.cert-manager.io/*'
+      - 'clusterissuers.cert-manager.io/*'
+
+  # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
+  # matching labels.
+  # nodeSelector:
+  #   node-role.kubernetes.io/infra: ''
+
+  # Tolerations ... placing on infra nodes
+  tolerations: []
+#    - effect: NoSchedule
+#      key: node-role.kubernetes.io/infra
+#      operator: Equal
+#      value: reserved
+#    - effect: NoExecute
+#      key: node-role.kubernetes.io/infra
+#      operator: Equal
+#      value: reserved
+
+#########################################################
+# CERT-Manager Approver Policy Configuration
+#########################################################
+role: cert-manager-policy:global-approver
+serviceAccount: cert-manager
+cert_manager_Namespace: cert-manager
+
+policies:
+  - name: my-approver-policy
+    enabled: false
+
+    allowed:
+
+      commonName:
+        required: false
+        value: "*"
+        validations: []
+      dnsNames:
+        required: true
+        values:
+          - "*"
+        validations: []
+      ipAddresses:
+        required: false
+        values: ["*"]
+        validations: []
+      uris:
+        required: false
+        values:
+          - "*"
+        validations: []
+      emailAddresses:
+        required: false
+        values:
+          - "*"
+        validations: []
+
+      # isCA: false
+      subject:
+        organizations:
+          required: true
+          values:
+            - "MyOrganization"
+          validations:
+            - rule: self.matches("MyOrganization")
+              message: Organization must be MyOrganization
+        countries:
+          required: true
+          values:
+            - AT
+          validations:
+            - rule: self.matches("AT")
+              message: Country code must be AT
+      usages:
+        - "server auth"
+        - "client auth"
+
+    constraints:
+      minDuration: 1h
+      maxDuration: 24h
+      privateKey:
+        algorithm: RSA
+        minSize: 2048
+        maxSize: 4096
+
+    selector:
+      issuerRef: {}
+
+# Sealed for THIS cluster, seal again for every other cluster.
+helper-sealed-secrets:
+  secrets:
+    prod-route53-credentials-secret:
+      namespace: cert-manager
+      encryptedData:
+        access-key-id: AgCfy6kcCbUwJm8lQlgogiujjwlEmS09NB4e7VXB4ySmIndx14iOVMDgYH31897biPFSyR231c9aeYC839rZhWBVzGF6DD7DZ1It9aKhDEWGsNqBtpvTXBKy2o1Y62BLpFup4q0St87ehj/CmqLhAzU3bkfjcsDW/ZKSyfMI9BV9/EQ+c204Nx+vOLc/j2r8P43xITyhzg8qHg+zB/Bs50UqdD+lK1qlKCZy8kOh6oZ5oavKZtlRWhs85wSQOMAf/3d07k1hkIslLx5wLcqC/sQcxk9Gq5fJyVxuMBHyaMbjDy7XuT4y32lkTzMKNw4pllcR/Q660m5muB/Gb46X4qguoQ8JO72yR4WaVWQnLTni32Nj01lfDMGwomK2m1830axVz9wzwcMSsZOrbyAmb3yvY3mHfgvJJ7nIB91rz/JCRQIeQcSEzmeOvv8hGxsoqO//3//BNaM/r6rsRUUUzV/XszvDEycU6rhSUGJDq+GGYLvP7nRG1NnETP0d6Vo7ZTkOrKq8WUkOKtZhw9m+WayUedZCMsXmhypGirC80ZpHxQz3hAdTh21fFpRPTrbWKXdxD2kvV3uQ1mRvlNcdnMjO6GxdMR/LpI6qIO+qVNdqgMmJ+gkyDD3DK+tBne6FEMxdNq3H+Ef9npfsIir3vHkp/y78S83CKSrqY+hqWNXDa4c6DfwTDMi2rPNrSzLMTu/PTz/dv5em6z+b60E8ptuUBRTlVQ==
+        secret-access-key: AgArsykG+RKJ46f0+Yu+w9M3Gtli5G2nxv/22JCzg848KxlQYlK/zac50FxeS0I9IT3cmFQNx/f3sEEDnWO4nwxFmPowMrep2p1KyeaY4QD3fiDP2X8SdGr2CmoXVOTSUeM8vAYi4EMKVEwmiyyME9HxPckhY9lBUfIMs9ZClLq63ARZoWNSyroRiwnvFy6lY6igPxyFli26m0t75QDVg21xS9kIEsEFslAY1QWSyHQa2PgdZ2CCFrnoVzSzzFal+X66ojWnqZsK9zKBAeWCzf6k/v+Hr3JPbeCe30wb3abgUqYUcD8FAEA4LUTLH01S8dFb+P6V06IPqRaKnTr+dr7aSsKvoqtk3bZ0rtLWC6T2Qf+Lyf1BiHnB4WnPEKA7sjvfopRwV3Uw/6rikfYimOm4IT1IMUDBnc1KeyFPu4gktNFTeja9VzCrPKJZhDgCJOkWflt+CZnFYnPAUc8+Z+BdPnGP0TiYPIK0d4z/ykbZ04HcyH5x9qMp4JhFmBkTxnWZ6IaJGXlndRvrZPiqPOR+PUS2/s6TtAYApkkeowgh6DB4oPt+7234b+nlDDtE94D4oqif1BD63YQhp1dDMRotW0eCr5ToHPnGygTzzLZnhH6/Fpsu6vXWEL+CjhvxjzVBdC1++Wkd47+LsiuV0IWT9Gvq92ub+1W/oe0+gwk7KU9oIUxHUym6sU5Wtxcz5gd0hpjuYKl+gXHHJ3WDpyTFBwcg+mka+CiXkKSqcSb184GbNd/h03+1

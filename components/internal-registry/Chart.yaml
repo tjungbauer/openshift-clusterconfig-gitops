@@ -1,0 +1,14 @@
+apiVersion: v2
+name: internal-registry
+description: Configures the internal OpenShift registry
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-objectstore.enabled
+maintainers:
+  - name: tjungbauer

@@ -1,0 +1,59 @@
+---
+# Cluster "management-cluster". The directory name is free, clusterName must equal the
+# name in Argo CD: the hub cluster itself is called in-cluster.
+# This file only SELECTS components, their settings are in ../catalog.yaml.
+#
+#   clusterName: destination and AppProject of all Applications
+#   group:       adds the value files of ../groups/<group>/
+#   active:      set to false to create no Application for this cluster (default: true)
+#   components:  every key must exist in ../catalog.yaml, otherwise the ApplicationSet
+#                fails on purpose (no silent skip, this would delete the Application).
+#     enabled:   set to false to skip the component (default: true). Boolean only.
+#     revision:  override the Git revision of the component
+clusterName: in-cluster
+group: management
+# Showcase, not active: with a group per stage, this cluster would be
+# group: prod  # production clusters, reads ../groups/prod/
+
+components:
+  applications-gitops: {}
+  branding: {}
+  branding-bottom: {}
+  cert-manager: {}
+  clusterconfig-apiserver: {}
+  etcd-backup: {}
+  generic-clusterconfig: {}
+  idp: {}
+  ingresscontroller: {}
+  install-cyclonedx: {}
+  internal-registry: {}
+  node-configuration: {}
+  openbao: {}
+  openbao-ca-certificate: {}
+  setup-acm: {}
+  setup-acs: {}
+  setup-acs-backup: {}
+  setup-cert-utils-test: {}
+  setup-cluster-observability-operator: {}
+  setup-compliance-operator: {}
+  setup-container-security-operator: {}
+  setup-cost-management-operator: {}
+  setup-crunchy-postgres: {}
+  setup-dev-spaces: {}
+  setup-file-integrity-operator: {}
+  setup-grafana: {}
+  setup-loki-operator: {}
+  setup-lokistack-otel-k8s-events: {}
+  setup-multicluster-observability: {}
+  setup-network-observability: {}
+  setup-openshift-data-foundation: {}
+  setup-openshift-logging: {}
+  setup-otel-operator: {}
+  setup-quay: {}
+  setup-rbac-overview: {}
+  setup-rh-build-of-keycloak: {}
+  setup-tempo-operator: {}
+  trusted-artifact-signer: {}
+  trusted-profile-analyzer: {}
+  update-clusterversion: {}
+  wave-acm-policy-management: {}

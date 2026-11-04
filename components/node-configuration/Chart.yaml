@@ -1,0 +1,6 @@
+apiVersion: v2
+name: node-labels
+description: Manage the labelling of the nodes using openshift-gitops 1.6+ and Server Side Apply
+version: 1.0.0
+maintainers:
+  - name: tjungbauer

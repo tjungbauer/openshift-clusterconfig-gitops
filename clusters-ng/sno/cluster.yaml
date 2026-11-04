@@ -1,0 +1,17 @@
+---
+# Cluster "sno". The directory name is free, clusterName must equal the name in Argo CD.
+# This file only SELECTS components, their settings are in ../catalog.yaml.
+#
+#   active:      false until the cluster is registered in Argo CD. No Application is
+#                created, so an unknown cluster does not cause errors in the ApplicationSet.
+clusterName: sno
+group: demo
+# Showcase, not active: with a group per stage, this cluster would be
+# group: dev  # test charts here first, reads ../groups/dev/
+active: false
+
+components:
+  branding: {}
+  branding-bottom: {}
+  cluster-welcome: {}
+  setup-compliance-operator: {}

@@ -1,0 +1,4 @@
+apiVersion: v2
+name: cluster-welcome
+description: Link in the help menu of the OpenShift console
+version: 1.0.0

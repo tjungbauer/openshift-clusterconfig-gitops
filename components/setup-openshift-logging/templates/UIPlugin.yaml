@@ -1,0 +1,16 @@
+{{- if .Values.observability_ui_plugin }}
+{{- if eq ( .Values.observability_ui_plugin.enabled | toString) "true" }}
+---
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  name: {{ .Values.observability_ui_plugin.name}}
+spec:
+  logging:
+    logsLimit: {{ .Values.observability_ui_plugin.logsLimit}}
+    lokiStack:
+      name: {{.Values.lokistack }}
+    timeout: {{ .Values.observability_ui_plugin.timeout}}
+  type: {{ .Values.observability_ui_plugin.type}}
+{{- end }}
+{{- end }}

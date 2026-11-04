@@ -1,0 +1,83 @@
+---
+namespace: &namespace "keycloak"
+ssohostname: &ssohostname sso.apps.ocp.aws.ispworld.at
+
+cert-manager:
+  enabled: true
+
+  certificates:
+    enabled: true
+
+    # List of certificates
+    certificate:
+      - name: keycloak-certificate
+        enabled: true
+        namespace: *namespace
+        syncwave: "0"
+        secretName: keycloak-certificate
+
+        dnsNames:
+          - *ssohostname
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: letsencrypt-prod
+          kind: ClusterIssuer
+
+# -- The following section contains the configuration for the Red Hat build of Keycloak.
+rh-build-keycloak:
+  enabled: true
+
+  namespace:
+    name: *namespace
+    create: true
+
+  keycloak:
+    name: keycloak
+    namespace: *namespace
+
+    hostname:
+      hostname: *ssohostname
+
+    http:
+      tlsSecret: "keycloak-certificate"
+
+    db:
+      use_example_db_sta: true
+      exmple_db_user: testuser
+      example_db_pass: ""
+
+    additionalAnnotations:
+      argocd.argoproj.io/sync-wave: '10'
+      argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    rhbk-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: *namespace
+        create: false
+      subscription:
+        channel: stable-v22
+        approval: Automatic
+        operatorName: rhbk-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: false
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: rhbk-operator
+      namespace:
+        name: *namespace
+      serviceAccount:
+        name: "status-checker-rhbk"

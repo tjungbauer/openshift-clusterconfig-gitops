@@ -1,0 +1,11 @@
+apiVersion: v2
+name: fleet_app_of_apps
+description: Installs the single Application that manages the ApplicationSets of all clusters.
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: 1.0.28
+    repository: https://charts.stderr.at/
+  - name: helper-argocd
+    version: 2.0.45
+    repository: https://charts.stderr.at/

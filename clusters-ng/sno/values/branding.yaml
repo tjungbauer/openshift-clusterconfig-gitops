@@ -1,0 +1,7 @@
+---
+# Values for this cluster only. Overrides components/branding/values.yaml
+generic-cluster-config:
+  console:
+    console_banners:
+      topbanner:
+        text: 'SNO Cluster Test Banner'

@@ -1,0 +1,33 @@
+---
+namespace: &namespace "openshift-devspaces"
+
+# Install Operator Compliance Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    devspaces:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: *namespace
+        create: true
+      subscription:
+        channel: stable
+        approval: Automatic
+        operatorName: devspaces
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: true
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: devspaces
+      namespace:
+        name: *namespace
+      serviceAccount:
+        name: "status-checker-devspaces"

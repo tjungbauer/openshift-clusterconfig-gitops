@@ -1,0 +1,99 @@
+redhat-trusted-profile-analyzer:
+  appDomain: apps.ocp.aws.ispworld.at
+
+  ingress:
+    className: openshift-default
+    additionalAnnotations:
+      "haproxy.router.openshift.io/timeout": "5m"
+
+  storage:
+    type: s3
+    region: REGION
+    bucket: trusted-profile-analyzer-b58f7115-7076-4595-9194-e8b0c213be38
+    endpoint: s3.openshift-storage.svc
+    accessKey:
+      valueFrom:
+        secretKeyRef:
+          name: trusted-profile-analyzer
+          key: AWS_ACCESS_KEY_ID
+    secretKey:
+      valueFrom:
+        secretKeyRef:
+          name: trusted-profile-analyzer
+          key: AWS_SECRET_ACCESS_KEY
+
+  database:
+    sslMode: require
+    host:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.host
+    port:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.port
+    name:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.name
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.password
+
+  createDatabase:
+    name:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.name
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.password
+
+  migrateDatabase:
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.password
+
+  modules:
+    createDatabase:
+      enabled: true
+    migrateDatabase:
+      enabled: true
+
+  oidc:
+    issuerUrl: https://sso.apps.ocp.aws.ispworld.at/realms/openshift
+    clients:
+      frontend:
+        clientId: openshift
+      cli:
+        clientId: openshift
+        clientSecret:
+          valueFrom:
+            secretKeyRef:
+              name: oidc-cli
+              key: client-secret

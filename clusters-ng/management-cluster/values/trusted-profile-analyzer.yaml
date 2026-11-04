@@ -1,0 +1,262 @@
+---
+target_namespace: &namespace trusted-profile-analyzer
+s3_hostname: &s3_hostname s3-openshift-storage.apps.ocp.aws.ispworld.at
+storageclassname: &storageclassname tpa-bucket-storage-class
+bucketname: &bucketname trusted-profile-analyzer
+
+enabled: true
+
+namespace:
+  create: true
+  name: *namespace
+
+db:
+  use_example_db_sts: true
+  example_db_user: testuser
+  example_db_pass: thisisonly4testingNOT4prod
+
+#######################################################
+# If ODF is used, the Chart helper-objectstore
+# is able to create the S3 storage for Quay.
+#
+# It is a helper chart that simply creates another
+# backingstore.
+# This is a chart in an early state, and not everything
+# can be customized for now.
+#
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+#######################################################
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: tpa-backingstore
+  # Size of the BackingStore
+  backingstore_size: 700Gi
+  # numOfVolumes: 1
+  # type: py-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname
+
+  # Bucket that shall be created
+  bucket:
+    # -- Shall a new bucket be enabled?
+    # @default -- false
+    enabled: true
+
+    # -- Name of the bucket that shall be created
+    name: *bucketname
+
+    # -- Target Namespace for that bucket.
+    namespace: *namespace
+
+    # -- Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+    # @default -- 2
+    syncwave: 2
+
+    # -- Name of the storageclass for our bucket
+    # @default -- openshift-storage.noobaa.io
+    storageclass: *storageclassname
+
+redhat-trusted-profile-analyzer:
+  appDomain: apps.ocp.aws.ispworld.at
+
+  ingress:
+    className: openshift-default
+    additionalAnnotations:
+      "haproxy.router.openshift.io/timeout": "5m"
+
+  storage:
+    type: s3
+    region: https://s3.openshift-storage.svc
+    bucket: trusted-profile-analyzer-b58f7115-7076-4595-9194-e8b0c213be38
+    pathStyle: true
+    accessKey:
+      valueFrom:
+        secretKeyRef:
+          name: trusted-profile-analyzer
+          key: AWS_ACCESS_KEY_ID
+    secretKey:
+      valueFrom:
+        secretKeyRef:
+          name: trusted-profile-analyzer
+          key: AWS_SECRET_ACCESS_KEY
+
+  database:
+    # sslMode: require
+    host:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.host
+    port:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.port
+    name:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.name
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-credentials
+          key: db.password
+
+  createDatabase:
+    name:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.name
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.password
+
+  migrateDatabase:
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: postgresql-admin-credentials
+          key: db.password
+
+  modules:
+    createDatabase:
+      enabled: true
+    migrateDatabase:
+      enabled: true
+    createImporters:
+      enabled: true
+      importers:
+        redhat-sboms:
+          sbom:
+            description: All Red Hat SBOMs
+            period: 1d
+            source: https://access.redhat.com/security/data/sbom/beta/
+            keys:
+              - https://access.redhat.com/security/data/97f5eac4.txt#77E79ABE93673533ED09EBE2DCE3823597F5EAC4
+            disabled: true
+            fetchRetries: 50
+        redhat-csaf:
+          csaf:
+            description: All Red Hat CSAF data
+            period: 1d
+            source: redhat.com
+            disabled: true
+            fetchRetries: 50
+        cve:
+          cve:
+            description: CVE list v5
+            period: 1d
+            source: https://github.com/CVEProject/cvelistV5
+            disabled: false
+        osv-github:
+          osv:
+            description: GitHub Advisory Database
+            period: 1d
+            source: https://github.com/github/advisory-database
+            path: advisories
+            disabled: false
+
+  oidc:
+    issuerUrl: https://sso.apps.ocp.aws.ispworld.at/realms/openshift
+    clients:
+      frontend:
+        clientId: openshift
+      cli:
+        clientId: openshift
+        clientSecret:
+          valueFrom:
+            secretKeyRef:
+              name: oidc-cli
+              key: client-secret
+
+  # $schema: "charts/trustify/values.schema.json"
+
+  # appDomain: apps.ocp.aws.ispworld.at
+  # tracing: {}
+
+  # modules:
+  #   createImporters:
+  #     enabled: true
+  #     importers:
+  #       redhat-sboms:
+  #         sbom:
+  #           description: All Red Hat SBOMs
+  #           period: 1d
+  #           source: https://access.redhat.com/security/data/sbom/beta/
+  #           keys:
+  #             - https://access.redhat.com/security/data/97f5eac4.txt#77E79ABE93673533ED09EBE2DCE3823597F5EAC4
+  #           disabled: true
+  #           fetchRetries: 50
+  #       redhat-csaf:
+  #         csaf:
+  #           description: All Red Hat CSAF data
+  #           period: 1d
+  #           source: redhat.com
+  #           disabled: true
+  #           fetchRetries: 50
+  #       cve:
+  #         cve:
+  #           description: CVE list v5
+  #           period: 1d
+  #           source: https://github.com/CVEProject/cvelistV5
+  #           disabled: false
+  #       osv-github:
+  #         osv:
+  #           description: GitHub Advisory Database
+  #           period: 1d
+  #           source: https://github.com/github/advisory-database
+  #           path: advisories
+  #           disabled: false
+
+# Sealed for THIS cluster, seal again for every other cluster.
+helper-sealed-secrets:
+  secrets:
+    postgresql-admin-credentials:
+      namespace: trusted-profile-analyzer
+      type: Opaque
+      encryptedData:
+        db.host: AgBMm6iYbp6t4zG9DNnqLrb+rvRtbncTOdm8Ofvr5I5hz6xKGCvSUrk6tyraL+vAYI8L7XrP67BjcQzw+h8yl7d36MEV04xRNWsgjyEQewf3VNEWimWR6hVZro8htSnPQDuTShhXC/zm3rh3xQ6Ze2gHgLfbpYIn+/yT6418IdRtB5+VilAYeBIimo1puRoa7z1g8N73F+6uogB0P/6GC54zcFNKXEO5tHCUIedBsCExlR9GqJ7ezjDWfgrRAPH8/JJCSic8IEytBl+xBdH5vrhZPb/8lip4VPFxHZvK6Ap1PXJqWKjIzpE9mjrUMxgmRixXBjay5U8Nvydo+tUTxIfS7jrDaBorGrkCstoIEJI4xm2/K7dfQHJERZDf+k7RgVXTLkiJ8ONwwd31hSHj2Yk5+JGNZ78udIrNGZ8Z95QakxLRAfjttrHH49DwNtulrh5c7AEVChzD3EP+5ipqqPElNdkYYATXmt2bfOKFiagtmByXlR0Wh9VtaS5YF4fkQpWdId5vcEOBIe5v/yhLFJJMRv5Ieh/fpQuy83Rn60TJD7cedLTKYK+gJbVTV7k56kBhpyCgT+KTk8FczZVEI1kP9obVomb+iVzJllBiNSK5F6HhY1CuvRr+U0fJG/rexe4zRwIO4YcGe8vwOFgRfJ6fqw3XGgUMEZXv3wFzNitHw3fAUlob4Hp9/WlIpws2TOkd98VZtLiXimlKCmIDswTF2EKmcI8ibwHXJkvFOCdIAFkUcakWQ6T84oeDIt+jWhH7Y1LSSZw=
+        db.name: AgB7mOwS8zyRxuLVjmU2dQUxrUbF/hNfhvyKea5wUJB98qhXg3Z4Ro+zlPDGxyUxj2KcXnosB1riELFkfLwu0E441Ky7xpa92V/Wa/Agt6Ho/NFgCbOwn313t60KOR+ze4g5ZmU+Of8eu7VNmbZMB5LprTgqJR9QX1Y+PCR11iaEvgkDOpqr0xQs3CyebWRvISe4nFi9GCJdtrcX3tKh/+WFCYhcrm6P+b2dF5onxkzJZzw4dzqafp08tiZrV+Y+HR2g21fXaLGjHIEQNxpSK160JijWwaiREHXOdL95uFRI0sF8wIAeFPYhBXGG2JVJ7cEYS2YKdPQcFClKjGUqwSrM1WMv9NZCDmOrG9iTHLR/L8EuY5wxlu3aanC2tzztZmgGw3/NS8AJlZjlUQ+7T16h4x5jcny2kXoEQgRzdit929l41ZXpSn9lJakxt5CXMlECHVZUy9E7nqqULpZKWaAfrVPS4xN+ZDzDQa29LvlBRKvrEUFNlrNibyAbeyZzqYn8crmw6l3YNXRTpD8gvk3OGuzGUD3NlkIC3du05GYPT+xl9QoKv1DjmfMc4wL7d7qwI2RxKtLHx1NsXhkUzyrQV2UvTndqbgmfLju+6cRLoTdZAwYYwG92IML2v1h5Oi9CJj6W9oVmH066sFvYFNYWye4NARFbc9gP5G0qLE606SEBu997UFL9+stDsV4tiZbBvhsClawy
+        db.password: AgCp9cFntOS163ms24f7IPX0LwNCvNrCnn3MWAWRaL8T2qeiWh3GmDg3UohSANfkDE1EmjNfo7aK3dmnbZsmDetLVcBim2Eed0p7du580JDaDBwYEVCdl79qr/cl2hGwUIzJ+a9OgEbpMDC8zGc0dl8ilsCugE+mh8aWJzuaGY/07wgwIViloPB482zJW8CpUqJyWMCAOVfheO/q1sgGGF533iaRxjZZvZhYyYFk5bwUSqEJgPt3Aze1dsVPZ5xOa9HYd0hzVSPKcmPZECU1NcNub0DdQV4nvcEAUzcvknkol7PpondNDWNVQIkE6jXNLJeak4UnkrFMV9pKuKgnA7XFUC0+pI4SAVTcnKFW28O9xLeDpFXnirK3A+IT4XUmmHbGivBwcgMIpsacpvuI53BKjImSGOL2gcHvv5cG1uDqVEV2oma8fMtffuahr9H55hvKAe9QG6cCe7a69XUnS5j+d/iLSXRS6f9AFuisC8TiNk1GsSchUb+GbZ/CDhfS3bE5PdreaTIY9KmU/Tw22iGrkM/asqCktjF4L5iR63BWWZgdokQiBXB84QmLX5zHFZj8nAiLhHx6YePp+tNupe5fW96t8vBLYHon8pWjzeAMa3DKua4dSJDLWBym/EI8tistHrGk9NTJvxj2QrlVSTJgdY16MecWT3CkImhRjkVAgaYkTfZBMc5psisZfUlTUPIY+9LUGzdN4MTWhOwbC3uf4xDIxAafEedBPA==
+        db.port: AgBnGnHxxgah+Ju5fbmRGIH8wFn/jIea0zw7+LOZpdO4E6lmo5WC5/ZczhveZ8oonWB7pY8kibdBnF5nWwzoZbyiZkFhdGESze0W2gutarsF9ZG8pFrTXlB+khyHvjpa67iFYLRZs4j+cHmJ5bZmeywC1IxaW8Wq9y6HEwyPpelqjSz5Z6FXWa/wrJfCN33i/uEGN1NQvaStWLB3I8ZxLOkIiEDABOkvrr8r9s44c7zLMpVuimrhsL0b2uUDxAoaaVCOiOe3JL2pzFX98s26bxGrglfJ30Ky33SB0+I7C0IPgy8HHsyBNUKBF9xE/b0S9O91CXxSpJ+c84+BJciKeCEAf6yEDCzbwJz465cndb0//FpwnnOLPKJWeI6zESlX5vEsYHb+mv7eK0QPgm4aTFG18YvGEUxyMoGW1qZ6UAZwTdiRcNT/AragylsPONY+bfuicKizknLqRTUv4M4EbetACSgcwsEbepGC39Cf70fxh3gKRyYYZ0EbFeyCQIaHtIkShj1A9rjrhic2CNKLol3sVWyh1GxGDd0YGVUynncY7zdP1xUH6ZJHVlxslHAx1xh4MfI4ONb+AGjmDfjksTgIplI3ROs26jlACkHhR7DK4MbHU6NYaN/OEYt9yK7LhxcUJvi3v8vMoNSLZItYtAa+88dREunkUoI0tt9ChW6YoYpFXiLTJu9yeOuKFqaQF6QzSvCh
+        db.user: AgB9H/8qXnpKn1daGADJCACTAhyzxuDBQh4S5yROvCJIMx2wYbQ1RLycAxMVyPG82k3PPtHtiNZCJeGVRAjw3Rs7a485ePzcVILwt8YxY26Nf4wBYKb3Jg0YoBDa29LbomatJ3CSG35LbIPOxL7nGsTIYNnS2yvVCQLUjfVycn/PemDccvzTcas/ybXaANeKStiaUMz5UXyLFT/dDfNLNd152wRJabt4eOnN42zivJ8T8xDlf2pFy5YtkrzCOn9v8/lI8KgApdKFNqLdCPG1QdIWSIejhcfl3BRKqIeYlirDpxXPUG3YGE9/vB0jRDOsotOM+jbpduCMDYiZafxF3AZ7K5kflz1OeeWgcp4UdpUsTvMGNmpz+oITq/bUmCig0RJZ/VCZNryYfuJwyDmOK+wHxZp67BUjgUze3sSc8bXIWhO/flywET6bfW+rn5i+huVaBT0QA55qepOkwGK/n5AJvYqdhZ/739ww9n4OGT3/hWPPEMWp1q6YVX2HlAUi2AzM/O+5m3+YGpcZTiUn3M9InPyHl/nobTyLZqgQjHVwzs2Gmxa2GMwF2wRg1fOiKMpa45F6BRRWmoQ0EewH+be+nEcoYzZxDm7BtaRQfHTj1OCpfgBuaE3AH05KTgespVyZ+9KuxtW4p+CCq3GztpLls2o5hmuwk85lC6tgRRnPJZAc0mcaUiAgjTfyyCxEaur7WGisWWAiWg==
+    postgresql-credentials:
+      namespace: trusted-profile-analyzer
+      type: Opaque
+      encryptedData:
+        db.host: AgAiblrXew/jaQt4E3oz9xEJyuYqmwxmcBUqUM1esPxxwga/DTXRgDjKC+3nLYcWl6ejCHjhiaB08E/5EZoElCFIhT39Vl9ZiuMwHtzOdxrY/Rx4ZvIRRt/w92NptxDGH32hykh0zRHIPsJaSsJHHosrzCwO6Tx1qhwj9wL8/yJr+87Bdd1Vk33n56uLDg71sNrHdQrXNzTK+KkLwypwqaGshAKt5NtmSFj8y0iEL+57yB3W8kIRZQdEPOS1gU8MYybMYhhXH8B0811uuo4rK+Hr2GLVZoakPS3esemSA8HyznJwOg62ODwHshDs3dEBBWUaqDDanCzxN5tRSPCzDVB5CCmcQaDREwFg30K/hevNiXPeOgssVrCPAroYarg7Iq+PjK/79pn4qFVBr4dgYhcgC1mw4KhqxvgQrOgcDz6hXfhxKrs/eY+57q2OCVjxG6caqiZ2Lb6RFD+mZLTyBlfYGNOwDbtLx8KfFieRg8IPNEmMXPAkEZZryNngeDsow7TTv3MpXNLnvx+GFFjqEmvXVVdB8Hs0A1wUkpy9pBURcrHlLoRZVzITOBk7hLDtQk6p8vZZQNodCRxPm457mwK+HHJhhCCo2zXOJsgYgHdLB+1Oj51vaUQOJUmtwmIFplgIRHYRgYosoN35eb50uCpmT4AF0MdxDU4htYfistsvbz2hAnvkatsIXOdkeUshUA2oCFiGUpDR5WLKxCgViIMKp/7KIZRzed4vw6UZOlPmHmO+9IO+IC4fBr64+/yB0IkoPs2OAek=
+        db.name: AgDOu/5Z9e+RkO9xduQaTKNC9szKkcVPeXJz5EGBEdnHlFgO45IQt0LspAavhg6UR1veWECWvWKg73sCULtMH1y+5R+oQ9RPQ11mbPSZfjGUFXEgRQ1WngbUqh21IX+ygWK8QUnxdenIiwZ7ruWHVVBZuCYV0tLHPwSkT5WKpSXP8hLLQkxNOlXoq9S6WbIu2LyGFNGCJTrD2khsVuBC1XEL8bdlGh1HsKKeUU8t9pgdDoJG6gj1l0fRgVqyQVr5TU1it8rlHo688FiZ49YN47d6ohRsZM2XJHchylyslgROPuw8h2VEu7J6v92sfpNxFdrGglbBaq1MKtWn9AVzDBWFRhGJ5w5bivE5MDoF3FCZ0EqeEbtlw/QemkQhYmQQTMK+t5re4SuU6VXk2yxossXZ2KZOaF9TSypFsLXbB/OPGBxg/ooiVbOKDZmr3IuY6nZlji/ETlzgGwi2Icc/q/gbtl9Zl7jjmApR4wh5DAkRYivf620qXWJKsRU2b3SeFftC3jw9r9avKhvOx5vUEpsUJyVR0gY3nBQjvZcxwKdx3MXDsmbfY4ZSd/D8zfGqRbxWI9X0p9fNnZjVafMgJ/xTQNjmgQN6NYmPHceSNaKYz9rooCcABDz3JeArydNXV7KydkLh1thildpW8aL+pkqfNs7VV5PJErbieR2ZNIHV+OyVHSOBWcuCiQ9Ynn2DClZGA+vcSecF
+        db.password: AgCTPvTt6aSdnoDr7QFQdf2QecUGOVVPWWiP/ZdInKKmxaFCP3Zk+49AwYvbs1Qa9zApVBQxp/u52dUSdzEr/HSrVkf57ujm59FM0/HrGGS6UnsxNGeJaRfJX3yz5tDGHngRyI+u2AsghX6+/d+0k1D/WdwBk6jXK5X15Xq2tWdYP8z+YCmrLkOuQLIcbez0PzuaAnhdTT3uwE9SMq02+bY1kmaEljELtwz4isz1vgUks2YwicsocaTPstNSPxLPdrJWqrMIlCjtYYPNWJrpVMYLWhEoqSiqABTgr63ev68U7sGlWLNNNMR+TwU9ggb3BiuieHgtfq8NR/+1/muEoh/dVMURkO6u5iSBZLmW97dJcCi+9Siy3EuuDGvpOv0R8NH2RfZPEiZhuRCEP9Y1jBA5WiTqPLIB6W7M9otbt+1ZEr9F2fxhPTuc8CesAYGRyQRnlYSxhZjCejvNvOlYAKM1KgINl5kybSE6EWoK2slZgfEhzHwrGSuXlaOJTsCJKHzc9Evt2QE+lS4KipjDUap3UrmELyWy2Khl83CoAdsZxXsz+ndD/29cXmqnACrpdDcl4YZQe9VYXdWkao9+2TFcF98ItK7r+Th0bv+4y+k1n1+tzE00YCiUR1fXyt0Njjx9GO1RT0xY3Xw1D+MLcAgKlWIXsqjna2E74rrO2y0+8+2dwvplwTJBLAJmkuFria6nr5NYa6XQ
+        db.port: AgDHBGl66y9+gh+3Vste3mU2HeYdqbE291PDY5z5MUIR2qCxIerRCURwHaMThXCC23MVO9uppAydDLScGEQuaXb4Ih5mcFfunl3FJTeIOFdVqtmgP2WDUI32gMFAZTyUTKTmH7mvNcc7l7FMRIQljOq4TaMUVOswjOT5oFPxD278zp2dutEy8C5i9csYkQgGBo32WWqVPvPDl4BXUvoyKMwmQqBZ8seCd0BoTlHETilTyd/y0D6bsaicwAqPTF5O5Z5zqlVczpWGjLAyWqSw/d4YcrMS/t4+9UeYgpYtGM7DNHn1jFHlr3KRyuZGMU3UftU0TYP2I41ZcL3uX4zY/iz5/Yl7ciYe1HI9uCR7b4FA0LjbLHdofLbnXDN9eNWF++Lon4GJm/xnMDwAAeVUFFSmW8gsqixI7wK05BDAWqlkcgdlQnXcXdN2xYK9Hp43mtiuMgQgst3kUWCKDmXfPz2ay0/iI5POmahtZAqxPX8cze0y6QNBTKXqPdgvgtamd/nzbP3XepQ7ZeuJ6M+4tDByht0oUGB9JgKby3iNhma5WzcrllBtZndFHE3ZjJpStlqBz+sA9eOzzRziFpqwZ6oNCLjXSkotmkPXj05yBYogx9Kzcp5Frrly44TbqZeJU7qwO+8zGVtTgB+RGUySnuIZ9via76TaIDPolX5Ocx7sXoNjUjjq1P+eAXv9EDlAr/JJWIqb
+        db.user: AgAIX7cO7OU5Ai+yK0+Ekb2ykZUFwTT2GdQIvA6Odj1aZMVOQA0HaAFPpTHx+kof18mXBXUDkT9I+Zq3ojWT0gQH3Fw6uwAX4oUA0FEB1sYcvbgRAg5MGw5FtdJt3hX+omeonZT2GNwzjI47vrmMYsq6XjQevE5NlLdxiLTEFrtymQNj9sQaSFJLBGFvAufif2pHt/L49uX9+RWDJfFZIyxnV1Qvqekt4URdvEBCSJgwuETCtnzW9vYyytVzGdeMzUdjcgUmuXTTOYM2jWXH7Tgw7KHbZjTe2v/1rGiQ0NpTin7X8osVqqLkYolIA8HKvd7SA1ygmScunEIvG5zul8nEzlE6MyJNLpzr5Fpj4IWbgA72Hk2HRWA/vIkwcpusXToYOOdIPNgh342K9c4NVkeyEHdEGHgIxNrRiwnxo78KCclava7vobL2YpNGI2qqGr0RrqG4KTmCekpx+FyEBaDfrLwtrqxi3aAFLU0zMvVAFgagnipnyJETtLeyQ7s6k8/+BuzGh/l5zeJwSGIoj9j9DUSQGesEmxA9HHyFoiGSoTDhs/v8rjLEQF9EPYEYjW7upJLlDd152t2Mz46YVPGFNl6wgfhHeJC3Ctw7krXvRHX8CFNYze3XG+7JbW2Ry5zjMbZmJ/spj8Z7u5m6ebvIhEUlt8fVT1LDzbC3NZxYqUE4F653n8dA8/oO4BC1pn+W9cgAew==

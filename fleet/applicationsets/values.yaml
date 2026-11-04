@@ -1,0 +1,159 @@
+---
+# ApplicationSets of the fleet: one per cluster, rendered by helper-argocd.
+# Anchors keep what all clusters share in one place, an entry only sets its cluster.yaml.
+#
+#   clusters-ng/catalog.yaml                  all components and their namespace
+#   clusters-ng/<cluster>/cluster.yaml        which components this cluster gets
+#   components/<component>/                   the Helm chart of a component
+#   clusters-ng/groups/<group>/...            values for a group of clusters
+#   clusters-ng/<cluster>/values/...          values for one cluster
+#
+# One component on one cluster = one Application. Everything a component needs
+# (operator, status checker, configuration) is inside one chart, so sync waves
+# keep the order. One ApplicationSet per cluster limits errors to that cluster and allows
+# changing clusters one by one, for example when moving them to Argo CD Agent.
+
+repourl: &repourl https://github.com/tjungbauer/openshift-clusterconfig-gitops.git
+repobranch: &branch main
+
+# Everything that is the same for all clusters.
+common: &common
+  enabled: true
+  description: "Cluster configuration of one cluster"
+  goTemplate: true
+  # Applications dropped from the generator output (enabled: false, key removed) are
+  # deleted, but their objects stay on the cluster. This is cluster configuration, a
+  # typo must not remove it. Set to false to clean up, or remove the objects manually.
+  preserveResourcesOnDeletion: true
+  # "cfg-" avoids a name collision with other ApplicationSets.
+  applicationName: 'cfg-{{ .path.basename }}-{{ .app }}'  # cfg-management-cluster-setup-acs
+  # One AppProject per cluster, named like the cluster in Argo CD. It must allow this
+  # repository, the destination and the Helm repositories used by the component charts.
+  argocd_project: '{{ .clusterName }}'
+  # Take the destination namespace from the parameter .namespace, see STEP 3.
+  use_configured_namespace: true
+  templateLabels:
+    cluster: '{{ .clusterName }}'
+    group: '{{ .group }}'
+    app: '{{ .app }}'
+  templateAnnotations:
+    # Only these paths invalidate the manifest cache of this Application. Without
+    # it, every commit refreshes all Applications of this repository.
+    argocd.argoproj.io/manifest-generate-paths: '/components/{{ .app }};/clusters-ng/groups/{{ .group }};/clusters-ng/{{ .path.basename }}'
+  # No syncPolicy on purpose: every Application must be synced manually. Do not enable
+  # autosync_enabled. No CreateNamespace either, the charts create their namespaces.
+  multiple_sources:
+    # Source 1: the component chart. Its values.yaml is the default for all clusters.
+    - repoUrl: *repourl
+      path: 'components/{{ .app }}'
+      targetRevision: '{{ .revision }}'
+      helm:
+        releaseName: '{{ .app | trunc 53 | trimSuffix "-" }}'  # Helm allows 53 characters
+        # Each layer is optional. Downside: a misnamed file is NOT an error, its
+        # values are just not applied. Check this in CI.
+        ignoreMissingValueFiles: true
+        # Merged in this order, the last file wins:
+        default_values_file: '$values/clusters-ng/groups/{{ .group }}/global.yaml'
+        additional_values_files:
+          - '$values/clusters-ng/groups/{{ .group }}/{{ .app }}.yaml'
+          - '$values/clusters-ng/{{ .path.basename }}/values/global.yaml'
+          - '$values/clusters-ng/{{ .path.basename }}/values/{{ .app }}.yaml'
+    # Source 2: the value files, always from main, even if a component is pinned.
+    # ref: values defines the prefix $values. It must not set "path".
+    - repoUrl: *repourl
+      targetRevision: *branch
+      ref: values
+
+# STEP 2 - Add the catalog: .catalog is now available as well.
+# pathParamPrefix is required with two Git generators, otherwise both would write the
+# parameter "path".
+catalog_generator: &catalog
+  git:
+    repoURL: *repourl
+    revision: *branch
+    pathParamPrefix: catalogFile
+    files:
+      - path: clusters-ng/catalog.yaml
+
+# STEP 3 - Find the components of this cluster.
+# elementsYaml is a Go template, "." holds the parameters of STEP 1 and 2. The rendered
+# text must be a YAML list, every item is one Application:
+#
+#   - app: setup-acs
+#     targetCluster: in-cluster
+#     namespace: stackrox
+#     revision: main
+components_generator: &components
+  list:
+    elementsYaml: |
+      {{- /* Walk over the components this cluster selected.
+             $name: the component, $cfg: the settings of this cluster. */}}
+      {{- /* A cluster with active: false gets no Application at all. */}}
+      {{- if dig "active" true $ }}
+      {{- range $name, $cfg := .components }}
+
+      {{- /* A typo must not silently drop a component: without this check the
+             Application would be deleted. The error stops the ApplicationSet of this cluster. */}}
+      {{- if not (hasKey $.catalog $name) }}
+      {{- fail (printf "component %s of cluster %s is not in clusters-ng/catalog.yaml" $name $.path.basename) }}
+      {{- end }}
+
+      {{- /* "name:" without settings is null, treat it like "name: {}". */}}
+      {{- $c := $cfg | default dict }}
+      {{- $base := get $.catalog $name }}
+
+      {{- /* dig reads a key and returns the 2nd argument if it does not exist. */}}
+      {{- if dig "enabled" true $c }}
+      - app: {{ $name }}
+        targetCluster: {{ $.clusterName }}
+        namespace: {{ get $base "namespace" }}
+
+        {{- /* The cluster wins over the catalog, the catalog over the default. */}}
+        revision: {{ dig "revision" (dig "revision" "main" $base) $c | quote }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+
+# One entry per cluster. Outer matrix: every result of the inner matrix is expanded by the
+# list. Argo CD allows exactly this one level of nesting, do not add another one.
+# Inner matrix: STEP 1 reads the cluster.yaml (clusterName, group, components and the
+# parameter "path" of its directory), STEP 2 adds the catalog.
+applicationsets:
+  cluster-config-management-cluster:
+    <<: *common
+    generatormatrix:
+      - matrix:
+          generators:
+            - git:
+                repoURL: *repourl
+                revision: *branch
+                files:
+                  - path: clusters-ng/management-cluster/cluster.yaml
+            - *catalog
+      - *components
+
+  cluster-config-sno:
+    <<: *common
+    generatormatrix:
+      - matrix:
+          generators:
+            - git:
+                repoURL: *repourl
+                revision: *branch
+                files:
+                  - path: clusters-ng/sno/cluster.yaml
+            - *catalog
+      - *components
+
+  cluster-config-bm:
+    <<: *common
+    generatormatrix:
+      - matrix:
+          generators:
+            - git:
+                repoURL: *repourl
+                revision: *branch
+                files:
+                  - path: clusters-ng/bm/cluster.yaml
+            - *catalog
+      - *components

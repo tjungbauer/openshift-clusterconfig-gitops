@@ -1,0 +1,8 @@
+apiVersion: v2
+name: component-update-clusterversion
+description: Updates the OpenShift ClusterVersion
+version: 1.0.0
+dependencies:
+  - name: update-clusterversion
+    version: ~1.0.4
+    repository: https://charts.stderr.at/

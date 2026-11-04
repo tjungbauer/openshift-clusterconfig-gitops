@@ -1,0 +1,33 @@
+---
+apiVersion: v2
+name: setup-network-observability
+description: Installs and configures OpenShift Network Observability.
+version: 1.0.1
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-loki-bucket-secret
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-loki-bucket-secret.enabled
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+#  - name: helper-status-checker
+#    version: ~4.0.0
+#    repository: https://charts.stderr.at/
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-objectstore.enabled
+  - name: network-observability
+    version: ~2.0.0
+    repository: https://charts.stderr.at/
+    condition: network-observability.enabled
+  - name: helper-lokistack
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-lokistack.enabled
+maintainers:
+  - name: tjungbauer

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: component-ingresscontroller
+description: Configures the IngressController and its certificate
+version: 1.0.0
+dependencies:
+  - name: ingresscontroller
+    version: ~1.0.20
+    repository: https://charts.stderr.at/
+  - name: cert-manager
+    version: ~2.0.9
+    repository: https://charts.stderr.at/

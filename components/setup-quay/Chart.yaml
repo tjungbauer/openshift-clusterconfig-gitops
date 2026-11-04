@@ -1,0 +1,24 @@
+apiVersion: v2
+name: setup-quay
+description: Setup Quay Registry
+version: 2.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: quay-registry-setup
+    version: ~2.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-objectstore.enabled
+maintainers:
+  - name: tjungbauer

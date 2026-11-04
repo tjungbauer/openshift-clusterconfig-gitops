@@ -1,0 +1,17 @@
+apiVersion: v2
+name: setup-trusted-profile-analyzer
+description: Setup Trusted Profile Analyzer
+version: 1.0.0
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+maintainers:
+  - name: tjungbauer

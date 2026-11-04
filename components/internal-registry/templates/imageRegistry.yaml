@@ -1,0 +1,28 @@
+{{- if eq ( .Values.enabled | toString) "true" }}
+{{- with .Values }}
+---
+apiVersion: imageregistry.operator.openshift.io/v1
+kind: Config
+metadata:
+  name: cluster
+  annotations:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "10" | quote }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+spec:
+  managementState: Managed
+  replicas: {{ .replicas | default "2" }}
+
+  {{- if .nodeSelector }}
+  nodeSelector: 
+    {{ .nodeSelector.key }}: {{ .nodeSelector.value | quote }}
+  {{- end }}
+
+  {{- /* Define required tolerations */}}
+  {{- if .tolerations }}
+{{ include "tpl.tolerations" .tolerations | indent 2 }}
+  {{- end }}
+{{- end }}
+{{- end }}

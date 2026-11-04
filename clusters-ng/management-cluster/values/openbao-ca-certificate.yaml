@@ -1,0 +1,62 @@
+---
+namespace:
+  create: true
+  name: "openbao"
+  description: "OpenBao Namespace"
+  displayName: "OpenBao Namespace"
+  additionalLabels:
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+
+cert-manager:
+  enabled: true
+
+  issuer:
+      # Name of issuer
+    - name: openbao-selfsigned
+
+      # -- Syncwave to create this issuer
+      syncwave: 5
+
+      # -- Type can be either ClusterIssuer or Issuer
+      type: Issuer
+
+      # -- Enable this issuer.
+      # @default -- false
+      enabled: true
+
+      # -- Namespace for Issuer (ignored for ClusterIssuer). Defaults to the default namespace when not set.
+      namespace: openbao
+
+      # -- Create a selfSigned issuer. The SelfSigned issuer doesn't represent a certificate authority as such, but instead denotes that certificates will "sign themselves" using a given private key.
+      selfSigned: true
+
+  certificates:
+    enabled: true
+
+    # List of certificates
+    certificate:
+      - name: openbao-ca
+        enabled: true
+        namespace: openbao
+        syncwave: "10"
+        secretName: openbao-ca-secret
+
+        duration: 87660h
+
+        dnsNames:
+          - openbao-ca
+
+        privateKey:
+          algorithm: ECDSA
+          size: 256
+          rotationPolicy: Always
+
+        isCA: true
+
+        # Reference to the issuer that shall be used.
+        issuerRef:
+          name: openbao-selfsigned
+          kind: Issuer

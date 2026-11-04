@@ -1,0 +1,20 @@
+apiVersion: v2
+name: setup-trusted-profile-analyzer
+description: Setup Trusted Profile Analyzer
+version: 1.0.1
+dependencies:
+  - name: helper-sealed-secrets
+    version: 1.0.0
+    repository: https://charts.stderr.at/
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-objectstore
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-objectstore.enabled
+  - name: redhat-trusted-profile-analyzer
+    version: ~1.2.0
+    repository: https://charts.openshift.io/
+maintainers:
+  - name: tjungbauer

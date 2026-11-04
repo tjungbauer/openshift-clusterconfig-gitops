@@ -1,0 +1,21 @@
+apiVersion: v2
+name: setup-rbac-overview
+description: GitOps wrapper — deploy and enable the OpenShift Console RBAC Overview plugin
+home: https://github.com/tjungbauer/openshift-clusterconfig-gitops/tree/main/clusters/management-cluster/setup-rbac-overview
+version: 1.0.0
+dependencies:
+  - name: rbac-overview
+    version: 1.0.5
+    repository: https://tjungbauer.github.io/openshift-console-rbac-overview
+maintainers:
+  - name: tjungbauer
+    email: tjungbau@redhat.com
+    url: https://blog.stderr.at/
+sources:
+  - https://github.com/tjungbauer/openshift-console-rbac-overview
+  - https://github.com/tjungbauer/openshift-clusterconfig-gitops
+keywords:
+  - openshift
+  - console
+  - rbac
+  - plugin

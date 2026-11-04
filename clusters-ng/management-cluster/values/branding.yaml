@@ -1,0 +1,7 @@
+---
+# Values for this cluster only. Overrides the group and components/branding/values.yaml
+generic-cluster-config:
+  console:
+    console_banners:
+      topbanner:
+        text: 'Management Cluster Test Banner'

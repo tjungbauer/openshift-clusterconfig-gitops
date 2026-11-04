@@ -1,0 +1,283 @@
+---
+quay_namespace: &namespace quay-enterprise
+quay_route: &publicroute quay-registry-quay-quay-enterprise.apps.ocp.aws.ispworld.at
+s3_hostname: &s3_hostname s3-openshift-storage.apps.ocp.aws.ispworld.at
+storageclassname: &storageclassname quay-bucket-storage-class
+bucket: &bucketname quay-bucket
+quay-version: &quay-version stable-3.16
+
+#######################################################
+# If ODF is used, the Chart helper-objectstore
+# is able to create the S3 storage for Quay.
+#
+# It is a helper chart that simply creates another
+# backingstore.
+# This is a chart in an early state, and not everything
+# can be customized for now.
+#
+# It will create the objects:
+#  - BackingStore
+#  - BackingClass
+#  - StorageClass
+
+# NOTE: Currently only PV type is supported
+#######################################################
+helper-objectstore:
+  enabled: true
+  # syncwave: 1
+
+  # Name of the BackingStore
+  backingstore_name: quay-backingstore
+  # Size of the BackingStore
+  backingstore_size: 700Gi
+  # numOfVolumes: 1
+  # type: py-pool
+
+  # The StorageClass the BackingStore is based on
+  baseStorageClass: gp3-csi
+
+  # Name of the StorageClass that shall be enabled.
+  storageclass_name: *storageclassname
+
+##################################
+# Quay Setup and Configuration
+# Using chart quay-registry-setup
+# Verify the Chart documentation:
+# https://github.com/tjungbauer/helm-charts/tree/main/charts/quay-registry-setup
+##################################
+quay-registry-setup:
+  quay:
+    enabled: true
+    syncwave: 10
+    config_bundle: quay-generated-configuration
+    public_route: *publicroute
+
+    # Namespace for Quay Enterprise
+    namespace:
+      create: true
+      name: *namespace
+      syncwave: 1
+      bindtoNode:
+        role: infra
+
+    # Create a BucketClaim. To use this the ObjectBucketClaim resource must be available on the cluster.
+    # If this resource is not available, then a bucket must be created in a different way (prepared before Quay is deployed.)
+    # This usually goes together with helper-objectstore, that can create a new BucketClass.
+    bucketClaim:
+      enabled: true
+      name: *bucketname
+
+      # Name of the storageclass
+      # Default: openshift-storage.noobaa.io
+      # a separate StorageClass with BackingStore and BackingClass can be created.
+      storageclass: *storageclassname
+
+      # Syncwave for bucketclaim creation. This should be done very early, but it depends on ODF.
+      # Default: 2
+      syncwave: 2
+
+    # -- Quay comes with several components that might be managed by the Operator or managed by the customer.
+    # Some might have an "overrides" settings that can manage the number of replicas. This is useful for for testing purposes.
+    components:
+      clair:
+        overrides:
+          replicas: 1
+      clairpostgres: {}
+      objectstore:
+        managed: "false"
+      redis: {}
+      hpa:
+        managed: "false"
+      route: {}
+      mirror:
+        managed: "false"
+      monitoring: {}
+      tls: {}
+      postgres: {}
+      quay:
+        overrides:
+          replicas: 1
+
+    # Initialize Quay and configure the first user. This was start a Job, that will connect to the public route and configure the first (admin) user.
+    job_init_quay:
+      enabled: true
+      syncwave: 200
+      serviceAccount: quay-initiator
+      quay_basename: quay-registry-quay-app
+
+    # Creating initial admin account.
+    # The password for this user will be GENERATED and can be found in the secret "init-user"
+    # Defaults for username and mail:
+    #   - username: admin
+    #   - mail: admin@company.com
+    init_user:
+      enabled: true
+      secretName: initial-user
+      username: admin
+      mail: test@test.com
+      password: ''
+
+    # Inject the route certificate into the generated configuration Secret
+    job_inject_route_cert:
+      enabled: true
+      name: inject-certificate
+      serviceAccount: quay-ca-injector
+      syncwave: 5
+      sleeptimer: 30
+      certificate:
+        enabled: false
+        name: no-certificate-available
+      additional_ca:
+        enabled: true
+        configmap: kube-root-ca.crt
+        configmap_key: '.data.ca\.crt'
+
+  ##############################################################
+  # Generate the configuration secret for quay.
+  # This consists of numerous settings, Object storage settings
+  # and initial user configuration.
+  # Quay requires verify specific settings and a very specific
+  # layout of the configuration to be able to ready all settings
+  #
+  # NOTE: The configuration of Quay stores sensitive information
+  # Therefore a ConfigMap is used as a skeleton and a Job will
+  # then generate the Secret based on the ConfigMap and other
+  # settings.
+  ##############################################################
+  quay_configuration:
+    enabled: true
+    syncwave: 3
+    configmapName: quay-configuration-skeleton
+
+    storage:
+      instance: RHOCSStorage
+
+    ldap_auth_secret: ldap-authentication
+
+    bucket:
+      name: *bucketname
+
+      # is_secure: true
+      # port: 443
+
+    s3_hostname:
+      overwrite: true
+      hostname: *s3_hostname
+
+    #####################
+    # QUAY CONFIGURATION
+    #####################
+    # Additional SUPER_USERS besides the initial administraor as defined at init_user.username (default admin)
+    super_user_list:
+      - second_admin
+
+    # The authentication engine to use for credential authentication.
+    # Values:
+    #    One of Database, LDAP, JWT, Keystone, OIDC
+    # Default: Database
+    # authentication_type: Database
+    authentication_type: Database
+
+    # If enabled, only API calls marked as being made by an XHR will be allowed from browsers
+    # Default: false
+    browser_api_calls_xhr_only: false
+
+    # Additional features that can be activated or deactivated
+    feature:
+
+      # To create the first user, users need to set the FEATURE_USER_INITIALIZE parameter to true
+      # Default: false
+      user_initialize: true
+
+      # Whether to allow anonymous users to browse and pull public repositories
+      # Default: true
+      anonymous_access: false
+
+      # Enable support for Helm artifacts.
+      # Default: false
+      helm_oci_support: true
+
+      # Whether to proxy all direct download URLs in storage through NGINX.
+      # Default: false
+      proxy_storage: true
+
+      # Whether Quay will act as a pull through cache for upstream registries.
+      # Default: false
+      proxy_cache: true
+
+      # If set to true, enables repository mirroring.
+      # Default: false
+      repo_mirror: true
+
+      # If the security scanner is enabled, turn on or turn off security notifications
+      # Default: false
+      security_notifications: true
+
+      # When set, allows users to try the beta UI environment.
+      # Default: true
+      ui_v2: true
+
+      # Enables repository settings in the beta UI Environment
+      # Default: false
+      ui_v2_repo_settings: true
+
+      # Whether users can be created (by non-superusers)
+      # Default: true
+      user_creation: false
+
+      # If set to true, users can confirm and modify their initial usernames when logging in via OpenID Connect (OIDC) or a non-database internal authentication provider like LDAP.
+      # Default: true
+      username_confirmation: false
+
+    # One of http or https. Note that users only set their PREFERRED_URL_SCHEME to http
+    # when there is no TLS encryption in the communication path from the client to Quay.
+    # Default: http
+    preferred_url_scheme: https
+
+    # Number of results returned per page by search page
+    # Default: 10
+    search_results_per_page: 30
+
+    # Whether the secure property should be set on session cookies
+    # Set to True for all installations using SSL
+    # Default: false
+    session_cookie_secure: true
+
+    # If specified, nginx is configured to enabled a list of SSL protocols defined in the list.
+    # Removing an SSL protocol from the list disables the protocol during Red Hat Quay startup.
+    # ['TLSv1','TLSv1.1','TLSv1.2', `TLSv1.3]
+    # Default: TLSv1.3
+    ssl_protocols:
+      - TLSv1.2
+      - TLSv1.3
+
+# Install Quay Operator
+# Deploys Operator --> Subscription and Operatorgroup
+# Syncwave: 0
+helper-operator:
+  operators:
+    quay-operator:
+      enabled: true
+      syncwave: '0'
+      namespace:
+        name: openshift-operators
+        create: false
+      subscription:
+        channel: *quay-version
+        approval: Automatic
+        operatorName: quay-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        create: false
+        notownnamespace: true
+
+helper-status-checker:
+  enabled: true
+
+  checks:
+    - operatorName: quay-operator
+      namespace:
+        name: openshift-operators
+      serviceAccount:
+        name: "sa-quay"

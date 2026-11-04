@@ -1,0 +1,59 @@
+---
+# -- Enable the settings and configuration of a project template.
+# The information of the template can be found in templates/projecttempalte.yaml
+# @default -- ''
+projecttemplate:
+  # -- Shall a project template be configured?
+  # @default -- false
+  enabled: false
+
+  # -- Name of the project template
+  # @default -- project-template
+  name: project-template
+
+# @ignore
+generic-cluster-config:
+  ############################
+  # DISABLE SELF PROVISIONER #
+  ############################
+  self_provisioner:
+    deactivate: true
+
+  ##############
+  # MONITORING #
+  ##############
+  monitoring:
+    enabled: true
+    enableUserWorkload: true
+
+    ################
+    # ALERTMANAGER #
+    ################
+    # Configuration for the cluster (main) Alertmanager
+    alertmanagerMain:
+      disable_local_alertmanager: false
+
+      # Add storage to Alertmanager to keep the data.
+      storage:
+        class: gp3-csi
+        size: 2Gi
+
+    ##############
+    # PROMETHEUS #
+    ##############
+    prometheusK8s:
+
+      retention: 2d
+
+      # Add storage to Prometheus to keep the data.
+      storage:
+        class: gp3-csi
+        size: 10Gi
+
+# Sealed for THIS cluster, seal again for every other cluster.
+helper-sealed-secrets:
+  secrets:
+    htpasswd-secret:
+      namespace: openshift-config
+      encryptedData:
+        htpasswd: AgBbYwO8ZWJFJDL91ubFLOsXj82cZAI9jFAK8Yh1/Xsp8X9oo49gS/mTN/QBwU0YaR49/0cuCAwaY78uQFkAgUElzclxepnZ+PQ/zjv3yW7NrgYINqcYWm9PXmrVgS6HFI1xS009AZwvMStVD/1pMHLtBLLFCrokizaUtQ8TuM9Ioh/pQH7Hz1Is86usGxBif6AxqMAstYmlIdN/GqYTUHheU5ndoAcWGCmOiTl4yP3ICa5Cza15jHxA2ElunEdOxLjuul0PYNTT3e7kFhGPSuyJMxD1KYXt94+ee4EnZT9EDM2DwC+LgHRWrtzu28PZY49cIab3UTFAPWHldXebD7T/anuqcnvbsUhA4rFEpGMliZgiss0Jy5mweXfSH0DJolyibmIlZLZ7HIvu6pEeU3WZRnNU4U93EblRcIfpCDGy/Ft7KRbCtaJWz9Xev9fkZB7MCr7ALtTE1+h6lWveKLxiCKkhsdRbDK7d8CjRxGkstmurBppsWgxp5YuLQp7YOUdng7Kue9Dw3sQtDIThSUWZDCPGteOgiC7h+96KTp49HWDqHGQEJzBvdoW8gG/C0SGJ/xwU5O5OEqbb0ZWznBKcB/6HK04CSus8reus/YuVHsk2ptmT1NnqdFCDpXZWtVT2fhRg6ngO0dVkEjNl6ffMiiq+3mBuUbSUib9lrkZan+N6gd4Hm1CAEY4pZ7jj4egEdv4+ABkp8dBIugt6fXub3sKpjurpspOx0cfnAPSVWBIGtt8MH2i/QGf7xz7xOE75eQ3fRCoX5VFH/AB33aKPphc3r5PNBf4FZMTKxTfZdb+ac8K8um0P2qW/aep3Yf3eFkscOpe18X24sggO3nPszb1K+k+A4+aIqEVRg/0ja/outsKhsb+owweuCw22VRLjzGUfLd9iZ3CRx4z5qpdJstuK8ZxXRPPrbzt8gSmSTomz

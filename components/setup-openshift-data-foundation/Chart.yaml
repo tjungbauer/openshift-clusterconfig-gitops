@@ -1,0 +1,20 @@
+apiVersion: v2
+name: clusterbranding
+description: Deploys Cluster Branding such as custom Login Page or Logo etc.
+version: 1.0.2
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: openshift-data-foundation
+    version: ~1.0.10
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.14
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+maintainers:
+  - name: tjungbauer

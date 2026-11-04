@@ -1,0 +1,98 @@
+---
+# Catalog of all components of the fleet. One entry per folder in components/.
+#
+#   namespace:  destination namespace of the Application (required)
+#   revision:   Git revision of the component chart (default: main). Pin it to a tag
+#               to roll a new chart version out cluster by cluster: a cluster can
+#               override it in its cluster.yaml.
+#   needs:      other components that must be healthy first. Documentation only,
+#               Argo CD does not evaluate it. Sync these first.
+catalog:
+  applications-gitops:
+    namespace: application-gitops
+  branding:
+    namespace: default
+  branding-bottom:
+    namespace: default
+  cert-manager:
+    namespace: cert-manager
+  clusterconfig-apiserver:
+    namespace: default
+  etcd-backup:
+    namespace: etcd-backup
+  generic-clusterconfig:
+    namespace: default
+  idp:
+    namespace: default
+  ingresscontroller:
+    namespace: openshift-ingress-operator
+  install-cyclonedx:
+    namespace: default
+  internal-registry:
+    namespace: openshift-image-registry
+  node-configuration:
+    namespace: default
+  openbao:
+    namespace: openbao
+  openbao-ca-certificate:
+    namespace: default
+  setup-acm:
+    namespace: open-cluster-management
+  setup-acs:
+    namespace: stackrox
+  setup-acs-backup:
+    namespace: stackrox
+  setup-cert-utils-test:
+    namespace: cert-utils-operator
+  setup-cluster-observability-operator:
+    namespace: openshift-cluster-observability-operator
+  setup-compliance-operator:
+    namespace: openshift-compliance
+  setup-container-security-operator:
+    namespace: default
+  setup-cost-management-operator:
+    namespace: costmanagement-metrics-operator
+  setup-crunchy-postgres:
+    namespace: crunchy-postgres-operator
+  setup-dev-spaces:
+    namespace: openshift-devspaces
+  setup-file-integrity-operator:
+    namespace: openshift-file-integrity
+  setup-grafana:
+    namespace: openshift-operators
+  setup-loki-operator:
+    namespace: openshift-operators-redhat
+  setup-lokistack-otel-k8s-events:
+    namespace: tempostack
+  setup-multicluster-observability:
+    namespace: open-cluster-management-observability
+    needs: ["setup-acm"]
+  setup-network-observability:
+    namespace: openshift-netobserv-operator
+  setup-openshift-data-foundation:
+    namespace: openshift-storage
+  setup-openshift-logging:
+    namespace: openshift-logging
+    needs: ["setup-loki-operator", "setup-openshift-data-foundation"]
+  setup-otel-operator:
+    namespace: openshift-opentelemetry-operator
+  setup-quay:
+    namespace: quay-enterprise
+    needs: ["setup-openshift-data-foundation"]
+  setup-rbac-overview:
+    namespace: rbac-overview
+  setup-rh-build-of-keycloak:
+    namespace: keycloak
+  setup-tempo-operator:
+    namespace: openshift-tempo-operator
+  trusted-artifact-signer:
+    namespace: trusted-artifact-signer
+  trusted-profile-analyzer:
+    namespace: trusted-profile-analyzer
+  update-clusterversion:
+    namespace: openshift-config
+  cluster-welcome:
+    namespace: default
+  wave-acm-policy-management:
+    namespace: open-cluster-management
+    needs: ["setup-acm"]
