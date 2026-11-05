@@ -6,7 +6,7 @@
 #                created, so an unknown cluster does not cause errors in the ApplicationSet.
 clusterName: bm
 group: demo
-active: false
+active: true
 
 components:
   branding: {}

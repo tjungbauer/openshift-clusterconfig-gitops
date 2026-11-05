@@ -11,7 +11,10 @@ helper-argocd:
       description: "Creates one ApplicationSet per cluster of clusters-ng"
       labels:
         category: fleet
-      # No syncPolicy on purpose: this Application must be synced manually.
+      syncPolicy:
+        autosync_enabled: true
+        syncpolicy_prune: true
+        syncpolicy_selfheal: true
 
       multiple_sources:
           # Define repository of the values-file

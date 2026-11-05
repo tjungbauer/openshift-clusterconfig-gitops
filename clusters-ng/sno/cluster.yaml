@@ -8,7 +8,7 @@ clusterName: sno
 group: demo
 # Showcase, not active: with a group per stage, this cluster would be
 # group: dev  # test charts here first, reads ../groups/dev/
-active: false
+active: true
 
 components:
   branding: {}
