@@ -13,6 +13,15 @@
 # keep the order. One ApplicationSet per cluster limits errors to that cluster and allows
 # changing clusters one by one, for example when moving them to Argo CD Agent.
 
+# One AppProject per cluster, named like clusterName in its cluster.yaml. They are created
+# before the ApplicationSets (syncwave 1 and 5). in-cluster is missing here on purpose: it
+# already comes from base/argocd-resources-manager and must not have two owners.
+argocd_projects:
+  - name: sno
+    enabled: true
+  - name: bm
+    enabled: true
+
 repourl: &repourl https://github.com/tjungbauer/openshift-clusterconfig-gitops.git
 repobranch: &branch main
 

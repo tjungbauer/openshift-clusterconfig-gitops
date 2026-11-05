@@ -31,9 +31,9 @@ group component file, cluster `global.yaml`, cluster component file.
 ## Add a cluster
 
 1. Register the cluster in Argo CD.
-2. Create an AppProject named like the cluster in Argo CD.
+2. Add the AppProject, named like the cluster in Argo CD, to `../fleet/applicationsets/values.yaml`.
 3. Create `clusters-ng/<cluster>/cluster.yaml` with `clusterName:`, `group:` and `components:`.
-   Add an entry to `../fleet/applicationsets/values.yaml` and sync `fleet-applicationsets`.
+   Add its ApplicationSet to the same file and sync `fleet-applicationsets`.
 4. Add only the values that differ in `clusters-ng/<cluster>/values/`.
 5. Seal the secrets for this cluster, see below.
 

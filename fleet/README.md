@@ -21,5 +21,5 @@ argocd app sync fleet-applicationsets
 
 ## Add a cluster
 
-Copy one entry below `applicationsets:` in `applicationsets/values.yaml`, change its name and the
-path of its `cluster.yaml`, and sync `fleet-applicationsets`.
+In `applicationsets/values.yaml`, add the cluster to `argocd_projects` and copy one entry below
+`applicationsets:`, with its name and the path of its `cluster.yaml`. Then sync `fleet-applicationsets`.
