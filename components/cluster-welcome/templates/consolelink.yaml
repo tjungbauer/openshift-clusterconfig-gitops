@@ -1,3 +1,4 @@
+{{- if .Values.href }}
 # Small, visible proof that the configuration works:
 # a link in the help menu (?) of the OpenShift console.
 apiVersion: console.openshift.io/v1
@@ -8,3 +9,4 @@ spec:
   href: {{ .Values.href | quote }}
   location: HelpMenu
   text: {{ .Values.text | quote }}
+{{- end }}

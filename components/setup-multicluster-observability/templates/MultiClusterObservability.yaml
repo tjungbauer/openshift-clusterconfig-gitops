@@ -1,4 +1,4 @@
-{{ if eq (.Values.multicluster_observability.enabled | toString) "true" }}
+{{ if eq ((.Values.multicluster_observability | default dict).enabled | toString) "true" }}
 {{- with .Values.multicluster_observability }}
 ---
 apiVersion: observability.open-cluster-management.io/v1beta2

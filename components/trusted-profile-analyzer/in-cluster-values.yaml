@@ -1,0 +1,43 @@
+---
+# Only for helm lint: the lint job and scripts/lint-local.sh load a file with this name.
+# The chart redhat-trusted-profile-analyzer has a schema that requires these settings, and the
+# real values are in clusters-ng/<cluster>/values/. Argo CD does not read this file.
+redhat-trusted-profile-analyzer:
+  appDomain: apps.example.com
+  storage:
+    type: s3
+    region: https://s3.example.com
+    bucket: lint-bucket
+    accessKey:
+      valueFrom:
+        secretKeyRef:
+          name: lint-storage
+          key: AWS_ACCESS_KEY_ID
+    secretKey:
+      valueFrom:
+        secretKeyRef:
+          name: lint-storage
+          key: AWS_SECRET_ACCESS_KEY
+  database:
+    host:
+      valueFrom:
+        secretKeyRef:
+          name: lint-database
+          key: db.host
+    name:
+      valueFrom:
+        secretKeyRef:
+          name: lint-database
+          key: db.name
+    username:
+      valueFrom:
+        secretKeyRef:
+          name: lint-database
+          key: db.user
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: lint-database
+          key: db.password
+  oidc:
+    issuerUrl: https://sso.example.com/realms/lint

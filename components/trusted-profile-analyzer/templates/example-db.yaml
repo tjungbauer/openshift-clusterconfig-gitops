@@ -1,4 +1,4 @@
-{{ if eq (.Values.db.use_example_db_sts | toString) "true" }}
+{{ if eq ((.Values.db | default dict).use_example_db_sts | toString) "true" }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
