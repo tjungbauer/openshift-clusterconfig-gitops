@@ -1,7 +1,10 @@
 ---
-# Cluster "management-cluster". The directory name is free, clusterName must equal the
+# Cluster "management-cluster".
+# The directory name can be freely chosen, but clusterName must equal the
 # name in Argo CD: the hub cluster itself is called in-cluster.
+#
 # This file only SELECTS components, their settings are in ../catalog.yaml.
+# This file defines WHAT is installed on the cluster.
 #
 #   clusterName: destination and AppProject of all Applications
 #   group:       adds the value files of ../groups/<group>/

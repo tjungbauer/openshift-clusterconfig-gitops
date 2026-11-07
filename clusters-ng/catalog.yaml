@@ -1,7 +1,12 @@
 ---
 # Catalog of all components of the fleet. One entry per folder in components/.
+# All if these might be installed on a cluster. What a cluster really gets installed
+# is defined in its cluster.yaml.
 #
 #   namespace:  destination namespace of the Application (required)
+#               FOR CLUSTERS: many use the "default" namespace
+#               This DOES NOT mean that it is actually active in that namespace,
+#               but that a resource is used, that does not know a namespace
 #   revision:   Git revision of the component chart (default: main). Pin it to a tag
 #               to roll a new chart version out cluster by cluster: a cluster can
 #               override it in its cluster.yaml.
